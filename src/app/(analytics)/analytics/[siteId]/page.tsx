@@ -5,6 +5,7 @@ import { parseDashboardFilters } from "@/modules/analytics/domain/date-range";
 import { getDataSource } from "@/modules/analytics/server/data-source-factory";
 import { getDashboardData } from "@/modules/analytics/server/queries/dashboard";
 import { getSite } from "@/modules/analytics/server/sites";
+import { getTrackingStatus } from "@/modules/analytics/server/tracking-status";
 import { DashboardSkeleton } from "@/modules/analytics/ui/dashboard/dashboard-skeleton";
 import { DashboardView } from "@/modules/analytics/ui/dashboard/dashboard-view";
 import { NoDataYet } from "@/modules/analytics/ui/dashboard/no-data-yet";
@@ -19,7 +20,10 @@ async function DashboardContent({
   const site = await getSite(siteId);
   if (!site) notFound();
   // Echte Websites: Live-Datenquelle folgt mit der Event-Erfassung – nie Demo-Daten.
-  if (!site.isDemo) return <NoDataYet site={site} />;
+  if (!site.isDemo) {
+    const status = await getTrackingStatus(site.id);
+    return <NoDataYet site={site} pageviews24h={status.pageviews24h} />;
+  }
 
   const filters = parseDashboardFilters(query);
   const data = await getDashboardData(site, filters, getDataSource(site), new Date());

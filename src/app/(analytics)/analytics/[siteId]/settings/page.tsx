@@ -7,6 +7,9 @@ import { hasRole, ROLE_LABELS } from "@/modules/analytics/domain/roles";
 import { revokeInvitationAction } from "@/modules/analytics/server/actions/tenancy-actions";
 import { getOrganization, listMembers, listPendingInvitations } from "@/modules/analytics/server/organizations";
 import { getSite } from "@/modules/analytics/server/sites";
+import { getTrackingStatus } from "@/modules/analytics/server/tracking-status";
+import { TrackingInstallation } from "@/modules/analytics/ui/tenancy/tracking-installation";
+import { getAppOrigin } from "@/lib/app-origin";
 import { CopyButton } from "@/modules/analytics/ui/components/copy-button";
 import { MembersTable } from "@/modules/analytics/ui/tenancy/members-table";
 import {
@@ -47,7 +50,15 @@ async function SettingsContent({ params }: Pick<PageProps<"/analytics/[siteId]/s
   const organization = await getOrganization(site.organizationId);
   if (!organization) notFound();
   const isAdmin = hasRole(organization.role, "admin");
-  const [members, invitations] = await Promise.all([listMembers(organization.id), listPendingInvitations(organization)]);
+  const [members, invitations, status, origin] = await Promise.all([
+    listMembers(organization.id),
+    listPendingInvitations(organization),
+    getTrackingStatus(site.id),
+    getAppOrigin(),
+  ]);
+  const snippet = `<script defer src="${origin}/tracker.js" data-site-id="${site.publicSiteId}"></script>`;
+  const appHost = new URL(origin).hostname.replace(/^www\./, "");
+  const testUrl = site.domain === appHost ? `/tracking-test?site=${site.publicSiteId}` : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -68,10 +79,10 @@ async function SettingsContent({ params }: Pick<PageProps<"/analytics/[siteId]/s
           </code>
           {site.publicSiteId && <CopyButton value={site.publicSiteId} label="ID kopieren" />}
         </div>
-        <p className="text-sm text-muted-foreground">
-          Das Tracking-Skript und die Installationsanleitung folgen mit der Event-Erfassung. Bis dahin werden für diese
-          Website keine Daten erhoben.
-        </p>
+      </Section>
+
+      <Section title="Tracking einbauen" description="Ein Skript, keine Cookies, unter 2 KB.">
+        <TrackingInstallation snippet={snippet} status={status} testUrl={testUrl} now={new Date()} />
       </Section>
 
       <Section title="Organisation" description={`Deine Rolle: ${ROLE_LABELS[organization.role]}`}>

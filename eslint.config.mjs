@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generierte Dateien
+    "public/tracker.js",
+    "src/lib/supabase/database.types.ts",
   ]),
 ]);
 

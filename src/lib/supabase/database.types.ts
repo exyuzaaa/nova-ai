@@ -409,6 +409,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"daily_salts": {
+                  Row: {
+                    "created_at": string,"day": string,"salt": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"day": string,"salt": string
+                  }
+                  Update: {
+                    "created_at"?: string,"day"?: string,"salt"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"dashboard_layouts": {
                   Row: {
                     "created_at": string,"id": string,"is_default": boolean,"layout": NonNullable<Json>,"name": string,"organization_id": string,"updated_at": string,"user_id": string | null,"website_id": string | null
@@ -753,12 +767,38 @@ isOneToOne: false
               "created_at": string,"email": string,"is_self": boolean,"member_id": string,"role": Database["analytics"]['Enums']["member_role"],"user_id": string
             }[]
                            },
+"purge_daily_salts":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
 "purge_expired_raw_data":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"tracking_status":
+{ Args: { "p_website": string }; Returns: {
+              "events_24h": number,"last_event_at": string,"last_path": string,"pageviews_24h": number,"sessions_24h": number
+            }[]
                            }
           }
           Enums: {
             "match_operator": "equals"|"starts_with"|"contains"|"regex","member_role": "viewer"|"analyst"|"admin"|"owner","tracking_mode": "cookieless"|"consent_upgrade"|"consent_required","traffic_channel": "organic_search"|"paid_search"|"direct"|"referral"|"social"|"email"|"display"|"unassigned","visitor_id_type": "daily_hash"|"consented_id"
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
+        },"public": {
+          Tables: {
+            [_ in never]: never
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "nova_ingest_event":
+{ Args: { "p": Json }; Returns: string
+                           }
+          }
+          Enums: {
+            [_ in never]: never
           }
           CompositeTypes: {
             [_ in never]: never
@@ -768,7 +808,7 @@ isOneToOne: false
 
 type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "analytics">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
@@ -875,6 +915,10 @@ export const Constants = {
   "analytics": {
           Enums: {
             "match_operator": ["equals", "starts_with", "contains", "regex"],"member_role": ["viewer", "analyst", "admin", "owner"],"tracking_mode": ["cookieless", "consent_upgrade", "consent_required"],"traffic_channel": ["organic_search", "paid_search", "direct", "referral", "social", "email", "display", "unassigned"],"visitor_id_type": ["daily_hash", "consented_id"]
+          }
+        },"public": {
+          Enums: {
+            
           }
         }
 } as const

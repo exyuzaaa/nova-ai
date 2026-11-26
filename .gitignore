@@ -46,3 +46,6 @@ next-env.d.ts
 /playwright-report/
 /.local-stack/
 /e2e/.auth/
+
+# Gebautes Tracking-Skript (entsteht beim Build)
+/public/tracker.js

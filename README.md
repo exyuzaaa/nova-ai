@@ -10,7 +10,8 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 1 | Architektur, Datenbankschema, Plan | ✓ |
 | 2 | Designsystem (Light/Dark), Dashboard mit gekennzeichneten Demo-Daten | ✓ |
 | 3 | Supabase Auth, Organisationen, Websites, Rollen, Einladungen, RLS | ✓ |
-| 4 | Tracking-Script und Event-Ingestion | offen |
+| 4 | Tracking-Skript, Event-Erfassung, Installationsstatus | ✓ |
+| 5 | Sessions und Aggregation (Dashboard mit echten Daten) | offen |
 
 ### Phase 3 im Überblick
 
@@ -28,6 +29,8 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
   in einem unveränderlichen Audit-Log.
 - **Keine Zugangsdaten im Frontend**: Supabase-URL und Publishable Key werden nur serverseitig gelesen
   (kein `NEXT_PUBLIC_`). Ein Service-Role-Key wird nicht benötigt.
+
+Tracking einbauen: [`docs/analytics/TRACKING.md`](docs/analytics/TRACKING.md)
 
 ## Lokale Entwicklung
 

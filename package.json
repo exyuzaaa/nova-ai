@@ -11,8 +11,11 @@
     "test": "vitest run",
     "test:e2e": "playwright test --trace off",
     "check": "npm run typecheck && npm run lint && npm run test",
-    "db:types": "supabase gen types typescript --local --schema analytics > src/lib/supabase/database.types.ts",
-    "db:test": "supabase test db"
+    "db:types": "supabase gen types typescript --local --schema analytics,public > src/lib/supabase/database.types.ts",
+    "db:test": "supabase test db",
+    "build:tracker": "node tracker/build.mjs",
+    "prebuild": "node tracker/build.mjs",
+    "predev": "node tracker/build.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -41,6 +44,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/coverage-v8": "^5.1.2",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "supabase": "^3.4.0",
