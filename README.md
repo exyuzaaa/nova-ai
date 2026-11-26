@@ -3,6 +3,9 @@
 Next.js-Anwendung mit dem Modul **NOVA ANALYTICS** (datenschutzfreundliche Web-Analyse) auf Supabase.
 Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analytics/ARCHITEKTUR.md).
 
+**Ausbau zur NOVA-Plattform** (Kern, Business-Module, Abos, NOVA MASTER, Website):
+[`docs/nova/PLATTFORM.md`](docs/nova/PLATTFORM.md)
+
 ## Stand
 
 | Phase | Inhalt | Status |
