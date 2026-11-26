@@ -95,6 +95,12 @@ declare global {
   );
   w.setInterval(tick, 5000);
 
+  // Heartbeat für die Echtzeit-Ansicht: alle 30 s, solange die Seite sichtbar ist
+  // und in den letzten 30 Minuten benutzt wurde. Erzeugt serverseitig kein Event.
+  w.setInterval(() => {
+    if (d.visibilityState === "visible" && Date.now() - lastInteraction < 1_800_000) send({ t: "heartbeat" });
+  }, 30_000);
+
   const flushEngagement = () => {
     tick();
     if (auto.includes("scroll") && maxScroll > 0) send({ t: "scroll", d: maxScroll });

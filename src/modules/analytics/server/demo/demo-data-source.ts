@@ -15,7 +15,10 @@ import { emptyTotals, type Totals } from "../../domain/metrics";
 import {
   ALL_CAPABILITIES,
   type AnalyticsDataSource,
+  DEPTH_BUCKETS,
+  DURATION_BUCKETS,
   type BreakdownDimension,
+  type SessionDistribution,
   type BreakdownRow,
   type TimeseriesPoint,
 } from "../data-source";
@@ -345,5 +348,15 @@ export const demoDataSource: AnalyticsDataSource = {
       }))
       .sort((a, b) => b[sortField] - a[sortField])
       .slice(0, limit);
+  },
+
+  async getSessionDistribution(siteId, range): Promise<SessionDistribution> {
+    const { totals } = aggregateRange(siteId, range);
+    const duration = allocate(totals.sessions, { lt10: 0.38, "10_30": 0.17, "30_60": 0.14, "60_180": 0.17, "180_600": 0.1, gt600: 0.04 });
+    const depth = allocate(totals.sessions, { "1": 0.41, "2": 0.23, "3_4": 0.2, "5_9": 0.12, "10p": 0.04 });
+    return {
+      duration: DURATION_BUCKETS.map((key) => ({ key, sessions: duration[key] })),
+      depth: DEPTH_BUCKETS.map((key) => ({ key, sessions: depth[key] })),
+    };
   },
 };

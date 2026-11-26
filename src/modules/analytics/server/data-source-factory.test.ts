@@ -21,7 +21,7 @@ describe("isDemoEnabled", () => {
 });
 
 describe("getDataSource", () => {
-  const fakeClient = async () => ({ dailyStats: async () => [], breakdown: async () => [] });
+  const fakeClient = async () => ({ dailyStats: async () => [], breakdown: async () => [], distribution: async () => [] });
 
   it("gibt echten Websites niemals Demo-Daten", async () => {
     vi.stubEnv("ANALYTICS_DEMO_ENABLED", "true");

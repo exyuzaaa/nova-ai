@@ -50,6 +50,10 @@ test.describe("Tracking: Skript → Erfassung → Status", () => {
     await visitor.close();
   });
 
+  test("Echtzeit-Daten nur für angemeldete Mitglieder", async ({ request }) => {
+    expect((await request.get(`/api/analytics/realtime/${siteId}`)).status()).toBe(401);
+  });
+
   test("Bots und fremde Domains werden nicht gezählt", async ({ request }) => {
     const send = (data: object, userAgent = VISITOR_UA) =>
       request.post("/api/e", { data: JSON.stringify(data), headers: { "content-type": "text/plain", "user-agent": userAgent } });
@@ -79,6 +83,19 @@ test.describe("Tracking: Skript → Erfassung → Status", () => {
     await expect(sources.getByRole("table")).toContainText("E-Mail");
     const pages = page.getByRole("region", { name: "Beliebteste Seiten" });
     await expect(pages.getByRole("table")).toContainText("/tracking-test");
+
+    // Echtzeit (Phase 6)
+    await page.getByRole("link", { name: "Echtzeit" }).first().click();
+    await expect(page.getByRole("heading", { name: "Echtzeit", level: 1 })).toBeVisible();
+    await expect(page.getByTestId("active-now")).toHaveText("1");
+    await expect(page.getByRole("region", { name: "Letzte Events" })).toContainText("test_button_clicked");
+    await expect(page.getByRole("region", { name: "Aktuelle Seiten (letzte 5 Min.)" })).toContainText("/tracking-test");
+
+    // Besucher (Phase 6)
+    await page.getByRole("link", { name: "Besucher" }).first().click();
+    await expect(page.getByRole("heading", { name: "Besucher", level: 1 })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Seiten pro Session" }).getByRole("table")).toContainText("2 Seiten");
+    await expect(page.getByText("Ø 2,0 Seiten pro Session")).toBeVisible();
     await page.goto(`/analytics/${siteId}/settings`);
     const status = page.getByTestId("tracking-status");
     await expect(status).toContainText("Tracking aktiv");

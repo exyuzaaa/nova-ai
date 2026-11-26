@@ -30,6 +30,14 @@ export type BreakdownRow = {
   conversions: number;
 };
 
+export const DURATION_BUCKETS = ["lt10", "10_30", "30_60", "60_180", "180_600", "gt600"] as const;
+export const DEPTH_BUCKETS = ["1", "2", "3_4", "5_9", "10p"] as const;
+
+export type SessionDistribution = {
+  duration: { key: (typeof DURATION_BUCKETS)[number]; sessions: number }[];
+  depth: { key: (typeof DEPTH_BUCKETS)[number]; sessions: number }[];
+};
+
 export type TimeseriesPoint = { bucket: IsoDate; range: DateRange; totals: Totals };
 
 /** Welche Kennzahlen die Quelle tatsächlich liefern kann – fehlende werden als „nicht verfügbar“ gezeigt. */
@@ -52,4 +60,5 @@ export type AnalyticsDataSource = {
     dimension: BreakdownDimension,
     options: { limit: number },
   ): Promise<BreakdownRow[]>;
+  getSessionDistribution(siteId: string, range: DateRange): Promise<SessionDistribution>;
 };

@@ -6,11 +6,14 @@ export const EVENT_TYPES = [
   "form_start", "form_submit", "scroll", "phone_click", "email_click",
 ] as const;
 
+/** Vom Skript gesendete Typen: alle Event-Typen plus Heartbeat (wird nicht als Event gespeichert). */
+export const TRACKER_TYPES = [...EVENT_TYPES, "heartbeat"] as const;
+
 export const MAX_PAYLOAD_BYTES = 16_384;
 
 export const trackerPayloadSchema = z.object({
   s: z.string().regex(/^ns_[a-f0-9]{16}$/),
-  t: z.enum(EVENT_TYPES),
+  t: z.enum(TRACKER_TYPES),
   n: z.string().trim().min(1).max(80).regex(/^[\p{L}\p{N}_.:\- ]+$/u).optional(),
   u: z.string().max(4096),
   r: z.string().max(2048).optional(),

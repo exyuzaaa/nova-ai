@@ -19,6 +19,10 @@ const fakeClient = (rows: DailyStatsRow[]): ReportingClient & { dailyStats: Retu
   breakdown: vi.fn(async (_site: string, _start: string, _end: string, dimension: string) =>
     dimension === "channel" ? [{ key: "organic_search", visitors: 3, pageviews: 5 }, { key: "direct", visitors: 1, pageviews: 1 }] : [],
   ),
+  distribution: vi.fn(async () => [
+    { kind: "duration", bucket: "lt10", sessions: 2 },
+    { kind: "depth", bucket: "2", sessions: 1 },
+  ]),
 });
 
 describe("Live-Datenquelle", () => {
@@ -35,6 +39,14 @@ describe("Live-Datenquelle", () => {
     expect(totals.pageviews).toBe(5);
     expect(weeks.map((week) => week.totals.pageviews)).toEqual([1, 4]);
     expect(client.dailyStats).toHaveBeenCalledTimes(1);
+  });
+
+  it("ergänzt fehlende Verteilungs-Klassen mit 0", async () => {
+    const source = createLiveDataSource(fakeClient([]));
+    const distribution = await source.getSessionDistribution("s", { start: "2026-11-01", end: "2026-11-02" });
+    expect(distribution.duration).toHaveLength(6);
+    expect(distribution.duration[0]).toEqual({ key: "lt10", sessions: 2 });
+    expect(distribution.depth.map((row) => row.sessions)).toEqual([0, 1, 0, 0, 0]);
   });
 
   it("liefert keine erfundenen Ziele", async () => {

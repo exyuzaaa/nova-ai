@@ -88,7 +88,9 @@ export const getDashboardData = async (
   filters: DashboardFilters,
   dataSource: AnalyticsDataSource,
   now: Date,
+  options: { breakdowns?: boolean } = {},
 ): Promise<DashboardData> => {
+  const withBreakdowns = options.breakdowns ?? true;
   const today = todayInTimeZone(site.timezone, now);
   const range = resolveRange(filters.preset, today);
   const previousRange = getCompareRange(range, filters.compare);
@@ -103,7 +105,7 @@ export const getDashboardData = async (
     previousRange ? dataSource.getTimeseries(site.id, previousRange, granularity) : Promise.resolve(null),
     Promise.all(
       breakdownEntries.map(([, spec]) =>
-        dataSource.getBreakdown(site.id, range, spec.dimension, { limit: BREAKDOWN_LIMIT }),
+        withBreakdowns ? dataSource.getBreakdown(site.id, range, spec.dimension, { limit: BREAKDOWN_LIMIT }) : Promise.resolve([]),
       ),
     ),
   ]);

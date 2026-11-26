@@ -12,7 +12,8 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 3 | Supabase Auth, Organisationen, Websites, Rollen, Einladungen, RLS | ✓ |
 | 4 | Tracking-Skript, Event-Erfassung, Installationsstatus | ✓ |
 | 5 | Dashboard mit echten Daten (Auswertung in der Datenbank, Zeitzone der Website) | ✓ |
-| 6 | Echtzeit und Besucheranalyse | offen |
+| 6 | Echtzeit (aktive Besucher, alle 10 s) und Besucheranalyse | ✓ |
+| 7 | Traffic- und Seitenanalyse | offen |
 
 ### Phase 3 im Überblick
 

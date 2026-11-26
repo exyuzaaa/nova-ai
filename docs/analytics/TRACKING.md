@@ -37,6 +37,12 @@ Telefonnummer oder IBAN aussehen, werden serverseitig verworfen.
 Seitenaufrufe (auch Seitenwechsel in Single-Page-Apps), externe Herkunft und UTM-Parameter, aktive Verweildauer,
 Klicks auf externe Links, Downloads, Telefon- und E-Mail-Links (ohne Nummer/Adresse).
 
+## Echtzeit (Phase 6)
+
+Solange eine Seite sichtbar ist und in den letzten 30 Minuten benutzt wurde, sendet das Skript alle 30 Sekunden
+einen Heartbeat. Er verlängert nur die laufende Session und wird nicht als Event gespeichert. „Gerade aktiv“ heißt:
+Signal in den letzten 90 Sekunden. Die Echtzeit-Ansicht lädt alle 10 Sekunden neu (pausiert in Hintergrund-Tabs).
+
 ## Datenschutz
 
 - Keine Cookies, kein Speicher im Browser (außer einem freiwilligen Opt-out über `novaAnalytics.optOut()`).

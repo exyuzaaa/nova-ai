@@ -19,7 +19,9 @@ const HYPHENATED_LABELS: Partial<Record<MetricKey, string>> = {
   pageviews: "Seiten\u00adaufrufe",
 };
 
-const KPI_GROUPS: { label: string; metrics: MetricKey[] }[] = [
+export type KpiGroup = { label: string; metrics: MetricKey[] };
+
+const KPI_GROUPS: KpiGroup[] = [
   { label: "Reichweite", metrics: ["visitors", "sessions", "pageviews"] },
   { label: "Zielgruppe", metrics: ["newVisitors", "returningVisitors", "avgSessionDuration"] },
   { label: "Qualität & Ergebnis", metrics: ["bounceRate", "conversionRate", "leads"] },
@@ -94,21 +96,23 @@ export function KpiOverview({
   series,
   compareLabel,
   rangeLabel,
+  groups = KPI_GROUPS,
 }: {
   kpis: KpiData[];
   series: SeriesPoint[];
   compareLabel: string | null;
   rangeLabel: string;
+  groups?: KpiGroup[];
 }) {
-  const [selected, setSelected] = useState<MetricKey>("visitors");
+  const [selected, setSelected] = useState<MetricKey>(groups[0].metrics[0]);
   const byKey = new Map(kpis.map((kpi) => [kpi.key, kpi]));
   const hasPrevious = series.some((point) => point.previous !== null);
   const metric = METRICS[selected];
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid gap-3 lg:grid-cols-3">
-        {KPI_GROUPS.map((group) => (
+      <div className={cn("grid gap-3", groups.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3")}>
+        {groups.map((group) => (
           <section key={group.label} aria-label={group.label} className="rounded-xl border bg-card p-1.5">
             <h2 className="px-3 pt-2 pb-1 text-xs font-medium text-muted-foreground">{group.label}</h2>
             <div className="grid grid-cols-3 gap-0.5">

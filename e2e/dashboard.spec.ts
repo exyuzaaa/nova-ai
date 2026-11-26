@@ -103,6 +103,17 @@ test.describe("Dashboard (Demo-Website)", () => {
     });
   }
 
+  test("zeigt die Besucheranalyse mit Demo-Daten, aber keine Echtzeit", async ({ page }) => {
+    await page.goto(DASHBOARD);
+    await expect(page.getByRole("link", { name: "Echtzeit" })).toHaveCount(0);
+    await page.getByRole("link", { name: "Besucher" }).first().click();
+    await expect(page.getByRole("heading", { name: "Besucher", level: 1 })).toBeVisible();
+    await expect(page.getByRole("note", { name: "Hinweis zu Demo-Daten" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Sitzungsdauer" }).getByRole("table")).toContainText("unter 10 Sek.");
+    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+    expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([]);
+  });
+
   test("schaltet zwischen hellem und dunklem Design um", async ({ page }) => {
     await page.goto(DASHBOARD);
     await page.getByRole("radio", { name: "Dunkel" }).first().click();

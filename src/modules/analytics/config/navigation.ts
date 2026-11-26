@@ -3,7 +3,7 @@
  * `availableFrom` = Phase, ab der der Bereich echte Funktion hat. Bereiche ohne
  * Funktion werden ausgeblendet – es gibt keine optischen Platzhalter.
  */
-export const CURRENT_PHASE = 3;
+export const CURRENT_PHASE = 6;
 
 export type NavIcon =
   | "dashboard"
@@ -86,8 +86,8 @@ export const NAVIGATION: NavGroup[] = [
 
 export const ALL_NAV_ITEMS = NAVIGATION.flatMap((group) => group.items);
 
-/** Bereiche, die für die Demo-Website keinen Sinn ergeben (Verwaltung echter Websites). */
-const MANAGEMENT_ITEMS: NavIcon[] = ["settings", "integrations", "privacy", "reports"];
+/** Bereiche ohne Demo-Inhalt: Verwaltung echter Websites und Echtzeit (nur echte Besucher). */
+const MANAGEMENT_ITEMS: NavIcon[] = ["settings", "integrations", "privacy", "reports", "realtime"];
 
 /** Nur Bereiche mit echter Funktion in der aktuellen Phase. */
 export const visibleNavigation = (

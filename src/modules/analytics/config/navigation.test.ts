@@ -11,11 +11,17 @@ describe("Navigation", () => {
   it("zeigt nur Bereiche mit echter Funktion", () => {
     expect(visibleNavigation(2).flatMap((group) => group.items).map((item) => item.id)).toEqual(["dashboard"]);
     expect(visibleNavigation(3).flatMap((group) => group.items).map((item) => item.id)).toEqual(["dashboard", "settings"]);
+    expect(visibleNavigation(6).flatMap((group) => group.items).map((item) => item.id)).toEqual([
+      "dashboard",
+      "realtime",
+      "visitors",
+      "settings",
+    ]);
   });
 
   it("blendet Verwaltung für die Demo-Website aus", () => {
-    const visible = visibleNavigation(3, { isDemo: true }).flatMap((group) => group.items);
-    expect(visible.map((item) => item.id)).toEqual(["dashboard"]);
+    const visible = visibleNavigation(6, { isDemo: true }).flatMap((group) => group.items);
+    expect(visible.map((item) => item.id)).toEqual(["dashboard", "visitors"]);
   });
 
   it("blendet Bereiche mit ihrer Phase ein", () => {

@@ -1,7 +1,15 @@
 import type { DateRange, Granularity } from "../../domain/date-range";
 import { bucketsFor } from "../../domain/date-range";
 import { emptyTotals, type Totals } from "../../domain/metrics";
-import type { AnalyticsDataSource, BreakdownDimension, BreakdownRow, TimeseriesPoint } from "../data-source";
+import {
+  DEPTH_BUCKETS,
+  DURATION_BUCKETS,
+  type AnalyticsDataSource,
+  type BreakdownDimension,
+  type BreakdownRow,
+  type SessionDistribution,
+  type TimeseriesPoint,
+} from "../data-source";
 
 /**
  * LIVE-DATENQUELLE – liest echte Besucherdaten über die Auswertungsfunktionen
@@ -26,6 +34,7 @@ export type BreakdownRpcRow = { key: string; visitors: number; pageviews: number
 export type ReportingClient = {
   dailyStats(siteId: string, start: string, end: string): Promise<DailyStatsRow[]>;
   breakdown(siteId: string, start: string, end: string, dimension: string, limit: number): Promise<BreakdownRpcRow[]>;
+  distribution(siteId: string, start: string, end: string): Promise<{ kind: string; bucket: string; sessions: number }[]>;
 };
 
 const SUPPORTED_BREAKDOWNS: BreakdownDimension[] = ["channel", "source", "page", "entry_page", "country", "device", "browser", "os"];
@@ -77,6 +86,16 @@ export const createLiveDataSource = (client: ReportingClient): AnalyticsDataSour
         pageviews: Number(row.pageviews),
         conversions: 0,
       }));
+    },
+
+    async getSessionDistribution(siteId, range): Promise<SessionDistribution> {
+      const rows = await client.distribution(siteId, range.start, range.end);
+      const count = (kind: string, bucket: string) =>
+        Number(rows.find((row) => row.kind === kind && row.bucket === bucket)?.sessions ?? 0);
+      return {
+        duration: DURATION_BUCKETS.map((key) => ({ key, sessions: count("duration", key) })),
+        depth: DEPTH_BUCKETS.map((key) => ({ key, sessions: count("depth", key) })),
+      };
     },
   };
 };

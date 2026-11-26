@@ -789,6 +789,14 @@ isOneToOne: false
 "site_has_data":
 { Args: { "p_website": string }; Returns: boolean
                            },
+"site_realtime":
+{ Args: { "p_website": string }; Returns: Json
+                           },
+"site_session_distribution":
+{ Args: { "p_end": string,"p_start": string,"p_website": string }; Returns: {
+              "bucket": string,"kind": string,"sessions": number
+            }[]
+                           },
 "tracking_status":
 { Args: { "p_website": string }; Returns: {
               "events_24h": number,"last_event_at": string,"last_path": string,"pageviews_24h": number,"sessions_24h": number

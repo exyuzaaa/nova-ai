@@ -22,6 +22,11 @@ export const createSupabaseReportingClient = async (): Promise<ReportingClient> 
       if (error) throw error;
       return data ?? [];
     },
+    async distribution(siteId, start, end) {
+      const { data, error } = await db.rpc("site_session_distribution", { p_website: siteId, p_start: start, p_end: end });
+      if (error) throw error;
+      return data ?? [];
+    },
   };
 };
 
