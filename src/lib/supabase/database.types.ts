@@ -745,6 +745,9 @@ isOneToOne: false
 "accessible_website_ids":
 { Args: { "p_min": Database["analytics"]['Enums']["member_role"] }; Returns: string[]
                            },
+"assert_site_access":
+{ Args: { "p_website": string }; Returns: string
+                           },
 "create_invitation":
 { Args: { "p_email": string,"p_org": string,"p_role"?: Database["analytics"]['Enums']["member_role"] }; Returns: string
                            },
@@ -772,6 +775,19 @@ isOneToOne: false
                            },
 "purge_expired_raw_data":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"site_breakdown":
+{ Args: { "p_dimension": string,"p_end": string,"p_limit"?: number,"p_start": string,"p_website": string }; Returns: {
+              "key": string,"pageviews": number,"visitors": number
+            }[]
+                           },
+"site_daily_stats":
+{ Args: { "p_end": string,"p_start": string,"p_website": string }; Returns: {
+              "bounces": number,"day": string,"engagement_ms": number,"pageviews": number,"sessions": number,"visitors": number
+            }[]
+                           },
+"site_has_data":
+{ Args: { "p_website": string }; Returns: boolean
                            },
 "tracking_status":
 { Args: { "p_website": string }; Returns: {

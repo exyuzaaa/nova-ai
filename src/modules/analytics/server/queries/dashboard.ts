@@ -13,6 +13,7 @@ import {
   deriveMetrics,
   METRIC_KEYS,
   METRICS,
+  type MetricValues,
   type Totals,
 } from "../../domain/metrics";
 import { formatBucketAxis, formatBucketLong, formatCountry } from "../../domain/format";
@@ -107,8 +108,17 @@ export const getDashboardData = async (
     ),
   ]);
 
-  const current = deriveMetrics(totals);
-  const previous = previousTotals ? deriveMetrics(previousTotals) : null;
+  const { capabilities } = dataSource;
+  // Kennzahlen ohne Datengrundlage nie als 0 anzeigen, sondern als „nicht verfügbar“.
+  const withAvailability = (values: MetricValues): MetricValues => ({
+    ...values,
+    conversionRate: capabilities.conversions ? values.conversionRate : null,
+    leads: capabilities.leads ? values.leads : null,
+    newVisitors: capabilities.newReturning ? values.newVisitors : null,
+    returningVisitors: capabilities.newReturning ? values.returningVisitors : null,
+  });
+  const current = withAvailability(deriveMetrics(totals));
+  const previous = previousTotals ? withAvailability(deriveMetrics(previousTotals)) : null;
 
   const kpis: KpiData[] = METRIC_KEYS.map((key) => {
     const delta = previous ? computeDelta(current[key], previous[key], METRICS[key].format) : null;
@@ -122,8 +132,8 @@ export const getDashboardData = async (
       key: point.bucket,
       axisLabel: formatBucketAxis(point.bucket, granularity),
       label: formatBucketLong(point.range, granularity),
-      current: deriveMetrics(point.totals),
-      previous: comparePoint ? deriveMetrics(comparePoint.totals) : null,
+      current: withAvailability(deriveMetrics(point.totals)),
+      previous: comparePoint ? withAvailability(deriveMetrics(comparePoint.totals)) : null,
       previousLabel: comparePoint ? formatBucketLong(comparePoint.range, granularity) : null,
     };
   });
@@ -137,6 +147,7 @@ export const getDashboardData = async (
 
   return {
     site: { id: site.id, name: site.name, domain: site.domain, isDemo: site.isDemo },
+    availability: { ...capabilities },
     preset: filters.preset,
     compare: filters.compare,
     range,

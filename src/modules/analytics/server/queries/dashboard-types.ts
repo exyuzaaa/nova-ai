@@ -38,6 +38,8 @@ export type BreakdownData = {
 
 export type DashboardData = {
   site: { id: string; name: string; domain: string; isDemo: boolean };
+  /** Welche Kennzahlen echte Werte haben; fehlende werden als „nicht verfügbar“ angezeigt. */
+  availability: { conversions: boolean; leads: boolean; newReturning: boolean };
   preset: RangePreset;
   compare: CompareMode;
   range: DateRange;

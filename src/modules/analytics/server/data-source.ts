@@ -32,8 +32,18 @@ export type BreakdownRow = {
 
 export type TimeseriesPoint = { bucket: IsoDate; range: DateRange; totals: Totals };
 
+/** Welche Kennzahlen die Quelle tatsächlich liefern kann – fehlende werden als „nicht verfügbar“ gezeigt. */
+export type DataCapabilities = {
+  conversions: boolean;
+  leads: boolean;
+  newReturning: boolean;
+};
+
+export const ALL_CAPABILITIES: DataCapabilities = { conversions: true, leads: true, newReturning: true };
+
 export type AnalyticsDataSource = {
   readonly kind: "demo" | "live";
+  readonly capabilities: DataCapabilities;
   getTotals(siteId: string, range: DateRange): Promise<Totals>;
   getTimeseries(siteId: string, range: DateRange, granularity: Granularity): Promise<TimeseriesPoint[]>;
   getBreakdown(

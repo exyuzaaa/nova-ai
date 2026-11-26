@@ -48,6 +48,7 @@ function KpiCell({
         type="button"
         onClick={onSelect}
         aria-pressed={selected}
+        disabled={kpi.value === null}
         aria-label={metric.label}
         className="line-clamp-2 min-h-8 min-w-0 text-left text-xs leading-4 font-medium hyphens-auto text-muted-foreground after:absolute after:inset-0 after:rounded-lg after:content-[''] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-ring"
       >

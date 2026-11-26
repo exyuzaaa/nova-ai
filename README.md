@@ -11,7 +11,8 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 2 | Designsystem (Light/Dark), Dashboard mit gekennzeichneten Demo-Daten | ✓ |
 | 3 | Supabase Auth, Organisationen, Websites, Rollen, Einladungen, RLS | ✓ |
 | 4 | Tracking-Skript, Event-Erfassung, Installationsstatus | ✓ |
-| 5 | Sessions und Aggregation (Dashboard mit echten Daten) | offen |
+| 5 | Dashboard mit echten Daten (Auswertung in der Datenbank, Zeitzone der Website) | ✓ |
+| 6 | Echtzeit und Besucheranalyse | offen |
 
 ### Phase 3 im Überblick
 

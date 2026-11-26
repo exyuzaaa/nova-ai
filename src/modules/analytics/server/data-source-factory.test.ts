@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getDataSource, LiveDataSourceUnavailableError } from "./data-source-factory";
+import { getDataSource } from "./data-source-factory";
 import { DEMO_SITE, getSite, isDemoEnabled, type Site } from "./sites";
 
 const REAL_SITE: Site = { ...DEMO_SITE, id: "real", name: "Echte GmbH", isDemo: false };
@@ -21,18 +21,21 @@ describe("isDemoEnabled", () => {
 });
 
 describe("getDataSource", () => {
-  it("gibt echten Websites niemals Demo-Daten", () => {
-    expect(() => getDataSource(REAL_SITE)).toThrow(LiveDataSourceUnavailableError);
-  });
+  const fakeClient = async () => ({ dailyStats: async () => [], breakdown: async () => [] });
 
-  it("liefert für die Demo-Website die Demo-Quelle", () => {
+  it("gibt echten Websites niemals Demo-Daten", async () => {
     vi.stubEnv("ANALYTICS_DEMO_ENABLED", "true");
-    expect(getDataSource(DEMO_SITE).kind).toBe("demo");
+    expect((await getDataSource(REAL_SITE, fakeClient)).kind).toBe("live");
   });
 
-  it("verweigert Demo-Daten, wenn sie abgeschaltet sind", () => {
+  it("liefert für die Demo-Website die Demo-Quelle", async () => {
+    vi.stubEnv("ANALYTICS_DEMO_ENABLED", "true");
+    expect((await getDataSource(DEMO_SITE, fakeClient)).kind).toBe("demo");
+  });
+
+  it("verweigert Demo-Daten, wenn sie abgeschaltet sind", async () => {
     vi.stubEnv("ANALYTICS_DEMO_ENABLED", "false");
-    expect(() => getDataSource(DEMO_SITE)).toThrow(/deaktiviert/);
+    await expect(getDataSource(DEMO_SITE, fakeClient)).rejects.toThrow(/deaktiviert/);
   });
 });
 

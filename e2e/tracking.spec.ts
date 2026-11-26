@@ -65,7 +65,20 @@ test.describe("Tracking: Skript → Erfassung → Status", () => {
     await page.getByRole("button", { name: "Anmelden" }).click();
     await expect(page).toHaveURL(`/analytics/${siteId}`);
 
-    await expect(page.getByRole("heading", { name: /Tracking aktiv: 2 Seitenaufrufe/ })).toBeVisible();
+    // Dashboard mit echten Daten (Phase 5)
+    const kpiValue = (label: string) =>
+      page.getByRole("button", { name: label, exact: true }).locator("xpath=..").locator("p").first();
+    await expect(kpiValue("Eindeutige Besucher")).toHaveText("1");
+    await expect(kpiValue("Sessions")).toHaveText("1");
+    await expect(kpiValue("Seitenaufrufe")).toHaveText("2");
+    await expect(kpiValue("Conversion Rate")).toHaveText("–");
+    await expect(page.getByRole("button", { name: "Conversion Rate", exact: true })).toBeDisabled();
+    await expect(page.getByText("Noch keine Conversion-Ziele")).toBeVisible();
+    await expect(page.getByRole("note", { name: "Hinweis zu Demo-Daten" })).toHaveCount(0);
+    const sources = page.getByRole("region", { name: "Traffic nach Quelle" });
+    await expect(sources.getByRole("table")).toContainText("E-Mail");
+    const pages = page.getByRole("region", { name: "Beliebteste Seiten" });
+    await expect(pages.getByRole("table")).toContainText("/tracking-test");
     await page.goto(`/analytics/${siteId}/settings`);
     const status = page.getByTestId("tracking-status");
     await expect(status).toContainText("Tracking aktiv");

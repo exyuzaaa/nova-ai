@@ -67,12 +67,21 @@ export function DashboardView({ data }: { data: DashboardData }) {
               <section className="flex flex-col gap-3 rounded-xl border bg-card p-4">
                 <h2 className="text-sm font-medium">Neue vs. wiederkehrende Besucher</h2>
                 <DataNotice title="Ohne Einwilligung nicht verfügbar">
-                  Im cookieless-Modus lässt sich nicht feststellen, ob jemand schon einmal da war. Aktiviere den
-                  Einwilligungsmodus in den Tracking-Einstellungen, um diese Kennzahl zu erhalten.
+                  Im cookielosen Modus lässt sich nicht feststellen, ob jemand schon einmal da war. Diese Kennzahl wird
+                  mit dem Einwilligungsmodus verfügbar.
                 </DataNotice>
               </section>
             )}
 
+            {!data.availability.conversions ? (
+              <section className="flex flex-col gap-3 rounded-xl border bg-card p-4">
+                <h2 className="text-sm font-medium">Conversion-Entwicklung</h2>
+                <DataNotice title="Noch keine Conversion-Ziele">
+                  Sobald Ziele wie „Kontaktformular abgeschickt“ angelegt sind, erscheinen hier Conversion Rate und
+                  erreichte Ziele. Die Zielverwaltung folgt mit dem Conversion-Tracking.
+                </DataNotice>
+              </section>
+            ) : (
             <ChartFrame
               title="Conversion-Entwicklung"
               description="Conversion Rate im Verlauf und erreichte Ziele im Zeitraum"
@@ -97,6 +106,7 @@ export function DashboardView({ data }: { data: DashboardData }) {
                 </div>
               }
             />
+            )}
 
             <BreakdownCard
               title="Traffic nach Quelle"

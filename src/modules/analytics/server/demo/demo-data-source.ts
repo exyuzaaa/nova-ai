@@ -12,11 +12,12 @@
 import type { DateRange, Granularity, IsoDate } from "../../domain/date-range";
 import { bucketsFor, enumerateDays, rangeLength } from "../../domain/date-range";
 import { emptyTotals, type Totals } from "../../domain/metrics";
-import type {
-  AnalyticsDataSource,
-  BreakdownDimension,
-  BreakdownRow,
-  TimeseriesPoint,
+import {
+  ALL_CAPABILITIES,
+  type AnalyticsDataSource,
+  type BreakdownDimension,
+  type BreakdownRow,
+  type TimeseriesPoint,
 } from "../data-source";
 
 type Weights = Record<string, number>;
@@ -309,6 +310,7 @@ const aggregateRange = (siteId: string, range: DateRange): { totals: Totals; vis
 
 export const demoDataSource: AnalyticsDataSource = {
   kind: "demo",
+  capabilities: ALL_CAPABILITIES,
 
   async getTotals(siteId, range) {
     return aggregateRange(siteId, range).totals;
