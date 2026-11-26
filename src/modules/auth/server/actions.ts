@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { safeNextPath } from "../domain/redirects";
@@ -24,6 +25,14 @@ export type AuthFormState = {
 const formString = (formData: FormData, key: string): string => {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
+};
+
+/** Basis-URL für E-Mail-Links (APP_URL, sonst aus der Anfrage). */
+const appOrigin = async (): Promise<string> => {
+  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, "");
+  const list = await headers();
+  const host = list.get("x-forwarded-host") ?? list.get("host") ?? "localhost:3000";
+  return `${list.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https")}://${host}`;
 };
 
 export async function signInAction(_state: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -57,7 +66,10 @@ export async function signUpAction(_state: AuthFormState, formData: FormData): P
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: { data: { signup_next: next } },
+    options: {
+      data: { signup_next: next },
+      emailRedirectTo: `${await appOrigin()}/auth/confirm?next=${encodeURIComponent("/onboarding")}`,
+    },
   });
   if (error) {
     return { status: "error", message: authErrorMessage(error.code), email: parsed.data.email };
@@ -83,7 +95,9 @@ export async function requestPasswordResetAction(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email);
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${await appOrigin()}/auth/confirm?type=recovery&next=${encodeURIComponent("/passwort-neu")}`,
+  });
   if (error && (error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit")) {
     return { status: "error", message: authErrorMessage(error.code), email: parsed.data.email };
   }

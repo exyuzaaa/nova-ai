@@ -16,6 +16,18 @@ export async function GET(request: NextRequest) {
   const fallback = type === "recovery" ? "/passwort-neu" : "/onboarding";
   const next = safeNextPath(searchParams.get("next"), fallback);
 
+  // Standard-Vorlagen von Supabase (ohne eigenes SMTP) liefern einen PKCE-Code statt token_hash.
+  const code = searchParams.get("code");
+  if (code) {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      const signupNext = data.user?.user_metadata?.signup_next;
+      const target = next === "/onboarding" && signupNext ? safeNextPath(signupNext, next) : next;
+      return NextResponse.redirect(new URL(target, request.url));
+    }
+  }
+
   if (tokenHash && type && ALLOWED_TYPES.includes(type)) {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
