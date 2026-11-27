@@ -750,6 +750,40 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"notification_preferences": {
+                  Row: {
+                    "email": boolean,"in_app": boolean,"kind": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "email"?: boolean,"in_app"?: boolean,"kind": string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "email"?: boolean,"in_app"?: boolean,"kind"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"notifications": {
+                  Row: {
+                    "body": string | null,"created_at": string,"href": string | null,"id": string,"kind": string,"metadata": NonNullable<Json>,"read_at": string | null,"tenant_id": string,"title": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body"?: string | null,"created_at"?: string,"href"?: string | null,"id"?: string,"kind": string,"metadata"?: NonNullable<Json>,"read_at"?: string | null,"tenant_id": string,"title": string,"user_id": string
+                  }
+                  Update: {
+                    "body"?: string | null,"created_at"?: string,"href"?: string | null,"id"?: string,"kind"?: string,"metadata"?: NonNullable<Json>,"read_at"?: string | null,"tenant_id"?: string,"title"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "notifications_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"permissions": {
                   Row: {
                     "default_role": Database["core"]['Enums']["member_role"],"description": string | null,"grantable": boolean,"is_sensitive": boolean,"key": string,"module_key": string,"name": string,"sort_order": number
@@ -810,6 +844,32 @@ isOneToOne: false
                   Relationships: [
                     {
       foreignKeyName: "roles_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"search_index": {
+                  Row: {
+                    "entity_id": string,"entity_type": string,"href": string,"permission": string,"search": unknown,"subtitle": string | null,"tenant_id": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "entity_id": string,"entity_type": string,"href": string,"permission": string,"search"?: never,"subtitle"?: string | null,"tenant_id": string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "entity_id"?: string,"entity_type"?: string,"href"?: string,"permission"?: string,"search"?: never,"subtitle"?: string | null,"tenant_id"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "search_index_permission_fkey"
+      columns: ["permission"]
+isOneToOne: false
+      referencedRelation: "permissions"
+      referencedColumns: ["key"]
+    },{
+      foreignKeyName: "search_index_tenant_id_fkey"
       columns: ["tenant_id"]
 isOneToOne: false
       referencedRelation: "tenants"
@@ -996,6 +1056,29 @@ isOneToOne: false
                            },
 "my_permissions":
 { Args: { "p_tenant": string }; Returns: string[]
+                           },
+"notify":
+{ Args: { "p_body"?: string,"p_href"?: string,"p_kind": string,"p_metadata"?: Json,"p_tenant": string,"p_title": string,"p_user": string }; Returns: undefined
+                           },
+"notify_role":
+{ Args: { "p_body"?: string,"p_exclude"?: string,"p_href"?: string,"p_kind": string,"p_min": Database["core"]['Enums']["member_role"],"p_tenant": string,"p_title": string }; Returns: undefined
+                           },
+"purge_notifications":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"search":
+{ Args: { "p_limit"?: number,"p_query": string,"p_tenant": string }; Returns: {
+              "entity_id": string,"entity_type": string,"href": string,"rank": number,"subtitle": string,"title": string
+            }[]
+                           },
+"search_query":
+{ Args: { "p_query": string }; Returns: unknown
+                           },
+"search_remove":
+{ Args: { "p_id": string,"p_type": string }; Returns: undefined
+                           },
+"search_upsert":
+{ Args: { "p_href": string,"p_id": string,"p_permission": string,"p_subtitle": string,"p_tenant": string,"p_title": string,"p_type": string }; Returns: undefined
                            },
 "set_module_enabled":
 { Args: { "p_enabled": boolean,"p_module": string,"p_tenant": string }; Returns: undefined

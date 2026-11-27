@@ -91,6 +91,26 @@ test.describe("NOVA-Plattform: Verwaltung eines Unternehmens", () => {
     await expectAccessible(page);
   });
 
+  test("Globale Suche findet nur Erlaubtes und ist per Tastatur erreichbar", async () => {
+    await page.goto(base);
+    const box = page.getByRole("searchbox", { name: "Suchen" }).first();
+    await expect(box).toBeVisible();
+    // Das Tastenkürzel greift, sobald die Seite interaktiv ist
+    await expect(async () => {
+      await page.locator("main").click({ position: { x: 5, y: 5 } });
+      await page.keyboard.press("/");
+      await expect(box).toBeFocused({ timeout: 500 });
+    }).toPass({ timeout: 10_000 });
+    await box.fill("vertr");
+    await box.press("Enter");
+    await expect(page).toHaveURL(`${base}/suche?q=vertr`);
+    const departments = page.getByRole("region", { name: "Abteilungen" });
+    await expect(departments.getByRole("link", { name: "Vertrieb" })).toBeVisible();
+    await page.goto(`${base}/suche?q=gibtesnicht`);
+    await expect(page.getByText("Keine Treffer für „gibtesnicht“.")).toBeVisible();
+    await expectAccessible(page);
+  });
+
   test("Eigene Rolle mit zusätzlichem Recht", async () => {
     await page.goto(`${base}/verwaltung/rollen`);
     await expect(page.getByRole("table", { name: "Rechte je Basisrolle" })).toBeVisible();

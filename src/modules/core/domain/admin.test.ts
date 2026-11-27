@@ -107,3 +107,19 @@ describe("Plattform-Navigation", () => {
     expect(buildPlatformNavigation("a b", all, new Set())[0].items[0].href).toBe("/app/a%20b");
   });
 });
+
+describe("Ziele von Benachrichtigungen und Suchtreffern", () => {
+  it("löst relative und absolute Ziele auf", async () => {
+    const { resolveTenantHref } = await import("./notifications");
+    expect(resolveTenantHref("/app/firma", "verwaltung/mitglieder")).toBe("/app/firma/verwaltung/mitglieder");
+    expect(resolveTenantHref("/app/firma", "/analytics/123")).toBe("/analytics/123");
+    expect(resolveTenantHref("/app/firma", null)).toBeNull();
+  });
+
+  it("verwirft fremde Ziele", async () => {
+    const { resolveTenantHref } = await import("./notifications");
+    for (const href of ["//evil.example", "https://evil.example", "javascript:alert(1)", "/\\evil.example"]) {
+      expect(resolveTenantHref("/app/firma", href)).toBeNull();
+    }
+  });
+});

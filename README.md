@@ -26,7 +26,8 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 1a | Gemeinsamer Kern `core`: Unternehmen, Mitglieder, Einladungen, Audit-Log; Analytics nutzt ihn | ✓ |
 | 1b | Rechtekatalog, eigene Rollen, Abteilungen/Teams, Modulfreischaltung, Unternehmensprofil, Sperre | ✓ |
 | 1c | Plattform-Oberfläche `/app/[unternehmen]`: Navigation, Unternehmenswechsel, Übersicht, Verwaltung (Profil, Mitglieder, Rollen, Abteilungen/Teams, Module, Protokoll) | ✓ |
-| 1d | Benachrichtigungen, globale Suche, Dateien, Zwei-Faktor-Anmeldung, Sitzungen | offen |
+| 1d-1 | Benachrichtigungen (Glocke, Eingang, Einstellungen) und globale Suche mit Rechteprüfung | ✓ |
+| 1d-2 | Dateien, Zwei-Faktor-Anmeldung, Sitzungen, Sicherheitsheader | offen |
 
 ### Phase 3 im Überblick
 

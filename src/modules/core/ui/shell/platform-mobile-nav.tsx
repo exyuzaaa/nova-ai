@@ -13,11 +13,13 @@ export function PlatformMobileNav({
   groups,
   tenants,
   currentSlug,
+  search,
   userMenu,
 }: {
   groups: PlatformNavGroup[];
   tenants: TenantOption[];
   currentSlug: string;
+  search: React.ReactNode;
   userMenu: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -34,6 +36,7 @@ export function PlatformMobileNav({
           <SheetDescription className="sr-only">Navigation und Unternehmensauswahl</SheetDescription>
         </SheetHeader>
         <TenantSwitcher tenants={tenants} currentSlug={currentSlug} />
+        <div className="mt-3 flex">{search}</div>
         <div className="mt-4 flex-1 overflow-y-auto">
           <PlatformNav groups={groups} onNavigate={() => setOpen(false)} />
         </div>

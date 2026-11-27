@@ -18,16 +18,16 @@ const dateTime = new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeSty
 function Stat({ label, value, href }: { label: string; value: number; href?: string }) {
   const content = (
     <>
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="text-2xl font-semibold tabular-nums">{value}</span>
+      <span className="truncate text-xs text-muted-foreground">{label}</span>
+      <span className="text-xl font-semibold tabular-nums sm:text-2xl">{value}</span>
     </>
   );
   return href ? (
-    <Link href={href} className="flex flex-col gap-1 rounded-xl border bg-card p-4 transition-colors hover:bg-muted/40">
+    <Link href={href} className="flex min-w-0 flex-col gap-1 rounded-xl border bg-card p-3 transition-colors hover:bg-muted/40 sm:p-4">
       {content}
     </Link>
   ) : (
-    <div className="flex flex-col gap-1 rounded-xl border bg-card p-4">{content}</div>
+    <div className="flex min-w-0 flex-col gap-1 rounded-xl border bg-card p-3 sm:p-4">{content}</div>
   );
 }
 
@@ -68,7 +68,7 @@ async function Overview({ params }: Pick<PageProps<"/app/[tenant]">, "params">) 
         </Link>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {canSeeMembers && <Stat label="Mitglieder" value={members.length} href={`${base}/verwaltung/mitglieder`} />}
         {canSeeOrganization && (
           <Stat label="Abteilungen" value={organization.departments.length} href={`${base}/verwaltung/abteilungen`} />

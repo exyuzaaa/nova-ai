@@ -2,18 +2,26 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/app/theme-toggle";
 import { UserMenu } from "@/components/app/user-menu";
-import { buildPlatformNavigation } from "../../config/navigation";
+import { buildPlatformNavigation, tenantBasePath } from "../../config/navigation";
 import { ROLE_LABELS } from "../../domain/roles";
+import { countUnreadNotifications } from "../../server/notifications";
 import { loadTenantContext } from "../../server/tenant-context";
 import { PlatformMobileNav } from "./platform-mobile-nav";
+import { NotificationBell } from "./notification-bell";
 import { PlatformNav } from "./platform-nav";
+import { SearchBox } from "./search-box";
 import { TenantSwitcher } from "./tenant-switcher";
 
 const loadShell = async (slug: string) => {
   const context = await loadTenantContext(slug);
+  const unread = await countUnreadNotifications(context.tenant.id);
   const enabled = new Set(context.modules.filter((module) => module.enabled).map((module) => module.key));
+  const base = tenantBasePath(context.tenant.slug);
   return {
     context,
+    unread,
+    searchAction: `${base}/suche`,
+    notificationsHref: `${base}/benachrichtigungen`,
     groups: buildPlatformNavigation(context.tenant.slug, context.permissions, enabled),
     tenants: context.tenants.map((tenant) => ({
       slug: tenant.slug,
@@ -25,10 +33,14 @@ const loadShell = async (slug: string) => {
 };
 
 async function Sidebar({ slug }: { slug: string }) {
-  const { context, groups, tenants } = await loadShell(slug);
+  const { context, groups, tenants, unread, searchAction, notificationsHref } = await loadShell(slug);
   return (
     <>
       <TenantSwitcher tenants={tenants} currentSlug={context.tenant.slug} />
+      <div className="mt-3 flex items-center gap-1">
+        <SearchBox action={searchAction} />
+        <NotificationBell tenantId={context.tenant.id} href={notificationsHref} initialUnread={unread} />
+      </div>
       <div className="mt-5 flex-1 overflow-y-auto">
         <PlatformNav groups={groups} />
       </div>
@@ -41,16 +53,18 @@ async function Sidebar({ slug }: { slug: string }) {
 }
 
 async function MobileBar({ slug }: { slug: string }) {
-  const { context, groups, tenants } = await loadShell(slug);
+  const { context, groups, tenants, unread, searchAction, notificationsHref } = await loadShell(slug);
   return (
     <>
       <PlatformMobileNav
         groups={groups}
         tenants={tenants}
         currentSlug={context.tenant.slug}
+        search={<SearchBox action={searchAction} />}
         userMenu={<UserMenu email={context.user.email} />}
       />
-      <span className="truncate text-sm font-medium">{context.tenant.name}</span>
+      <span className="min-w-0 flex-1 truncate text-sm font-medium">{context.tenant.name}</span>
+      <NotificationBell tenantId={context.tenant.id} href={notificationsHref} initialUnread={unread} />
     </>
   );
 }

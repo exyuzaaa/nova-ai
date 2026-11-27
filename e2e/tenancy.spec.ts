@@ -105,6 +105,19 @@ test.describe("Unternehmen, Rollen und Mandantentrennung", () => {
     await expect(member.getByRole("region", { name: "Mitglieder einladen" }).getByRole("option", { name: "Owner" })).toHaveCount(0);
     await member.goto(`${tenantPath}/verwaltung`);
     await expect(member.getByRole("textbox", { name: "Anzeigename" })).toBeEnabled();
+
+    // Die Beförderung wird dem Mitglied gemeldet
+    await expect(member.getByRole("link", { name: /Benachrichtigungen, \d+ ungelesen/ }).first()).toBeVisible();
+    await member.goto(`${tenantPath}/benachrichtigungen`);
+    await expect(member.getByRole("link", { name: "Deine Rolle wurde geändert: Administrator" })).toBeVisible();
+    await member.getByRole("button", { name: "Alle als gelesen markieren" }).click();
+    await expect(member.getByText("Alles gelesen.")).toBeVisible();
+    const results = await new AxeBuilder({ page: member }).withTags(WCAG).analyze();
+    expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([]);
+
+    // Der Owner wurde über den Beitritt informiert
+    await owner.goto(`${tenantPath}/benachrichtigungen`);
+    await expect(owner.getByText(`${memberEmail} ist dem Unternehmen beigetreten`)).toBeVisible();
   });
 
   test("Andere Unternehmen sehen weder Website noch Verwaltung", async ({ browser }) => {

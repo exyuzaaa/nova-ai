@@ -80,6 +80,23 @@ in Einzel-Policies aufteilen).
   (`20261127220000_core_indexes.sql`).
 - Tests: 229 Datenbank-, 140 Unit-, 41 Browsertests (7 neue für die Verwaltung, jeweils mit axe-Prüfung).
 
+### Phase 1d-1 – umgesetzt am 27.11.2026
+
+Migration `20261127230000_core_notifications_search.sql`:
+
+- **Benachrichtigungen** (`core.notifications`): entstehen nur serverseitig über `core.notify()` aus echten
+  Ereignissen (Beitritt → Admins, Rollenänderung, zusätzliche Rolle, Teamzuordnung → betroffene Person, Modul
+  geschaltet → Admins; nie über eigene Handlungen). Empfänger sehen nur eigene Einträge, können sie als gelesen
+  markieren oder löschen. Einstellungen je Art (`core.notification_preferences`); E-Mail-Zustellung folgt mit dem
+  E-Mail-Anbieter, die Wahl wird bereits gespeichert. Aufbewahrung: gelesen 90 Tage, sonst 365 Tage (pg_cron).
+- **Oberfläche**: Glocke mit Zähler (Aktualisierung beim Seitenwechsel, beim Zurückkehren und jede Minute über
+  `/api/core/notifications/unread`), Seite `/app/[unternehmen]/benachrichtigungen` mit Eingang und Einstellungen.
+- **Globale Suche** (`core.search_index`): Trigger halten Mitglieder, Abteilungen, Teams, Rollen und Websites aktuell;
+  jeder Eintrag trägt das nötige Recht, RLS filtert mit `core.can()` (auch Modulfreischaltung). Präfixsuche über alle
+  Wörter, Satzzeichen trennen Wörter. Suchfeld in der Seitenleiste (Tastenkürzel „/“ und Strg/⌘+K),
+  Ergebnisseite `/app/[unternehmen]/suche`. Neue Module melden ihre Datensätze über `core.search_upsert()` an.
+- Tests: 256 Datenbank-, 142 Unit-, 42 Browsertests.
+
 ---
 
 ## 0. Bestandsaufnahme
