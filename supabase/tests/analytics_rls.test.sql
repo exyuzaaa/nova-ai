@@ -177,7 +177,7 @@ select throws_ok(
   format($$select * from core.list_members(%L)$$,
          (select tenant_id from core.tenant_members where user_id = 'a0000000-0000-0000-0000-00000000000a')),
   '42501', null, 'Owner B kann Mitglieder von Org A nicht abfragen');
-select is((select count(*)::int from core.audit_logs), 3, 'Owner B sieht die 3 Audit-Einträge der eigenen Organisation');
+select is((select count(*)::int from core.audit_logs), 4, 'Owner B sieht die 4 Audit-Einträge des eigenen Unternehmens (inkl. Modulfreischaltung)');
 select is(
   (select count(*)::int from core.audit_logs
    where tenant_id <> (select tenant_id from core.tenant_members where user_id = 'b0000000-0000-0000-0000-00000000000b')),

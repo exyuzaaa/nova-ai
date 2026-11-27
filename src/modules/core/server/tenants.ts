@@ -6,7 +6,14 @@ import { hasRole, isMemberRole, type MemberRole } from "../domain/roles";
 import { isInvitationToken, uuidSchema } from "../domain/tenant-validation";
 
 /** Ein Unternehmen (Mandant), in dem der angemeldete Nutzer Mitglied ist, samt seiner Rolle. */
-export type Tenant = { id: string; name: string; slug: string; role: MemberRole };
+export type Tenant = {
+  id: string;
+  name: string;
+  slug: string;
+  role: MemberRole;
+  /** Vom Betreiber gesperrte Unternehmen bleiben sichtbar, aber ohne Rechte (core.can). */
+  suspended: boolean;
+};
 
 export type Member = {
   memberId: string;
@@ -34,13 +41,21 @@ export const listMyTenants = cache(async (): Promise<Tenant[]> => {
   const db = coreSchema(await createSupabaseServerClient());
   const { data, error } = await db
     .from("tenant_members")
-    .select("role, tenants(id, name, slug)")
+    .select("role, tenants(id, name, slug, status)")
     .eq("user_id", user.id);
   if (error) throw error;
   return data
     .flatMap((row) =>
       row.tenants && isMemberRole(row.role)
-        ? [{ id: row.tenants.id, name: row.tenants.name, slug: row.tenants.slug, role: row.role }]
+        ? [
+            {
+              id: row.tenants.id,
+              name: row.tenants.name,
+              slug: row.tenants.slug,
+              role: row.role,
+              suspended: row.tenants.status !== "active",
+            },
+          ]
         : [],
     )
     .sort((a, b) => a.name.localeCompare(b.name, "de"));

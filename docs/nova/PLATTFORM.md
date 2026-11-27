@@ -39,6 +39,29 @@ Sitzungen). Funktionsdefinitionen in Produktion sind bis auf Kommentare identisc
 Kern unter `src/modules/core` (Rollen, Validierung, `tenants.ts`, Server Actions); Analytics nutzt ihn. In der
 Oberfläche heißt „Organisation“ jetzt „Unternehmen“.
 
+### Phase 1b – umgesetzt am 27.11.2026
+
+Migration `20261127210000_core_permissions.sql`:
+
+- **Unternehmensprofil** in `core.tenants`: Firmierung, Anschrift, Kontakt, USt-IdNr., Branche, Größe, Sprache, Zeitzone,
+  Währung, Logo-Pfad. **Sperre** (`status = suspended`) kann nur der Betreiber setzen (Spaltenrechte).
+- **Module**: Katalog `core.modules` (Kern und Analytics verfügbar, alle anderen „geplant“) und Freischaltung
+  `core.tenant_modules`. Neue Unternehmen erhalten Standardmodule per Trigger. `core.set_module_enabled()` schaltet
+  (ab Admin, nur verfügbare Module). `core.module_entitled()` ist bis zur Abrechnung (Phase 6) immer wahr.
+- **Rechte**: Katalog `core.permissions` (`modul.ressource.aktion`, Standard-Mindestrolle, vergebbar ja/nein).
+  **Eigene Rollen** `core.roles` + `role_permissions` + `member_roles` geben zusätzliche Rechte. Schutz vor
+  Rechteausweitung: Verwaltungsrechte des Kerns sind nicht vergebbar; vergeben darf nur, wer jedes Recht selbst hat.
+- **`core.can(unternehmen, recht)`**: Mitgliedschaft + Unternehmen aktiv + Modul freigeschaltet + Recht. Grundlage
+  aller neuen Policies; `core.my_permissions()` für die Oberfläche.
+- **Abteilungen und Teams** (`core.departments` mit Hierarchie ohne Zyklen, `core.teams`, `core.team_members`),
+  Fremdschlüssel immer über `(tenant_id, id)` – Verweise in fremde Unternehmen sind technisch unmöglich.
+- **Analytics** ist jetzt ein freischaltbares Modul: abgeschaltet oder gesperrt → keine Daten, keine Erfassung.
+- Tests: 229 Datenbanktests (64 neu), 125 Unit-Tests (inkl. Abgleich Rechtekatalog Code ↔ Migrationen), 34 Browsertests.
+- Produktion: eingespielt, Funktionen/Policies/Spalten per Prüfsumme identisch mit dem getesteten Stand.
+
+Offen für 1c: Performance-Hinweise der Supabase-Advisors (Indizes für zusammengesetzte Fremdschlüssel, „for all“-Policies
+in Einzel-Policies aufteilen).
+
 ---
 
 ## 0. Bestandsaufnahme

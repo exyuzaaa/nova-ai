@@ -658,6 +658,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"departments": {
+                  Row: {
+                    "created_at": string,"description": string | null,"id": string,"lead_member_id": string | null,"name": string,"parent_id": string | null,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"lead_member_id"?: string | null,"name": string,"parent_id"?: string | null,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"lead_member_id"?: string | null,"name"?: string,"parent_id"?: string | null,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "departments_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "departments_tenant_id_lead_member_id_fkey"
+      columns: ["tenant_id","lead_member_id"]
+isOneToOne: false
+      referencedRelation: "tenant_members"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "departments_tenant_id_parent_id_fkey"
+      columns: ["tenant_id","parent_id"]
+isOneToOne: false
+      referencedRelation: "departments"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
                 },"invitations": {
                   Row: {
                     "accepted_at": string | null,"accepted_by": string | null,"created_at": string,"email": string,"expires_at": string,"id": string,"invited_by": string | null,"role": Database["core"]['Enums']["member_role"],"tenant_id": string,"token_hash": string
@@ -676,6 +708,170 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "tenants"
       referencedColumns: ["id"]
+    }
+                  ]
+                },"member_roles": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"member_id": string,"role_id": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"member_id": string,"role_id": string,"tenant_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"member_id"?: string,"role_id"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "member_roles_tenant_id_member_id_fkey"
+      columns: ["tenant_id","member_id"]
+isOneToOne: false
+      referencedRelation: "tenant_members"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "member_roles_tenant_id_role_id_fkey"
+      columns: ["tenant_id","role_id"]
+isOneToOne: false
+      referencedRelation: "roles"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"modules": {
+                  Row: {
+                    "category": string,"created_at": string,"description": string,"enabled_by_default": boolean,"is_core": boolean,"key": string,"name": string,"sort_order": number,"status": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category": string,"created_at"?: string,"description": string,"enabled_by_default"?: boolean,"is_core"?: boolean,"key": string,"name": string,"sort_order"?: number,"status"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "category"?: string,"created_at"?: string,"description"?: string,"enabled_by_default"?: boolean,"is_core"?: boolean,"key"?: string,"name"?: string,"sort_order"?: number,"status"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"permissions": {
+                  Row: {
+                    "default_role": Database["core"]['Enums']["member_role"],"description": string | null,"grantable": boolean,"is_sensitive": boolean,"key": string,"module_key": string,"name": string,"sort_order": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "default_role": Database["core"]['Enums']["member_role"],"description"?: string | null,"grantable"?: boolean,"is_sensitive"?: boolean,"key": string,"module_key": string,"name": string,"sort_order"?: number
+                  }
+                  Update: {
+                    "default_role"?: Database["core"]['Enums']["member_role"],"description"?: string | null,"grantable"?: boolean,"is_sensitive"?: boolean,"key"?: string,"module_key"?: string,"name"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "permissions_module_key_fkey"
+      columns: ["module_key"]
+isOneToOne: false
+      referencedRelation: "modules"
+      referencedColumns: ["key"]
+    }
+                  ]
+                },"role_permissions": {
+                  Row: {
+                    "created_at": string,"permission_key": string,"role_id": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"permission_key": string,"role_id": string,"tenant_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"permission_key"?: string,"role_id"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "role_permissions_permission_key_fkey"
+      columns: ["permission_key"]
+isOneToOne: false
+      referencedRelation: "permissions"
+      referencedColumns: ["key"]
+    },{
+      foreignKeyName: "role_permissions_tenant_id_role_id_fkey"
+      columns: ["tenant_id","role_id"]
+isOneToOne: false
+      referencedRelation: "roles"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"roles": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"description": string | null,"id": string,"name": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"description"?: string | null,"id"?: string,"name": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"description"?: string | null,"id"?: string,"name"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "roles_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"team_members": {
+                  Row: {
+                    "created_at": string,"member_id": string,"team_id": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"member_id": string,"team_id": string,"tenant_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"member_id"?: string,"team_id"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "team_members_tenant_id_member_id_fkey"
+      columns: ["tenant_id","member_id"]
+isOneToOne: false
+      referencedRelation: "tenant_members"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "team_members_tenant_id_team_id_fkey"
+      columns: ["tenant_id","team_id"]
+isOneToOne: false
+      referencedRelation: "teams"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"teams": {
+                  Row: {
+                    "created_at": string,"department_id": string | null,"description": string | null,"id": string,"lead_member_id": string | null,"name": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"department_id"?: string | null,"description"?: string | null,"id"?: string,"lead_member_id"?: string | null,"name": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"department_id"?: string | null,"description"?: string | null,"id"?: string,"lead_member_id"?: string | null,"name"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "teams_tenant_id_department_id_fkey"
+      columns: ["tenant_id","department_id"]
+isOneToOne: false
+      referencedRelation: "departments"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "teams_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "teams_tenant_id_lead_member_id_fkey"
+      columns: ["tenant_id","lead_member_id"]
+isOneToOne: false
+      referencedRelation: "tenant_members"
+      referencedColumns: ["tenant_id","id"]
     }
                   ]
                 },"tenant_branding": {
@@ -718,16 +914,42 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"tenants": {
+                },"tenant_modules": {
                   Row: {
-                    "ai_enabled": boolean,"created_at": string,"deleted_at": string | null,"id": string,"is_demo": boolean,"name": string,"plan": string,"slug": string,"updated_at": string
+                    "changed_by": string | null,"created_at": string,"enabled": boolean,"module_key": string,"source": string,"tenant_id": string,"updated_at": string,"valid_until": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "ai_enabled"?: boolean,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"is_demo"?: boolean,"name": string,"plan"?: string,"slug": string,"updated_at"?: string
+                    "changed_by"?: string | null,"created_at"?: string,"enabled"?: boolean,"module_key": string,"source"?: string,"tenant_id": string,"updated_at"?: string,"valid_until"?: string | null
                   }
                   Update: {
-                    "ai_enabled"?: boolean,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"is_demo"?: boolean,"name"?: string,"plan"?: string,"slug"?: string,"updated_at"?: string
+                    "changed_by"?: string | null,"created_at"?: string,"enabled"?: boolean,"module_key"?: string,"source"?: string,"tenant_id"?: string,"updated_at"?: string,"valid_until"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "tenant_modules_module_key_fkey"
+      columns: ["module_key"]
+isOneToOne: false
+      referencedRelation: "modules"
+      referencedColumns: ["key"]
+    },{
+      foreignKeyName: "tenant_modules_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"tenants": {
+                  Row: {
+                    "ai_enabled": boolean,"city": string | null,"company_size": string | null,"country_code": string,"created_at": string,"currency": string,"deleted_at": string | null,"email": string | null,"id": string,"industry": string | null,"is_demo": boolean,"legal_name": string | null,"locale": string,"logo_path": string | null,"name": string,"onboarding_completed_at": string | null,"phone": string | null,"plan": string,"postal_code": string | null,"slug": string,"status": string,"street": string | null,"suspended_at": string | null,"suspended_reason": string | null,"timezone": string,"updated_at": string,"vat_id": string | null,"website": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ai_enabled"?: boolean,"city"?: string | null,"company_size"?: string | null,"country_code"?: string,"created_at"?: string,"currency"?: string,"deleted_at"?: string | null,"email"?: string | null,"id"?: string,"industry"?: string | null,"is_demo"?: boolean,"legal_name"?: string | null,"locale"?: string,"logo_path"?: string | null,"name": string,"onboarding_completed_at"?: string | null,"phone"?: string | null,"plan"?: string,"postal_code"?: string | null,"slug": string,"status"?: string,"street"?: string | null,"suspended_at"?: string | null,"suspended_reason"?: string | null,"timezone"?: string,"updated_at"?: string,"vat_id"?: string | null,"website"?: string | null
+                  }
+                  Update: {
+                    "ai_enabled"?: boolean,"city"?: string | null,"company_size"?: string | null,"country_code"?: string,"created_at"?: string,"currency"?: string,"deleted_at"?: string | null,"email"?: string | null,"id"?: string,"industry"?: string | null,"is_demo"?: boolean,"legal_name"?: string | null,"locale"?: string,"logo_path"?: string | null,"name"?: string,"onboarding_completed_at"?: string | null,"phone"?: string | null,"plan"?: string,"postal_code"?: string | null,"slug"?: string,"status"?: string,"street"?: string | null,"suspended_at"?: string | null,"suspended_reason"?: string | null,"timezone"?: string,"updated_at"?: string,"vat_id"?: string | null,"website"?: string | null
                   }
                   Relationships: [
                     
@@ -740,6 +962,9 @@ isOneToOne: false
           Functions: {
             "accept_invitation":
 { Args: { "p_token": string }; Returns: string
+                           },
+"can":
+{ Args: { "p_permission": string,"p_tenant": string }; Returns: boolean
                            },
 "create_invitation":
 { Args: { "p_email": string,"p_role"?: Database["core"]['Enums']["member_role"],"p_tenant": string }; Returns: string
@@ -762,6 +987,21 @@ isOneToOne: false
                            },
 "log_audit":
 { Args: { "p_action": string,"p_metadata"?: Json,"p_target_id": string,"p_target_type": string,"p_tenant": string }; Returns: undefined
+                           },
+"module_enabled":
+{ Args: { "p_module": string,"p_tenant": string }; Returns: boolean
+                           },
+"module_entitled":
+{ Args: { "p_module": string,"p_tenant": string }; Returns: boolean
+                           },
+"my_permissions":
+{ Args: { "p_tenant": string }; Returns: string[]
+                           },
+"set_module_enabled":
+{ Args: { "p_enabled": boolean,"p_module": string,"p_tenant": string }; Returns: undefined
+                           },
+"tenant_access":
+{ Args: { "p_min": Database["core"]['Enums']["member_role"],"p_module": string,"p_tenant": string }; Returns: boolean
                            }
           }
           Enums: {
