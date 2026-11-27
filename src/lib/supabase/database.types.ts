@@ -1328,6 +1328,280 @@ isOneToOne: false
           CompositeTypes: {
             [_ in never]: never
           }
+        },"projects": {
+          Tables: {
+            "checklist_items": {
+                  Row: {
+                    "created_at": string,"done": boolean,"id": string,"position": number,"project_id": string,"task_id": string,"tenant_id": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"done"?: boolean,"id"?: string,"position"?: number,"project_id": string,"task_id": string,"tenant_id": string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"done"?: boolean,"id"?: string,"position"?: number,"project_id"?: string,"task_id"?: string,"tenant_id"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "checklist_items_tenant_id_project_id_task_id_fkey"
+      columns: ["tenant_id","project_id","task_id"]
+isOneToOne: false
+      referencedRelation: "tasks"
+      referencedColumns: ["tenant_id","project_id","id"]
+    }
+                  ]
+                },"comments": {
+                  Row: {
+                    "author_id": string | null,"body": string,"created_at": string,"edited_at": string | null,"id": string,"project_id": string,"task_id": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "author_id"?: string | null,"body": string,"created_at"?: string,"edited_at"?: string | null,"id"?: string,"project_id": string,"task_id": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "author_id"?: string | null,"body"?: string,"created_at"?: string,"edited_at"?: string | null,"id"?: string,"project_id"?: string,"task_id"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "comments_tenant_id_project_id_task_id_fkey"
+      columns: ["tenant_id","project_id","task_id"]
+isOneToOne: false
+      referencedRelation: "tasks"
+      referencedColumns: ["tenant_id","project_id","id"]
+    }
+                  ]
+                },"counters": {
+                  Row: {
+                    "next_value": number,"scope": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "next_value"?: number,"scope": string,"tenant_id": string
+                  }
+                  Update: {
+                    "next_value"?: number,"scope"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"milestones": {
+                  Row: {
+                    "completed_at": string | null,"created_at": string,"description": string | null,"due_date": string | null,"id": string,"name": string,"project_id": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "completed_at"?: string | null,"created_at"?: string,"description"?: string | null,"due_date"?: string | null,"id"?: string,"name": string,"project_id": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "completed_at"?: string | null,"created_at"?: string,"description"?: string | null,"due_date"?: string | null,"id"?: string,"name"?: string,"project_id"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "milestones_tenant_id_project_id_fkey"
+      columns: ["tenant_id","project_id"]
+isOneToOne: false
+      referencedRelation: "projects"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"project_members": {
+                  Row: {
+                    "created_at": string,"id": string,"member_id": string,"project_id": string,"role": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"member_id": string,"project_id": string,"role"?: string,"tenant_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"member_id"?: string,"project_id"?: string,"role"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "project_members_tenant_id_project_id_fkey"
+      columns: ["tenant_id","project_id"]
+isOneToOne: false
+      referencedRelation: "projects"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"projects": {
+                  Row: {
+                    "archived_at": string | null,"budget_hours": number | null,"color": string,"created_at": string,"created_by": string | null,"customer_id": string | null,"description": string | null,"due_date": string | null,"id": string,"is_template": boolean,"lead_member_id": string | null,"name": string,"number": string,"start_date": string | null,"status": string,"tenant_id": string,"updated_at": string,"visibility": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived_at"?: string | null,"budget_hours"?: number | null,"color"?: string,"created_at"?: string,"created_by"?: string | null,"customer_id"?: string | null,"description"?: string | null,"due_date"?: string | null,"id"?: string,"is_template"?: boolean,"lead_member_id"?: string | null,"name": string,"number"?: string,"start_date"?: string | null,"status"?: string,"tenant_id": string,"updated_at"?: string,"visibility"?: string
+                  }
+                  Update: {
+                    "archived_at"?: string | null,"budget_hours"?: number | null,"color"?: string,"created_at"?: string,"created_by"?: string | null,"customer_id"?: string | null,"description"?: string | null,"due_date"?: string | null,"id"?: string,"is_template"?: boolean,"lead_member_id"?: string | null,"name"?: string,"number"?: string,"start_date"?: string | null,"status"?: string,"tenant_id"?: string,"updated_at"?: string,"visibility"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"statuses": {
+                  Row: {
+                    "category": string,"created_at": string,"id": string,"name": string,"position": number,"project_id": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category"?: string,"created_at"?: string,"id"?: string,"name": string,"position"?: number,"project_id": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "category"?: string,"created_at"?: string,"id"?: string,"name"?: string,"position"?: number,"project_id"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "statuses_tenant_id_project_id_fkey"
+      columns: ["tenant_id","project_id"]
+isOneToOne: false
+      referencedRelation: "projects"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"task_dependencies": {
+                  Row: {
+                    "created_at": string,"depends_on_id": string,"project_id": string,"task_id": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"depends_on_id": string,"project_id": string,"task_id": string,"tenant_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"depends_on_id"?: string,"project_id"?: string,"task_id"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "task_dependencies_tenant_id_project_id_depends_on_id_fkey"
+      columns: ["tenant_id","project_id","depends_on_id"]
+isOneToOne: false
+      referencedRelation: "tasks"
+      referencedColumns: ["tenant_id","project_id","id"]
+    },{
+      foreignKeyName: "task_dependencies_tenant_id_project_id_task_id_fkey"
+      columns: ["tenant_id","project_id","task_id"]
+isOneToOne: false
+      referencedRelation: "tasks"
+      referencedColumns: ["tenant_id","project_id","id"]
+    }
+                  ]
+                },"tasks": {
+                  Row: {
+                    "assignee_member_id": string | null,"completed_at": string | null,"created_at": string,"created_by": string | null,"description": string | null,"due_date": string | null,"estimate_minutes": number | null,"id": string,"milestone_id": string | null,"number": number,"parent_id": string | null,"position": number,"priority": string,"project_id": string,"reminder_notified_at": string | null,"start_date": string | null,"status_id": string,"tenant_id": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "assignee_member_id"?: string | null,"completed_at"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"due_date"?: string | null,"estimate_minutes"?: number | null,"id"?: string,"milestone_id"?: string | null,"number"?: number,"parent_id"?: string | null,"position"?: number,"priority"?: string,"project_id": string,"reminder_notified_at"?: string | null,"start_date"?: string | null,"status_id": string,"tenant_id": string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "assignee_member_id"?: string | null,"completed_at"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"due_date"?: string | null,"estimate_minutes"?: number | null,"id"?: string,"milestone_id"?: string | null,"number"?: number,"parent_id"?: string | null,"position"?: number,"priority"?: string,"project_id"?: string,"reminder_notified_at"?: string | null,"start_date"?: string | null,"status_id"?: string,"tenant_id"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "tasks_tenant_id_project_id_fkey"
+      columns: ["tenant_id","project_id"]
+isOneToOne: false
+      referencedRelation: "projects"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "tasks_tenant_id_project_id_milestone_id_fkey"
+      columns: ["tenant_id","project_id","milestone_id"]
+isOneToOne: false
+      referencedRelation: "milestones"
+      referencedColumns: ["tenant_id","project_id","id"]
+    },{
+      foreignKeyName: "tasks_tenant_id_project_id_parent_id_fkey"
+      columns: ["tenant_id","project_id","parent_id"]
+isOneToOne: false
+      referencedRelation: "tasks"
+      referencedColumns: ["tenant_id","project_id","id"]
+    },{
+      foreignKeyName: "tasks_tenant_id_project_id_status_id_fkey"
+      columns: ["tenant_id","project_id","status_id"]
+isOneToOne: false
+      referencedRelation: "statuses"
+      referencedColumns: ["tenant_id","project_id","id"]
+    }
+                  ]
+                },"time_entries": {
+                  Row: {
+                    "billable": boolean,"created_at": string,"duration_minutes": number | null,"ended_at": string | null,"id": string,"member_id": string | null,"note": string | null,"project_id": string,"started_at": string,"task_id": string | null,"tenant_id": string,"updated_at": string,"user_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "billable"?: boolean,"created_at"?: string,"duration_minutes"?: never,"ended_at"?: string | null,"id"?: string,"member_id"?: string | null,"note"?: string | null,"project_id": string,"started_at": string,"task_id"?: string | null,"tenant_id": string,"updated_at"?: string,"user_id"?: string | null
+                  }
+                  Update: {
+                    "billable"?: boolean,"created_at"?: string,"duration_minutes"?: never,"ended_at"?: string | null,"id"?: string,"member_id"?: string | null,"note"?: string | null,"project_id"?: string,"started_at"?: string,"task_id"?: string | null,"tenant_id"?: string,"updated_at"?: string,"user_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "time_entries_tenant_id_project_id_fkey"
+      columns: ["tenant_id","project_id"]
+isOneToOne: false
+      referencedRelation: "projects"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "time_entries_tenant_id_project_id_task_id_fkey"
+      columns: ["tenant_id","project_id","task_id"]
+isOneToOne: false
+      referencedRelation: "tasks"
+      referencedColumns: ["tenant_id","project_id","id"]
+    }
+                  ]
+                }
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "can_edit":
+{ Args: { "p_project": string }; Returns: boolean
+                           },
+"can_manage":
+{ Args: { "p_project": string }; Returns: boolean
+                           },
+"can_view":
+{ Args: { "p_project": string }; Returns: boolean
+                           },
+"index_task":
+{ Args: { "p_task": string }; Returns: undefined
+                           },
+"move_task":
+{ Args: { "p_before"?: string,"p_status": string,"p_task": string }; Returns: undefined
+                           },
+"my_member_id":
+{ Args: { "p_tenant": string }; Returns: string
+                           },
+"next_value":
+{ Args: { "p_scope": string,"p_tenant": string }; Returns: number
+                           },
+"project_progress":
+{ Args: { "p_tenant": string }; Returns: {
+              "done": number,"overdue": number,"project_id": string,"total": number
+            }[]
+                           },
+"project_role":
+{ Args: { "p_project": string }; Returns: string
+                           },
+"searchable":
+{ Args: { "p_project": string }; Returns: boolean
+                           },
+"send_reminders":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"start_timer":
+{ Args: { "p_note"?: string,"p_project": string,"p_task"?: string }; Returns: string
+                           },
+"stop_timer":
+{ Args: { "p_tenant": string }; Returns: string
+                           }
+          }
+          Enums: {
+            [_ in never]: never
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
         },"public": {
           Tables: {
             [_ in never]: never
@@ -1464,6 +1738,10 @@ export const Constants = {
             "member_role": ["viewer", "member", "admin", "owner"]
           }
         },"crm": {
+          Enums: {
+            
+          }
+        },"projects": {
           Enums: {
             
           }

@@ -177,6 +177,31 @@ Migration `20261128090000_crm.sql` (Schema `crm`):
 
 ---
 
+### Phase 2b-1/2 – Projekte, umgesetzt am 27.11.2026
+
+- **Datenbank** (Schema `projects`, Migration `20261128150000_projects.sql`, live, Prüfsumme live = lokal):
+  Projekte (P-00001, Status, Farbe, Zeitraum, Stundenbudget, optional CRM-Kunde), Projektteam mit Rollen
+  Projektleitung/Mitglied, eigene Status je Projekt (Board-Spalten mit Art Offen/In Arbeit/Erledigt), Meilensteine,
+  Aufgaben (Nummer je Projekt, eine Ebene Unteraufgaben, Priorität, Zuständigkeit, Termine, Schätzung),
+  Checklisten, Abhängigkeiten (ohne Kreise), Kommentare, Zeiteinträge mit Stoppuhr (Oberfläche folgt in 2b-3).
+- **Sichtbarkeit**: „Alle im Unternehmen“ oder „Nur Projektmitglieder“. Private Projekte stehen nicht in der globalen
+  Suche. Archivierte Projekte sind schreibgeschützt.
+- **Rechte**: `projects.view` (Betrachter), `projects.edit` und `projects.time` (Mitglied), `projects.time_all`
+  (sensibel) und `projects.manage` (Admin). Projekteinstellungen ändern Projektleitung und `projects.manage`;
+  löschen nur `projects.manage`. Schutzregeln in der Datenbank: letzte Projektleitung, letzter Offen-/Erledigt-Status,
+  Status mit Aufgaben, Kreisabhängigkeiten, Zeiten nur für sich selbst (außer `projects.time_all`), höchstens
+  eine laufende Stoppuhr je Person, max. 24 h je Eintrag. Verlässt jemand das Unternehmen, bleiben seine Zeiten.
+- **Protokoll, Suche, Benachrichtigungen**: Projekte, Team, Status, Meilensteine, Aufgaben (anlegen/löschen) und
+  Zeit-Korrekturen durch andere werden protokolliert; Benachrichtigungen bei Zuweisung, Kommentar, Aufnahme ins
+  Projekt und fälligen Aufgaben (Fälligkeit in der Zeitzone des Unternehmens, alle 15 Minuten).
+- **Oberfläche** (`/projekte`): Projektliste mit Fortschritt und Filtern, Projekt anlegen, Aufgabenliste mit
+  Abhaken und Filtern, Board (Status per Auswahl wechseln, auch am Handy), Aufgabendetail mit Unteraufgaben,
+  Checkliste, Abhängigkeiten, Kommentaren (eigene bearbeiten/löschen), Meilensteine, Einstellungen (Projektdaten,
+  Team, Status, Archivieren/Löschen).
+- Tests: 431 Datenbank-, 181 Unit-, 74 Browsertests (inkl. Barrierefreiheit und Handy-Ansicht).
+
+---
+
 ## 0. Bestandsaufnahme
 
 | Bereich | Bestand | Bewertung |

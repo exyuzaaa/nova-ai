@@ -36,3 +36,6 @@ export const coreSchema = (client: Awaited<ReturnType<typeof createSupabaseServe
 
 /** Modul CRM: Kunden, Ansprechpartner, Leads, Pipelines, Verkaufschancen, Aktivitäten. */
 export const crmSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) => client.schema("crm");
+
+/** Zugriff auf das Schema projects (RLS: core.can + Sichtbarkeit des Projekts). */
+export const projectsSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) => client.schema("projects");

@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test --trace off",
     "check": "npm run typecheck && npm run lint && npm run test",
-    "db:types": "supabase gen types typescript --local --schema analytics,core,crm,public > src/lib/supabase/database.types.ts",
+    "db:types": "supabase gen types typescript --local --schema analytics,core,crm,projects,public > src/lib/supabase/database.types.ts",
     "db:test": "supabase test db",
     "build:tracker": "node tracker/build.mjs",
     "prebuild": "node tracker/build.mjs",

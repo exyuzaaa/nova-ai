@@ -37,6 +37,11 @@ export const PERMISSIONS = [
   "crm.edit",
   "crm.export",
   "crm.manage",
+  "projects.view",
+  "projects.edit",
+  "projects.time",
+  "projects.time_all",
+  "projects.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

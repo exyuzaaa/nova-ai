@@ -12,6 +12,10 @@ export const NOTIFICATION_KINDS = [
   { kind: "crm.task.assigned", label: "CRM: Aufgaben", description: "Dir wurde eine Aufgabe zugewiesen." },
   { kind: "crm.task.due", label: "CRM: Fällige Aufgaben", description: "Eine deiner Aufgaben ist fällig." },
   { kind: "crm.follow_up.due", label: "CRM: Wiedervorlagen", description: "Ein Lead steht zur Wiedervorlage an." },
+  { kind: "projects.task.assigned", label: "Projekte: Aufgaben", description: "Dir wurde eine Projektaufgabe zugewiesen." },
+  { kind: "projects.task.due", label: "Projekte: Fällige Aufgaben", description: "Eine deiner Projektaufgaben ist fällig." },
+  { kind: "projects.task.commented", label: "Projekte: Kommentare", description: "Neuer Kommentar zu einer deiner Aufgaben." },
+  { kind: "projects.member.added", label: "Projekte: Mitgliedschaft", description: "Du wurdest einem Projekt hinzugefügt." },
 ] as const;
 
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number]["kind"];
