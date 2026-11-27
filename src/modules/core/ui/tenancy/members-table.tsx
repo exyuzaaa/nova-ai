@@ -7,7 +7,7 @@ import { assignableRoles, hasRole, ROLE_LABELS, type MemberRole } from "@/module
 import { changeMemberRoleAction, removeMemberAction } from "@/modules/core/server/actions/tenant-actions";
 import type { ActionState } from "@/modules/core/server/action-state";
 import type { Member } from "@/modules/core/server/tenants";
-import { NativeSelect } from "./native-select";
+import { NativeSelect } from "@/components/app/native-select";
 
 const IDLE: ActionState = { status: "idle" };
 

@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 /** Platzhalter beim ersten Laden; reserviert die Flächen der echten Inhalte. */
 export function DashboardSkeleton() {
   return (
-    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4" aria-busy="true" aria-label="Dashboard wird geladen">
+    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4" role="status" aria-busy="true" aria-label="Dashboard wird geladen">
       <div className="flex flex-col gap-3">
         <Skeleton className="h-7 w-40" />
         <Skeleton className="h-8 w-96 max-w-full" />

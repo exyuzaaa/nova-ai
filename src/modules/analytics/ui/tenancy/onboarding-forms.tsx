@@ -7,7 +7,7 @@ import { COMMON_TIME_ZONES } from "../../domain/tenancy-validation";
 import { createTenantAction } from "@/modules/core/server/actions/tenant-actions";
 import type { ActionState } from "@/modules/core/server/action-state";
 import { createWebsiteAction } from "../../server/actions/website-actions";
-import { NativeSelect } from "./native-select";
+import { NativeSelect } from "@/components/app/native-select";
 
 const IDLE: ActionState = { status: "idle" };
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ROLE_DESCRIPTIONS, ROLE_LABELS } from "@/modules/core/domain/roles";
 import { getInvitationPreview } from "@/modules/core/server/tenants";
-import { AcceptInvitationForm } from "@/modules/analytics/ui/tenancy/accept-invitation-form";
+import { AcceptInvitationForm } from "@/modules/core/ui/tenancy/accept-invitation-form";
 import { getCurrentUser } from "@/modules/auth/server/session";
 
 export const metadata: Metadata = { title: "Einladung", robots: { index: false } };
@@ -45,7 +45,7 @@ async function InvitationContent({ params }: Pick<PageProps<"/einladung/[token]"
             ? "Diese Einladung wurde bereits angenommen."
             : "Diese Einladung ist ungültig oder abgelaufen. Bitte frage nach einer neuen Einladung."}
         </p>
-        <Link href="/analytics" className="text-sm font-medium text-brand underline-offset-4 hover:underline">
+        <Link href="/app" className="text-sm font-medium text-brand underline-offset-4 hover:underline">
           Zur Übersicht
         </Link>
       </div>

@@ -1,26 +1,20 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { hasRole, ROLE_LABELS } from "@/modules/core/domain/roles";
-import { revokeInvitationAction } from "@/modules/core/server/actions/tenant-actions";
-import { getTenant, listMembers, listPendingInvitations } from "@/modules/core/server/tenants";
+import { getTenant } from "@/modules/core/server/tenants";
+import { tenantBasePath } from "@/modules/core/config/navigation";
 import { getSite } from "@/modules/analytics/server/sites";
 import { getTrackingStatus } from "@/modules/analytics/server/tracking-status";
 import { TrackingInstallation } from "@/modules/analytics/ui/tenancy/tracking-installation";
 import { getAppOrigin } from "@/lib/app-origin";
-import { CopyButton } from "@/modules/analytics/ui/components/copy-button";
-import { MembersTable } from "@/modules/analytics/ui/tenancy/members-table";
-import {
-  InviteMemberForm,
-  TenantSettingsForm,
-  WebsiteSettingsForm,
-} from "@/modules/analytics/ui/tenancy/settings-forms";
+import { CopyButton } from "@/components/app/copy-button";
+import { WebsiteSettingsForm } from "@/modules/analytics/ui/tenancy/settings-forms";
 
 export const metadata: Metadata = { title: "Einstellungen" };
-
-const dateFormat = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short", year: "numeric" });
 
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
@@ -50,12 +44,7 @@ async function SettingsContent({ params }: Pick<PageProps<"/analytics/[siteId]/s
   const tenant = await getTenant(site.organizationId);
   if (!tenant) notFound();
   const isAdmin = hasRole(tenant.role, "admin");
-  const [members, invitations, status, origin] = await Promise.all([
-    listMembers(tenant.id),
-    listPendingInvitations(tenant),
-    getTrackingStatus(site.id),
-    getAppOrigin(),
-  ]);
+  const [status, origin] = await Promise.all([getTrackingStatus(site.id), getAppOrigin()]);
   const snippet = `<script defer src="${origin}/tracker.js" data-site-id="${site.publicSiteId}"></script>`;
   const appHost = new URL(origin).hostname.replace(/^www\./, "");
   const testUrl = site.domain === appHost ? `/tracking-test?site=${site.publicSiteId}` : null;
@@ -85,49 +74,19 @@ async function SettingsContent({ params }: Pick<PageProps<"/analytics/[siteId]/s
         <TrackingInstallation snippet={snippet} status={status} testUrl={testUrl} now={new Date()} />
       </Section>
 
-      <Section title="Unternehmen" description={`Deine Rolle: ${ROLE_LABELS[tenant.role]}`}>
-        <TenantSettingsForm tenant={{ id: tenant.id, name: tenant.name }} canEdit={isAdmin} />
-      </Section>
-
-      <Section title="Mitglieder" description="Alle Mitglieder haben Zugriff auf die Websites dieses Unternehmens.">
-        {/* relative: hält absolut positionierte Screenreader-Texte im Scroll-Container */}
-        <div className="relative overflow-x-auto">
-          <div className="min-w-[560px]">
-            <MembersTable members={members} tenantId={tenant.id} actorRole={tenant.role} />
-          </div>
+      <Section
+        title="Team und Unternehmen"
+        description={`Mitglieder, Einladungen und Rollen verwaltest du zentral in NOVA. Deine Rolle: ${ROLE_LABELS[tenant.role]}`}
+      >
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href={`${tenantBasePath(tenant.slug)}/verwaltung/mitglieder`}>Mitglieder verwalten</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href={`${tenantBasePath(tenant.slug)}/verwaltung`}>Unternehmensprofil</Link>
+          </Button>
         </div>
       </Section>
-
-      {isAdmin && (
-        <Section
-          title="Mitglieder einladen"
-          description="Die eingeladene Person meldet sich mit genau dieser E-Mail-Adresse an und nimmt die Einladung über den Link an."
-        >
-          <InviteMemberForm tenantId={tenant.id} actorRole={tenant.role} />
-          {invitations.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <h3 className="text-xs font-medium text-muted-foreground">Offene Einladungen</h3>
-              <ul className="flex flex-col divide-y rounded-lg border">
-                {invitations.map((invitation) => (
-                  <li key={invitation.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-sm">
-                    <span className="min-w-0 flex-1 truncate">{invitation.email}</span>
-                    <span className="text-muted-foreground">{ROLE_LABELS[invitation.role]}</span>
-                    <span className="text-xs text-muted-foreground">
-                      gültig bis {dateFormat.format(new Date(invitation.expiresAt))}
-                    </span>
-                    <form action={revokeInvitationAction}>
-                      <input type="hidden" name="invitationId" value={invitation.id} />
-                      <Button type="submit" variant="ghost" size="sm" aria-label={`Einladung für ${invitation.email} widerrufen`}>
-                        Widerrufen
-                      </Button>
-                    </form>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </Section>
-      )}
     </div>
   );
 }
@@ -141,7 +100,7 @@ export default function SettingsPage({ params }: PageProps<"/analytics/[siteId]/
       </header>
       <Suspense
         fallback={
-          <div className="flex flex-col gap-4" aria-busy="true" aria-label="Einstellungen werden geladen">
+          <div className="flex flex-col gap-4" role="status" aria-busy="true" aria-label="Einstellungen werden geladen">
             <Skeleton className="h-48 rounded-xl" />
             <Skeleton className="h-32 rounded-xl" />
             <Skeleton className="h-64 rounded-xl" />

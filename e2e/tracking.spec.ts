@@ -67,7 +67,8 @@ test.describe("Tracking: Skript → Erfassung → Status", () => {
     await page.getByLabel("E-Mail-Adresse").fill(ownerEmail);
     await page.getByLabel("Passwort", { exact: true }).fill("Sicher-Test-2026");
     await page.getByRole("button", { name: "Anmelden" }).click();
-    await expect(page).toHaveURL(`/analytics/${siteId}`);
+    await expect(page).toHaveURL(/\/app\/tracking-gmbh/);
+    await page.goto(`/analytics/${siteId}`);
 
     // Dashboard mit echten Daten (Phase 5)
     const kpiValue = (label: string) =>

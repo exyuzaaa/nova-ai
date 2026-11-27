@@ -19,7 +19,7 @@ describe("safeNextPath (Schutz vor offenen Weiterleitungen)", () => {
     undefined,
     42,
   ])("weist %s ab", (value) => {
-    expect(safeNextPath(value)).toBe("/analytics");
+    expect(safeNextPath(value)).toBe("/app");
   });
 
   it("nutzt den angegebenen Rückfallwert", () => {
@@ -30,6 +30,9 @@ describe("safeNextPath (Schutz vor offenen Weiterleitungen)", () => {
 describe("Geschützte Bereiche", () => {
   it("schützt Analytics, Einrichtung und Passwortänderung", () => {
     expect(isProtectedPath("/analytics")).toBe(true);
+    expect(isProtectedPath("/app")).toBe(true);
+    expect(isProtectedPath("/app/firma/verwaltung")).toBe(true);
+    expect(isProtectedPath("/apple")).toBe(false);
     expect(isProtectedPath("/analytics/demo/settings")).toBe(true);
     expect(isProtectedPath("/onboarding")).toBe(true);
     expect(isProtectedPath("/passwort-neu")).toBe(true);

@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isGuestOnlyPath, isProtectedPath } from "@/modules/auth/domain/redirects";
+import { DEFAULT_AFTER_LOGIN, isGuestOnlyPath, isProtectedPath } from "@/modules/auth/domain/redirects";
 
 /**
  * Erneuert die Supabase-Sitzung bei jeder Anfrage und schützt Bereiche, die eine
@@ -48,7 +48,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isAuthenticated && isGuestOnlyPath(pathname)) {
-    return redirectTo(new URL("/analytics", request.url));
+    return redirectTo(new URL(DEFAULT_AFTER_LOGIN, request.url));
   }
 
   return response;

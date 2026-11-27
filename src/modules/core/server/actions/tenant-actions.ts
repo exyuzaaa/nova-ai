@@ -9,7 +9,7 @@ import { fieldErrors } from "@/modules/auth/domain/validation";
 import { assignableRoles, isMemberRole } from "../../domain/roles";
 import { invitationSchema, isInvitationToken, slugify, tenantSchema, uuidSchema } from "../../domain/tenant-validation";
 import { databaseMessage, failure, FORBIDDEN, formValue, GENERIC_ERROR, type ActionState } from "../action-state";
-import { getTenant } from "../tenants";
+import { getTenant, listMyTenants } from "../tenants";
 
 const db = async () => coreSchema(await createSupabaseServerClient());
 
@@ -22,28 +22,17 @@ export async function createTenantAction(_state: ActionState, formData: FormData
   if (!parsed.success) return { status: "error", fieldErrors: fieldErrors(parsed.error) };
 
   const client = await db();
+  const isFirst = (await listMyTenants()).length === 0;
   const base = slugify(parsed.data.name);
   // Bei Namensgleichheit ein zufälliges Suffix anhängen (max. 3 Versuche).
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const slug = attempt === 0 ? base : `${base}-${crypto.randomUUID().slice(0, 6)}`;
-    const { error } = await client.rpc("create_tenant", { p_name: parsed.data.name, p_slug: slug });
-    if (!error) redirect("/onboarding");
+    const { data: tenantId, error } = await client.rpc("create_tenant", { p_name: parsed.data.name, p_slug: slug });
+    // Erstes Unternehmen: weiter mit der ersten Website; weitere Unternehmen: direkt in die Übersicht.
+    if (!error) redirect(isFirst ? "/onboarding" : `/app?unternehmen=${tenantId}`);
     if (error.code !== "23505") return failure(databaseMessage(error));
   }
   return failure(GENERIC_ERROR);
-}
-
-export async function updateTenantAction(_state: ActionState, formData: FormData): Promise<ActionState> {
-  await requireUser();
-  const tenant = await getTenant(formValue(formData, "tenantId"), "admin");
-  if (!tenant) return failure(FORBIDDEN);
-  const parsed = tenantSchema.safeParse({ name: formValue(formData, "name") });
-  if (!parsed.success) return { status: "error", fieldErrors: fieldErrors(parsed.error) };
-
-  const { error } = await (await db()).from("tenants").update({ name: parsed.data.name }).eq("id", tenant.id);
-  if (error) return failure(databaseMessage(error));
-  refresh();
-  return { status: "success", message: "Unternehmen gespeichert." };
 }
 
 // -----------------------------------------------------------------------------
@@ -113,7 +102,7 @@ export async function removeMemberAction(_state: ActionState, formData: FormData
     .select("user_id");
   if (error) return failure(databaseMessage(error));
   if (data.length === 0) return failure(FORBIDDEN);
-  if (data[0].user_id === user.id) redirect("/analytics");
+  if (data[0].user_id === user.id) redirect("/app");
   refresh();
   return { status: "success", message: "Mitglied entfernt." };
 }
@@ -122,7 +111,7 @@ export async function acceptInvitationAction(_state: ActionState, formData: Form
   const token = formValue(formData, "token");
   await requireUser(`/einladung/${token}`);
   if (!isInvitationToken(token)) return failure("Die Einladung ist ungültig oder abgelaufen.");
-  const { error } = await (await db()).rpc("accept_invitation", { p_token: token });
+  const { data: tenantId, error } = await (await db()).rpc("accept_invitation", { p_token: token });
   if (error) return failure(databaseMessage(error));
-  redirect("/analytics");
+  redirect(`/app?unternehmen=${tenantId}`);
 }

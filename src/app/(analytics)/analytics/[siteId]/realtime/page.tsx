@@ -33,7 +33,7 @@ export default function RealtimePage({ params }: PageProps<"/analytics/[siteId]/
       <h1 className="text-xl font-semibold tracking-tight">Echtzeit</h1>
       <Suspense
         fallback={
-          <div className="grid gap-3 lg:grid-cols-4" aria-busy="true" aria-label="Echtzeit wird geladen">
+          <div className="grid gap-3 lg:grid-cols-4" role="status" aria-busy="true" aria-label="Echtzeit wird geladen">
             {Array.from({ length: 4 }, (_, index) => (
               <Skeleton key={index} className="h-28 rounded-xl" />
             ))}

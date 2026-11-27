@@ -38,7 +38,11 @@ test.describe("Authentifizierung (Supabase Auth)", () => {
     await logIn(page, email, "Falsches-Passwort-1");
     await expect(page.getByRole("alert").filter({ hasText: "E-Mail-Adresse oder Passwort ist falsch" })).toBeVisible();
 
+    // Nach der Anmeldung landet man in der NOVA-Übersicht des Unternehmens
     await logIn(page, email);
+    await expect(page).toHaveURL(/\/app\/mueller-soehne-gmbh(-[a-f0-9]{6})?$/);
+    await expect(page.getByRole("heading", { name: "Müller & Söhne GmbH" })).toBeVisible();
+    await page.getByRole("link", { name: "Analytics öffnen" }).click();
     await expect(page).toHaveURL(`/analytics/${siteId}`);
   });
 

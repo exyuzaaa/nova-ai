@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CircleCheck, CircleDashed } from "lucide-react";
 import type { TrackingStatus } from "../../server/tracking-status";
-import { CopyButton } from "../components/copy-button";
+import { CopyButton } from "@/components/app/copy-button";
 
 const relativeTime = (iso: string, now: Date): string => {
   const minutes = Math.round((now.getTime() - new Date(iso).getTime()) / 60_000);

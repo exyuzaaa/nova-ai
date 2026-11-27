@@ -2,7 +2,7 @@
  * Ziel nach Anmeldung/Bestätigung. Nur relative Pfade innerhalb der App sind
  * erlaubt – verhindert offene Weiterleitungen auf fremde Domains.
  */
-export const DEFAULT_AFTER_LOGIN = "/analytics";
+export const DEFAULT_AFTER_LOGIN = "/app";
 
 export const safeNextPath = (value: unknown, fallback: string = DEFAULT_AFTER_LOGIN): string => {
   if (typeof value !== "string" || value.length === 0 || value.length > 512) return fallback;
@@ -18,7 +18,7 @@ export const safeNextPath = (value: unknown, fallback: string = DEFAULT_AFTER_LO
 };
 
 /** Bereiche, die eine Anmeldung voraussetzen. */
-export const PROTECTED_PREFIXES = ["/analytics", "/onboarding", "/passwort-neu"] as const;
+export const PROTECTED_PREFIXES = ["/app", "/analytics", "/onboarding", "/passwort-neu"] as const;
 
 /** Seiten, die angemeldete Nutzer nicht mehr brauchen. */
 export const GUEST_ONLY_PATHS = ["/login", "/registrieren", "/passwort-vergessen"] as const;

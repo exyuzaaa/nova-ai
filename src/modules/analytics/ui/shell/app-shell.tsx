@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireUser } from "@/modules/auth/server/session";
@@ -8,8 +10,8 @@ import { getSite, listSites, type Site } from "../../server/sites";
 import { MobileNav } from "./mobile-nav";
 import { SidebarNav } from "./sidebar-nav";
 import { SiteSwitcher, type SiteOption } from "./site-switcher";
-import { ThemeToggle } from "./theme-toggle";
-import { UserMenu } from "./user-menu";
+import { ThemeToggle } from "@/components/app/theme-toggle";
+import { UserMenu } from "@/components/app/user-menu";
 
 const toOption = ({ id, name, domain, isDemo, organizationName }: Site): SiteOption => ({
   id,
@@ -28,10 +30,24 @@ const loadShell = async (siteId: string) => {
   return { user, site, sites: sites.map(toOption), canAddWebsite };
 };
 
+/** Rückweg in die NOVA-Plattform (zum Unternehmen der Website). */
+function PlatformLink({ site }: { site: Site }) {
+  return (
+    <Link
+      href={site.isDemo ? "/app" : `/app?unternehmen=${site.organizationId}`}
+      className="mb-2 flex h-8 items-center gap-2 rounded-md px-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+    >
+      <ArrowLeft className="size-4" aria-hidden />
+      NOVA-Übersicht
+    </Link>
+  );
+}
+
 async function SidebarContent({ siteId }: { siteId: string }) {
   const { user, site, sites, canAddWebsite } = await loadShell(siteId);
   return (
     <>
+      <PlatformLink site={site} />
       <SiteSwitcher sites={sites} currentId={site.id} canAddWebsite={canAddWebsite} />
       <div className="mt-5 flex-1 overflow-y-auto">
         <SidebarNav siteId={site.id} isDemo={site.isDemo} />
@@ -54,6 +70,7 @@ async function MobileBar({ siteId }: { siteId: string }) {
         sites={sites}
         canAddWebsite={canAddWebsite}
         userMenu={<UserMenu email={user.email} />}
+        platformHref={site.isDemo ? "/app" : `/app?unternehmen=${site.organizationId}`}
       />
       <span className="truncate text-sm font-medium">{site.name}</span>
     </>

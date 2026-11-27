@@ -7,7 +7,7 @@ export default function NotFound() {
       <p className="text-sm text-muted-foreground">
         Diese Website oder Seite existiert nicht oder du hast keinen Zugriff darauf.
       </p>
-      <Link href="/analytics" className="text-sm font-medium text-brand underline-offset-4 hover:underline">
+      <Link href="/app" className="text-sm font-medium text-brand underline-offset-4 hover:underline">
         Zur Übersicht
       </Link>
     </main>

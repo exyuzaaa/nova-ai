@@ -62,6 +62,24 @@ Migration `20261127210000_core_permissions.sql`:
 Offen für 1c: Performance-Hinweise der Supabase-Advisors (Indizes für zusammengesetzte Fremdschlüssel, „for all“-Policies
 in Einzel-Policies aufteilen).
 
+### Phase 1c – umgesetzt am 27.11.2026
+
+- **Plattform-Oberfläche** unter `/app/[unternehmen]` (`src/app/(platform)`): Seitenleiste mit Unternehmenswechsel,
+  Navigation (nur freigeschaltete Module mit Oberfläche und nur Bereiche, für die Rechte bestehen), mobiles Menü,
+  Hinweis bei gesperrtem Unternehmen. Nach der Anmeldung landet man auf `/app` → erstes Unternehmen.
+- **Tenant-Kontext** (`core/server/tenant-context.ts`): Das Kürzel in der Adresse wird nur unter den eigenen
+  Unternehmen gesucht; fremde oder unbekannte Kürzel und fehlende Rechte ergeben 404.
+- **Übersicht**: Kennzahlen (Mitglieder, Abteilungen, Teams), freigeschaltete Module, letzte Änderungen, Hinweis auf
+  unvollständiges Profil.
+- **Verwaltung**: Unternehmensprofil (mit Prüfung von USt-IdNr., E-Mail, Website), Mitglieder und Einladungen,
+  Rollen und Rechte (Rechtematrix der Basisrollen, eigene Rollen, Vergabe an Mitglieder), Abteilungen (Baum) und Teams
+  (Leitung, Mitglieder), Module (ein-/ausschalten, geplante Module), Protokoll (seitenweise, lesbare Einträge).
+- **Analytics** verlinkt zurück zur Plattform; Mitglieder und Unternehmen werden nur noch zentral verwaltet.
+- **Formulare** behalten Eingaben bei Fehlermeldungen (`useFormAction`, statt automatischem Zurücksetzen in React 19).
+- **Datenbank**: Indizes für alle Fremdschlüssel des Kerns, Einzel-Policies statt „for all“
+  (`20261127220000_core_indexes.sql`).
+- Tests: 229 Datenbank-, 140 Unit-, 41 Browsertests (7 neue für die Verwaltung, jeweils mit axe-Prüfung).
+
 ---
 
 ## 0. Bestandsaufnahme
@@ -346,8 +364,8 @@ entsteht schon in Phase 1 im Kern, damit jedes Modul von Anfang an gesperrt werd
 |---|---|---|---|
 | **1a** | Schema `core`: Mandanten-Tabellen aus `analytics` verschieben, Analytics darauf umstellen, alle bisherigen Tests grün | – | 133 DB-Tests, 34 E2E, Produktionsdaten erhalten |
 | **1b** | Rollen/Rechte-Katalog, eigene Rollen, Abteilungen/Teams, `core.can()`, Modulfreischaltung | 1a | pgTAP A-gegen-B, Rechteeskalation |
-| **1c** | Plattform-Oberfläche: `/app/[tenant]`, Navigation aller Module, Mandantenwechsel, Kundenportal-Grundlagen, Benachrichtigungen, globale Suche, Dateien, Audit-Ansicht | 1b | E2E Test A, B, C |
-| **1d** | Sicherheit: MFA (TOTP), Sitzungsliste und Widerruf, Login-Schutz, Sicherheitsheader | 1a | E2E |
+| **1c** | Plattform-Oberfläche: `/app/[tenant]`, Navigation, Mandantenwechsel, Verwaltung, Audit-Ansicht ✓ | 1b | E2E Test A, B, C |
+| **1d** | Benachrichtigungen, globale Suche, Dateien; Sicherheit: MFA (TOTP), Sitzungsliste und Widerruf, Login-Schutz, Sicherheitsheader | 1c | E2E |
 | 2 | CRM, Projekte, Kalender, HR (+ REST-API je Modul) | 1 | Test E (Teil) |
 | 3 | Finanzen, Dokumente, Kommunikation, Support | 2 | Test E |
 | 4 | Lager, Marketing, Automatisierungen | 3 | Workflow-Tests |

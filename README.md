@@ -25,7 +25,8 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 0 | Bestandsaufnahme, Architektur, Entwicklungsplan | ✓ |
 | 1a | Gemeinsamer Kern `core`: Unternehmen, Mitglieder, Einladungen, Audit-Log; Analytics nutzt ihn | ✓ |
 | 1b | Rechtekatalog, eigene Rollen, Abteilungen/Teams, Modulfreischaltung, Unternehmensprofil, Sperre | ✓ |
-| 1c | Plattform-Oberfläche `/app/[unternehmen]`, Verwaltung, Benachrichtigungen, Suche | offen |
+| 1c | Plattform-Oberfläche `/app/[unternehmen]`: Navigation, Unternehmenswechsel, Übersicht, Verwaltung (Profil, Mitglieder, Rollen, Abteilungen/Teams, Module, Protokoll) | ✓ |
+| 1d | Benachrichtigungen, globale Suche, Dateien, Zwei-Faktor-Anmeldung, Sitzungen | offen |
 
 ### Phase 3 im Überblick
 
@@ -89,6 +90,7 @@ src/app/(auth)/                           Anmelden, Registrieren, Passwort verge
 src/app/auth/confirm/                     Ziel der E-Mail-Links (token_hash-Verfahren)
 src/app/onboarding/                       Organisation + erste Website
 src/app/einladung/[token]/                Einladung ansehen und annehmen
+src/app/(platform)/app/                   NOVA-Plattform: Einstieg, Übersicht, Verwaltung je Unternehmen
 src/app/(analytics)/analytics/            Dashboard, Einstellungen
 src/lib/supabase/                         Server-Client, Umgebung, generierte DB-Typen
 src/modules/auth/                         Validierung, Weiterleitungsschutz, Sitzung, Server Actions, Formulare
