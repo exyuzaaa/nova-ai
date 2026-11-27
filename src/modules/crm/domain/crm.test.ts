@@ -129,3 +129,38 @@ describe("Leads", () => {
     expect(parseLeadListQuery({ status: "geheim", quelle: "x" })).toMatchObject({ status: "open", source: null });
   });
 });
+
+describe("Verkaufschancen", () => {
+  it("gewichtet mit eigener oder Phasen-Wahrscheinlichkeit", async () => {
+    const { weightedAmount, summarizeStage } = await import("./crm");
+    expect(weightedAmount(10_000, { kind: "open", probability: 25 }, null)).toBe(2500);
+    expect(weightedAmount(10_000, { kind: "open", probability: 25 }, 60)).toBe(6000);
+    expect(weightedAmount(10_000, { kind: "won", probability: 0 }, 10)).toBe(10_000);
+    expect(weightedAmount(10_000, { kind: "lost", probability: 90 }, 90)).toBe(0);
+    expect(weightedAmount(333.33, { kind: "open", probability: 33 }, null)).toBe(110);
+    expect(summarizeStage([{ amount: 1000, probability: null }, { amount: 500, probability: 100 }], { kind: "open", probability: 50 })).toEqual({
+      count: 2,
+      total: 1500,
+      weighted: 1000,
+    });
+  });
+
+  it("prüft Verkaufschancen", async () => {
+    const { opportunitySchema } = await import("./crm");
+    const base = {
+      title: "Wartungsvertrag",
+      amount: "12.000",
+      stage_id: "0a000000-0000-4000-8000-000000000001",
+      probability: "",
+      expected_close_date: "",
+      owner_member_id: "",
+      lost_reason: "",
+      notes: "",
+    };
+    expect(opportunitySchema.parse(base)).toMatchObject({ amount: 12000, probability: null, expected_close_date: null });
+    expect(opportunitySchema.safeParse({ ...base, amount: "" }).success).toBe(false);
+    expect(opportunitySchema.safeParse({ ...base, probability: "150" }).success).toBe(false);
+    expect(opportunitySchema.safeParse({ ...base, expected_close_date: "31.12.2026" }).success).toBe(false);
+    expect(opportunitySchema.parse({ ...base, expected_close_date: "2026-12-31" }).expected_close_date).toBe("2026-12-31");
+  });
+});

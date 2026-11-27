@@ -234,3 +234,69 @@ export const parseLeadListQuery = (params: Record<string, string | string[] | un
     page: Number.isFinite(page) && page > 0 && page <= 10_000 ? page : 1,
   };
 };
+
+// -----------------------------------------------------------------------------
+// Verkaufschancen und Pipeline
+// -----------------------------------------------------------------------------
+const optionalDate = z
+  .string()
+  .trim()
+  .transform((value) => (value === "" ? null : value))
+  .pipe(
+    z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, { error: "Bitte gib ein gültiges Datum ein." })
+      .refine((value) => !Number.isNaN(Date.parse(`${value}T00:00:00Z`)), { error: "Bitte gib ein gültiges Datum ein." })
+      .nullable(),
+  );
+
+const optionalPercent = z
+  .string()
+  .trim()
+  .transform((value, context) => {
+    if (value === "") return null;
+    const number = Number(value);
+    if (!Number.isInteger(number) || number < 0 || number > 100) {
+      context.addIssue({ code: "custom", message: "Bitte gib eine ganze Zahl von 0 bis 100 ein." });
+      return z.NEVER;
+    }
+    return number;
+  });
+
+export const opportunitySchema = z.object({
+  title: z.string().trim().min(1, { error: "Bitte gib einen Titel ein." }).max(200, { error: "Der Titel ist zu lang." }),
+  amount: z.string().transform((value, context) => {
+    const amount = parseAmount(value);
+    if (amount === "invalid" || amount === null) {
+      context.addIssue({ code: "custom", message: "Bitte gib einen Betrag ein, z. B. 12.000,00." });
+      return z.NEVER;
+    }
+    return amount;
+  }),
+  stage_id: z.uuid({ error: "Bitte wähle eine Phase." }),
+  probability: optionalPercent,
+  expected_close_date: optionalDate,
+  owner_member_id: optionalUuid,
+  lost_reason: optional(500, "Der Grund"),
+  notes: optional(5000, "Die Notiz"),
+});
+
+export type StageKind = "open" | "won" | "lost";
+
+/** Gewichteter Wert: Betrag × Wahrscheinlichkeit (eigene oder die der Phase); gewonnen 100 %, verloren 0 %. */
+export const weightedAmount = (amount: number, stage: { kind: StageKind; probability: number }, override: number | null): number => {
+  if (stage.kind === "won") return amount;
+  if (stage.kind === "lost") return 0;
+  const probability = override ?? stage.probability;
+  return Math.round(amount * probability) / 100;
+};
+
+/** Summen je Phase für das Board. */
+export const summarizeStage = (
+  items: { amount: number; probability: number | null }[],
+  stage: { kind: StageKind; probability: number },
+): { count: number; total: number; weighted: number } => ({
+  count: items.length,
+  total: items.reduce((sum, item) => sum + item.amount, 0),
+  weighted: Math.round(items.reduce((sum, item) => sum + weightedAmount(item.amount, stage, item.probability) * 100, 0)) / 100,
+});

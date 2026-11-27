@@ -16,6 +16,7 @@ async function Tabs({ slug }: { slug: string }) {
         { href: "", label: "Übersicht", exact: true },
         { href: "/kunden", label: "Kunden" },
         { href: "/leads", label: "Leads" },
+        { href: "/pipeline", label: "Pipeline" },
       ]}
     />
   );

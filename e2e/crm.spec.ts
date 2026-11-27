@@ -177,12 +177,49 @@ test.describe("CRM: Kunden, Ansprechpartner, Aktivitäten", () => {
     await expect(page.getByRole("heading", { name: "Mueller Maschinenbau GmbH", level: 1 })).toBeVisible();
   });
 
+  test("Pipeline: Verkaufschance anlegen, Phase wechseln, Umsatz im Dashboard", async () => {
+    await page.goto(customerUrl);
+    // Archivierte Kunden bekommen keine neuen Verkaufschancen – erst wiederherstellen
+    const opportunities = page.getByRole("region", { name: "Verkaufschancen" });
+    await expect(opportunities.locator("summary", { hasText: "Neue Verkaufschance" })).toHaveCount(0);
+    await page.getByRole("button", { name: "Wiederherstellen" }).click();
+    await expect(page.getByRole("button", { name: "Archivieren" })).toBeVisible();
+    await opportunities.locator("summary", { hasText: "Neue Verkaufschance" }).click();
+    await opportunities.getByLabel("Titel").fill("Wartungsvertrag 2027");
+    await opportunities.getByLabel("Betrag (€)").fill("");
+    await opportunities.getByRole("button", { name: "Verkaufschance anlegen" }).click();
+    await expect(opportunities.getByText("Bitte gib einen Betrag ein")).toBeVisible();
+    await opportunities.getByLabel("Betrag (€)").fill("24.000");
+    await opportunities.getByLabel("Erwarteter Abschluss").fill("2030-06-30");
+    await opportunities.getByRole("button", { name: "Verkaufschance anlegen" }).click();
+    await expect(page.getByRole("heading", { name: "Wartungsvertrag 2027", level: 1 })).toBeVisible();
+    await expect(page.getByText("24.000,00 €").first()).toBeVisible();
+    await expect(page.getByText("gewichtet 2.400,00 €")).toBeVisible();
+    await expectAccessible(page);
+
+    await page.getByRole("link", { name: "Pipeline", exact: true }).first().click();
+    await expect(page).toHaveURL(new RegExp(`${base}/crm/pipeline`));
+    const neu = page.getByRole("listitem", { name: "Phase Neu" });
+    await expect(neu.getByRole("link", { name: "Wartungsvertrag 2027" })).toBeVisible();
+    await expect(neu.getByRole("link", { name: "Anfrage Website-Relaunch" })).toBeVisible();
+    await expectAccessible(page);
+
+    await neu.getByRole("combobox", { name: "Phase von Wartungsvertrag 2027" }).selectOption({ label: "Gewonnen" });
+    await neu.getByRole("button", { name: "Wartungsvertrag 2027 in gewählte Phase verschieben" }).click();
+    const won = page.getByRole("listitem", { name: "Phase Gewonnen" });
+    await expect(won.getByRole("link", { name: "Wartungsvertrag 2027" })).toBeVisible();
+
+    await page.goto(`${base}/crm`);
+    await expect(page.getByRole("link", { name: /Gewonnen diesen Monat\s*24\.000,00 €/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Offene Pipeline\s*8\.500,00 €/ })).toBeVisible();
+  });
+
   test("Mobil ohne horizontales Scrollen", async () => {
     await page.setViewportSize({ width: 390, height: 844 });
-    for (const path of [`${base}/crm`, `${base}/crm/kunden?archiv=1`, customerUrl, `${base}/crm/leads?status=all`]) {
+    for (const path of [`${base}/crm`, `${base}/crm/kunden?archiv=1`, customerUrl, `${base}/crm/leads?status=all`, `${base}/crm/pipeline`]) {
       await page.goto(path);
       await expect(page.locator("main h1").first()).toBeVisible();
-      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), path).toBeLessThanOrEqual(0);
     }
     await page.setViewportSize({ width: 1280, height: 800 });
   });

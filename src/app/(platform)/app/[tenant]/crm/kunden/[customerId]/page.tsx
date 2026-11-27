@@ -18,7 +18,9 @@ import {
   listContacts,
   listCustomerOpportunities,
 } from "@/modules/crm/server/customers";
+import { listPipelines } from "@/modules/crm/server/opportunities";
 import { ActivityFeed } from "@/modules/crm/ui/activity-feed";
+import { OpportunityForm } from "@/modules/crm/ui/opportunity-forms";
 import { CustomerForm } from "@/modules/crm/ui/customer-form";
 import {
   ActivityForm,
@@ -37,12 +39,15 @@ async function CustomerDetail({ params }: Pick<PageProps<"/app/[tenant]/crm/kund
   const customer = await getCustomer(tenant.id, customerId);
   if (!customer) notFound();
 
-  const [contacts, activities, opportunities, members] = await Promise.all([
+  const [contacts, activities, opportunities, members, pipelines] = await Promise.all([
     listContacts(tenant.id, customer.id),
     listActivities(tenant.id, { customerId: customer.id }),
     listCustomerOpportunities(tenant.id, customer.id),
     listMembers(tenant.id),
+    listPipelines(tenant.id),
   ]);
+  const defaultPipeline = pipelines.find((pipeline) => pipeline.isDefault) ?? pipelines[0];
+  const firstOpenStage = defaultPipeline?.stages.find((stage) => stage.kind === "open");
   const canEdit = permissions.has("crm.edit");
   const canManage = permissions.has("crm.manage");
   const base = tenantBasePath(tenant.slug);
@@ -208,7 +213,9 @@ async function CustomerDetail({ params }: Pick<PageProps<"/app/[tenant]/crm/kund
                 {opportunities.map((opportunity) => (
                   <li key={opportunity.id} className="flex items-baseline justify-between gap-3 py-2 text-sm">
                     <span className="min-w-0">
-                      <span className="font-medium">{opportunity.title}</span>
+                      <Link href={`${base}/crm/verkaufschancen/${opportunity.id}`} className="font-medium hover:underline">
+                        {opportunity.title}
+                      </Link>
                       <span className="block text-xs text-muted-foreground">
                         {opportunity.number} · {opportunity.stageName}
                       </span>
@@ -217,6 +224,30 @@ async function CustomerDetail({ params }: Pick<PageProps<"/app/[tenant]/crm/kund
                   </li>
                 ))}
               </ul>
+            )}
+            {canEdit && defaultPipeline && firstOpenStage && !customer.archivedAt && (
+              <details className="rounded-lg border p-3">
+                <summary className="cursor-pointer text-sm font-medium">Neue Verkaufschance</summary>
+                <div className="mt-3">
+                  <OpportunityForm
+                    tenantId={tenant.id}
+                    members={memberOptions}
+                    stages={defaultPipeline.stages.map(({ id, name, probability, kind }) => ({ id, name, probability, kind }))}
+                    values={{
+                      customerId: customer.id,
+                      pipelineId: defaultPipeline.id,
+                      title: "",
+                      amount: "",
+                      stageId: firstOpenStage.id,
+                      probability: null,
+                      expectedCloseDate: null,
+                      ownerMemberId: customer.ownerMemberId,
+                      lostReason: null,
+                      notes: null,
+                    }}
+                  />
+                </div>
+              </details>
             )}
           </Section>
 

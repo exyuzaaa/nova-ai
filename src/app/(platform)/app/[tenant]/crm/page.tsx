@@ -8,7 +8,10 @@ import { EmptyState, PageHeader, Section } from "@/components/app/page-section";
 import { cn } from "@/lib/utils";
 import { tenantBasePath } from "@/modules/core/config/navigation";
 import { requireTenantContext } from "@/modules/core/server/tenant-context";
+import { localDateTimeToUtc } from "@/modules/core/domain/time-zone";
+import { formatMoney } from "@/modules/crm/domain/crm";
 import { countOpenLeads } from "@/modules/crm/server/leads";
+import { getSalesSummary } from "@/modules/crm/server/opportunities";
 import { getCrmOverview } from "@/modules/crm/server/overview";
 
 export const metadata: Metadata = { title: "Übersicht" };
@@ -22,10 +25,30 @@ function Stat({ label, value, href, alert }: { label: string; value: number; hre
   );
 }
 
+/** Beginn des laufenden Monats in der Zeitzone des Unternehmens (als UTC-Zeitpunkt). */
+const monthStart = (timeZone: string): string => {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit" }).format(new Date());
+  return localDateTimeToUtc(`${parts}-01T00:00`, timeZone) ?? new Date().toISOString();
+};
+
+function Money({ label, value, href, hint }: { label: string; value: number; href: string; hint?: string }) {
+  return (
+    <Link href={href} className="flex min-w-0 flex-col gap-1 rounded-xl border bg-card p-3 transition-colors hover:bg-muted/40 sm:p-4">
+      <span className="truncate text-xs text-muted-foreground">{label}</span>
+      <span className="text-lg font-semibold tabular-nums sm:text-xl">{formatMoney(value)}</span>
+      {hint && <span className="truncate text-xs text-muted-foreground">{hint}</span>}
+    </Link>
+  );
+}
+
 async function Overview({ params }: Pick<PageProps<"/app/[tenant]/crm">, "params">) {
   const { tenant: slug } = await params;
   const { tenant, permissions } = await requireTenantContext(decodeURIComponent(slug), "crm.view");
-  const [overview, leads] = await Promise.all([getCrmOverview(tenant.id), countOpenLeads(tenant.id)]);
+  const [overview, leads, sales] = await Promise.all([
+    getCrmOverview(tenant.id),
+    countOpenLeads(tenant.id),
+    getSalesSummary(tenant.id, monthStart(tenant.timezone)),
+  ]);
   const base = `${tenantBasePath(tenant.slug)}/crm`;
   const dateTime = new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short", timeZone: tenant.timezone });
   const taskHref = (task: (typeof overview.upcomingTasks)[number]) =>
@@ -35,7 +58,7 @@ async function Overview({ params }: Pick<PageProps<"/app/[tenant]/crm">, "params
     <>
       <PageHeader
         title="CRM"
-        description="Kunden, Leads, Ansprechpartner und Aufgaben"
+        description="Kunden, Leads, Pipeline und Aufgaben"
         actions={
           permissions.has("crm.edit") && (
             <Button asChild size="sm">
@@ -47,6 +70,11 @@ async function Overview({ params }: Pick<PageProps<"/app/[tenant]/crm">, "params
           )
         }
       />
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
+        <Money label="Offene Pipeline" value={sales.openTotal} href={`${base}/pipeline`} hint={`${sales.openCount} Verkaufschancen`} />
+        <Money label="Gewichteter Umsatz" value={sales.weighted} href={`${base}/pipeline`} hint="nach Abschlusswahrscheinlichkeit" />
+        <Money label="Gewonnen diesen Monat" value={sales.wonThisMonth} href={`${base}/pipeline`} hint={`${sales.wonCountThisMonth} Abschlüsse`} />
+      </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
         <Stat label="Kunden" value={overview.customers} href={`${base}/kunden`} />
         <Stat label="Interessenten" value={overview.prospects} href={`${base}/kunden?status=prospect`} />
