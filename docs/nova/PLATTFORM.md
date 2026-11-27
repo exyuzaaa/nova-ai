@@ -140,6 +140,18 @@ Migration `20261128090000_crm.sql` (Schema `crm`):
 - **Zeitzonen**: Fälligkeiten werden in der Zeitzone des Unternehmens eingegeben und angezeigt (`core/domain/time-zone`).
 - Tests: 332 Datenbank-, 159 Unit-, 53 Browsertests.
 
+### Phase 2a-3 – CRM-Leads, umgesetzt am 27.11.2026
+
+- **Leadliste** (`/crm/leads`): standardmäßig offene Leads, Filter nach Status, Quelle, Zuständigkeit, Suche,
+  Sortierung nach Wiedervorlage (fällige zuerst, rot markiert), Datum, Bewertung, Titel; Seiten.
+- **Lead anlegen/bearbeiten**: Firma, Ansprechperson, Kontakt, Quelle, Status, Bewertung 0–100, geschätzter Wert
+  (deutsche Schreibweise „1.500“ = 1.500 €), Zuständigkeit, Wiedervorlage in Ortszeit, Notizen. Umgewandelte Leads
+  sind schreibgeschützt.
+- **Umwandlung**: neuer Kunde (mit Hauptansprechpartner) oder Zuordnung zu einem vorgeschlagenen bestehenden Kunden
+  (Dublettenprüfung, archivierte ausgenommen), optional mit Verkaufschance; Verlauf wandert zum Kunden.
+- **Übersicht**: offene Leads und fällige Wiedervorlagen.
+- Tests: 162 Unit-, 57 Browsertests.
+
 ---
 
 ## 0. Bestandsaufnahme

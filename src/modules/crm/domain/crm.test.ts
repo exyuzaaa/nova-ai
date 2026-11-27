@@ -84,3 +84,48 @@ describe("Listenfilter aus der Adresse", () => {
     expect(sanitizeSearchTerm("a,b),name.eq.x*%")).toBe("a b name eq x");
   });
 });
+
+describe("Leads", () => {
+  const lead = (overrides: Record<string, string> = {}) => ({
+    title: "Anfrage Relaunch",
+    company_name: "",
+    contact_name: "",
+    email: "",
+    phone: "",
+    source: "website",
+    status: "new",
+    score: "40",
+    estimated_value: "",
+    owner_member_id: "",
+    follow_up_at: "",
+    notes: "",
+    ...overrides,
+  });
+
+  it("liest Beträge in deutscher und technischer Schreibweise", async () => {
+    const { parseAmount } = await import("./crm");
+    expect(parseAmount("1.234,56")).toBe(1234.56);
+    expect(parseAmount("1234.5")).toBe(1234.5);
+    expect(parseAmount("8500 €")).toBe(8500);
+    expect(parseAmount("1.500")).toBe(1500);
+    expect(parseAmount("12.345.678")).toBe(12345678);
+    expect(parseAmount("")).toBeNull();
+    for (const value of ["-5", "1,234,5", "abc", "1.2.3", "10,999"]) expect(parseAmount(value)).toBe("invalid");
+  });
+
+  it("prüft Leads", async () => {
+    const { leadSchema } = await import("./crm");
+    expect(leadSchema.parse(lead({ estimated_value: "8.500,00" })).estimated_value).toBe(8500);
+    expect(leadSchema.safeParse(lead({ status: "converted" })).success).toBe(false);
+    expect(leadSchema.safeParse(lead({ score: "101" })).success).toBe(false);
+    expect(leadSchema.safeParse(lead({ follow_up_at: "morgen" })).success).toBe(false);
+    expect(leadSchema.safeParse(lead({ title: "" })).success).toBe(false);
+  });
+
+  it("filtert standardmäßig offene Leads", async () => {
+    const { parseLeadListQuery } = await import("./crm");
+    expect(parseLeadListQuery({})).toMatchObject({ status: "open", sort: "follow_up_at", page: 1 });
+    expect(parseLeadListQuery({ status: "converted", quelle: "event" })).toMatchObject({ status: "converted", source: "event" });
+    expect(parseLeadListQuery({ status: "geheim", quelle: "x" })).toMatchObject({ status: "open", source: null });
+  });
+});

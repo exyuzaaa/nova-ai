@@ -121,9 +121,65 @@ test.describe("CRM: Kunden, Ansprechpartner, Aktivitäten", () => {
     await expect(page.getByRole("region", { name: "Kunden" }).getByRole("link", { name: "Mueller Maschinenbau GmbH" })).toBeVisible();
   });
 
+  test("Lead erfassen und in neuen Kunden mit Verkaufschance umwandeln", async () => {
+    await page.goto(`${base}/crm/leads`);
+    await expect(page.getByText("Keine offenen Leads")).toBeVisible();
+    await page.getByRole("link", { name: "Neuer Lead" }).click();
+    await page.getByLabel("Titel").fill("Anfrage Website-Relaunch");
+    await page.getByLabel("Firma").fill("Bäckerei Sonne");
+    await page.getByLabel("Ansprechperson").fill("Maria Clara Sonne");
+    await page.getByLabel("Geschätzter Wert (€)").fill("8.5x");
+    await page.getByRole("button", { name: "Lead anlegen" }).click();
+    await expect(page.getByText("Bitte gib einen gültigen Betrag ein")).toBeVisible();
+    // Eingaben bleiben nach dem Fehler erhalten
+    await expect(page.getByLabel("Firma")).toHaveValue("Bäckerei Sonne");
+    await page.getByLabel("Geschätzter Wert (€)").fill("8.500");
+    await page.getByLabel("Wiedervorlage").fill("2030-03-02T09:15");
+    await page.getByRole("button", { name: "Lead anlegen" }).click();
+    await expect(page.getByRole("heading", { name: "Anfrage Website-Relaunch", level: 1 })).toBeVisible();
+    await expect(page.getByText("L-00001")).toBeVisible();
+    await expect(page.getByText("8.500,00 €")).toBeVisible();
+    await expect(page.getByText("Wiedervorlage 02.03.2030, 09:15")).toBeVisible();
+
+    const activity = page.getByRole("region", { name: "Verlauf und Aufgaben" });
+    await activity.getByLabel("Art").selectOption("call");
+    await activity.getByLabel("Betreff").fill("Erstgespräch geführt");
+    await activity.getByRole("button", { name: "Eintrag speichern" }).click();
+    await expect(activity.getByText("Erstgespräch geführt")).toBeVisible();
+    await expectAccessible(page);
+
+    const convert = page.getByRole("region", { name: "In Kunden umwandeln" });
+    await expect(convert.getByLabel("Verkaufschance in der Pipeline anlegen")).toBeChecked();
+    await convert.getByRole("button", { name: "In Kunden umwandeln" }).click();
+    await expect(page.getByRole("heading", { name: "Bäckerei Sonne", level: 1 })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Ansprechpartner" })).toContainText("Maria Clara Sonne");
+    await expect(page.getByRole("region", { name: "Verkaufschancen" })).toContainText("8.500,00 €");
+    await expect(page.getByRole("region", { name: "Verlauf und Aufgaben" })).toContainText("Erstgespräch geführt");
+
+    await page.goto(`${base}/crm/leads?status=converted`);
+    await page.getByRole("link", { name: "Anfrage Website-Relaunch" }).click();
+    await expect(page.getByText("in einen Kunden umgewandelt")).toBeVisible();
+    await expect(page.getByRole("region", { name: "In Kunden umwandeln" })).toHaveCount(0);
+  });
+
+  test("Lead einem bestehenden Kunden zuordnen", async () => {
+    await page.goto(`${base}/crm/leads/neu`);
+    await page.getByLabel("Titel").fill("Wartung Anlage 3");
+    await page.getByLabel("Firma").fill("Müller Maschinenbau GmbH");
+    await page.getByRole("button", { name: "Lead anlegen" }).click();
+    await expect(page.getByText("L-00002")).toBeVisible();
+    const convert = page.getByRole("region", { name: "In Kunden umwandeln" });
+    // K-00001 ist archiviert und wird deshalb nicht vorgeschlagen, K-00002 schon
+    await expect(convert.getByLabel(/K-00001/)).toHaveCount(0);
+    await convert.getByLabel(/Bestehendem Kunden zuordnen: K-00002/).check();
+    await convert.getByLabel("Verkaufschance in der Pipeline anlegen").uncheck();
+    await convert.getByRole("button", { name: "In Kunden umwandeln" }).click();
+    await expect(page.getByRole("heading", { name: "Mueller Maschinenbau GmbH", level: 1 })).toBeVisible();
+  });
+
   test("Mobil ohne horizontales Scrollen", async () => {
     await page.setViewportSize({ width: 390, height: 844 });
-    for (const path of [`${base}/crm`, `${base}/crm/kunden?archiv=1`, customerUrl]) {
+    for (const path of [`${base}/crm`, `${base}/crm/kunden?archiv=1`, customerUrl, `${base}/crm/leads?status=all`]) {
       await page.goto(path);
       await expect(page.locator("main h1").first()).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);

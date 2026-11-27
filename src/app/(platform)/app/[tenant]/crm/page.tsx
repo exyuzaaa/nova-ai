@@ -8,6 +8,7 @@ import { EmptyState, PageHeader, Section } from "@/components/app/page-section";
 import { cn } from "@/lib/utils";
 import { tenantBasePath } from "@/modules/core/config/navigation";
 import { requireTenantContext } from "@/modules/core/server/tenant-context";
+import { countOpenLeads } from "@/modules/crm/server/leads";
 import { getCrmOverview } from "@/modules/crm/server/overview";
 
 export const metadata: Metadata = { title: "Übersicht" };
@@ -24,17 +25,17 @@ function Stat({ label, value, href, alert }: { label: string; value: number; hre
 async function Overview({ params }: Pick<PageProps<"/app/[tenant]/crm">, "params">) {
   const { tenant: slug } = await params;
   const { tenant, permissions } = await requireTenantContext(decodeURIComponent(slug), "crm.view");
-  const overview = await getCrmOverview(tenant.id);
+  const [overview, leads] = await Promise.all([getCrmOverview(tenant.id), countOpenLeads(tenant.id)]);
   const base = `${tenantBasePath(tenant.slug)}/crm`;
   const dateTime = new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short", timeZone: tenant.timezone });
   const taskHref = (task: (typeof overview.upcomingTasks)[number]) =>
-    task.customerId ? `${base}/kunden/${task.customerId}` : base;
+    task.customerId ? `${base}/kunden/${task.customerId}` : task.leadId ? `${base}/leads/${task.leadId}` : base;
 
   return (
     <>
       <PageHeader
         title="CRM"
-        description="Kunden, Ansprechpartner und Aufgaben"
+        description="Kunden, Leads, Ansprechpartner und Aufgaben"
         actions={
           permissions.has("crm.edit") && (
             <Button asChild size="sm">
@@ -46,11 +47,13 @@ async function Overview({ params }: Pick<PageProps<"/app/[tenant]/crm">, "params
           )
         }
       />
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
         <Stat label="Kunden" value={overview.customers} href={`${base}/kunden`} />
         <Stat label="Interessenten" value={overview.prospects} href={`${base}/kunden?status=prospect`} />
+        <Stat label="Offene Leads" value={leads.open} href={`${base}/leads`} />
+        <Stat label="Wiedervorlagen fällig" value={leads.due} href={`${base}/leads`} alert />
         <Stat label="Offene Aufgaben" value={overview.openTasks} href={`${base}/kunden`} />
-        <Stat label="Überfällig" value={overview.overdueTasks} href={`${base}/kunden`} alert />
+        <Stat label="Aufgaben überfällig" value={overview.overdueTasks} href={`${base}/kunden`} alert />
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <Section title="Nächste Aufgaben">

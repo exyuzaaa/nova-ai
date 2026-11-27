@@ -156,3 +156,81 @@ export const sanitizeSearchTerm = (value: string): string => value.replace(/[,()
 const euro = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
 export const formatMoney = (amount: number, currency = "EUR"): string =>
   currency === "EUR" ? euro.format(amount) : new Intl.NumberFormat("de-DE", { style: "currency", currency }).format(amount);
+
+// -----------------------------------------------------------------------------
+// Beträge und Leads
+// -----------------------------------------------------------------------------
+
+/** Betrag in deutscher oder technischer Schreibweise ("1.234,56" / "1234.56") → Zahl; leer → null. */
+export const parseAmount = (value: string): number | null | "invalid" => {
+  const trimmed = value.trim().replace(/\s|€/g, "");
+  if (trimmed === "") return null;
+  // "1.500" ist im Deutschen eintausendfünfhundert (Tausenderpunkte ohne Komma)
+  const germanThousands = /^\d{1,3}(\.\d{3})+$/.test(trimmed);
+  const normalized = trimmed.includes(",") || germanThousands ? trimmed.replace(/\./g, "").replace(",", ".") : trimmed;
+  if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return "invalid";
+  const amount = Number(normalized);
+  return amount <= 999_999_999_999 ? amount : "invalid";
+};
+
+const optionalAmount = z.string().transform((value, context) => {
+  const amount = parseAmount(value);
+  if (amount === "invalid") {
+    context.addIssue({ code: "custom", message: "Bitte gib einen gültigen Betrag ein, z. B. 1.500,00." });
+    return z.NEVER;
+  }
+  return amount;
+});
+
+/** Status, die man im Formular wählen darf („Umgewandelt“ setzt nur die Umwandlung). */
+export const EDITABLE_LEAD_STATUSES = ["new", "contacted", "qualified", "unqualified"] as const;
+export const OPEN_LEAD_STATUSES = ["new", "contacted", "qualified"] as const;
+
+export const leadSchema = z.object({
+  title: z.string().trim().min(1, { error: "Bitte gib einen Titel ein, z. B. die Anfrage." }).max(200, { error: "Der Titel ist zu lang." }),
+  company_name: optional(200, "Die Firma"),
+  contact_name: optional(200, "Der Name"),
+  email: optionalEmail,
+  phone: optional(50, "Die Telefonnummer"),
+  source: z.enum(LEAD_SOURCES, { error: "Bitte wähle eine Quelle." }),
+  status: z.enum(EDITABLE_LEAD_STATUSES, { error: "Bitte wähle einen Status." }),
+  score: z.coerce
+    .number({ error: "Bitte gib eine Zahl von 0 bis 100 ein." })
+    .int({ error: "Bitte gib eine ganze Zahl ein." })
+    .min(0, { error: "Mindestens 0." })
+    .max(100, { error: "Höchstens 100." }),
+  estimated_value: optionalAmount,
+  owner_member_id: optionalUuid,
+  follow_up_at: optionalDateTime,
+  notes: optional(5000, "Die Notiz"),
+});
+export type LeadInput = z.infer<typeof leadSchema>;
+
+export const LEAD_SORTS = ["follow_up_at", "created_at", "score", "title"] as const;
+export type LeadSort = (typeof LEAD_SORTS)[number];
+
+export type LeadListQuery = {
+  q: string;
+  /** "open" = neu, kontaktiert, qualifiziert; "all" = alle; sonst ein einzelner Status */
+  status: LeadStatus | "open" | "all";
+  source: (typeof LEAD_SOURCES)[number] | null;
+  owner: string | null;
+  sort: LeadSort;
+  page: number;
+};
+
+export const parseLeadListQuery = (params: Record<string, string | string[] | undefined>): LeadListQuery => {
+  const status = first(params.status);
+  const source = first(params.quelle);
+  const owner = first(params.zustaendig);
+  const sort = first(params.sortierung);
+  const page = Number.parseInt(first(params.seite), 10);
+  return {
+    q: first(params.q).trim().slice(0, 100),
+    status: status === "all" || (LEAD_STATUSES as readonly string[]).includes(status) ? (status as LeadStatus | "all") : "open",
+    source: (LEAD_SOURCES as readonly string[]).includes(source) ? (source as (typeof LEAD_SOURCES)[number]) : null,
+    owner: z.uuid().safeParse(owner).success ? owner : null,
+    sort: (LEAD_SORTS as readonly string[]).includes(sort) ? (sort as LeadSort) : "follow_up_at",
+    page: Number.isFinite(page) && page > 0 && page <= 10_000 ? page : 1,
+  };
+};

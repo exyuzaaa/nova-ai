@@ -29,7 +29,8 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 1d-1 | Benachrichtigungen (Glocke, Eingang, Einstellungen) und globale Suche mit Rechteprüfung | ✓ |
 | 1d-2 | Zwei-Faktor-Anmeldung (TOTP), Geräteverwaltung, sofortiger Entzug beendeter Sitzungen, Sicherheitsheader | ✓ |
 | 2a-1/2 | CRM: Datenmodell (Kunden, Ansprechpartner, Leads, Pipelines, Verkaufschancen, Aktivitäten) und Kundenverwaltung | ✓ |
-| 2a-3/4 | CRM: Leads, Pipeline, Dashboard, CSV-Import/-Export | offen |
+| 2a-3 | CRM: Leads (Liste, Filter, Wiedervorlage, Umwandlung in Kunden mit Verkaufschance) | ✓ |
+| 2a-4 | CRM: Pipeline, Dashboard, CSV-Import/-Export | offen |
 | 2b–d | Projekte, Kalender, Personal | offen |
 
 ### Phase 3 im Überblick
