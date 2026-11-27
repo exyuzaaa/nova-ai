@@ -106,7 +106,7 @@ test.describe("Projekte: Aufgaben, Board, Meilensteine, Einstellungen", () => {
     await form.getByLabel("Beschreibung").fill("Drei Varianten für die Startseite.");
     await form.getByRole("button", { name: "Änderungen speichern" }).click();
     await expect(form.getByText("Aufgabe gespeichert.")).toBeVisible();
-    await expect(page.getByText("geschätzt 1:30 h")).toBeVisible();
+    await expect(page.getByText("· geschätzt 1:30 h", { exact: true })).toBeVisible();
 
     await page.getByLabel("Neue Unteraufgabe").fill("Farben festlegen");
     await page.getByRole("button", { name: "Hinzufügen" }).first().click();

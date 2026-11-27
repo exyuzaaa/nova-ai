@@ -6,6 +6,7 @@ import { PROJECT_STATUS_LABELS, VISIBILITY_LABELS } from "@/modules/projects/dom
 import { loadProjectContext } from "@/modules/projects/server/context";
 import { listCustomerOptions, listProjectMembers, listStatuses } from "@/modules/projects/server/projects";
 import { ProjectDangerZone, ProjectForm, ProjectMembers, StatusSettings } from "@/modules/projects/ui/project-forms";
+import { CopyProjectForm } from "@/modules/projects/ui/time-forms";
 
 export const metadata: Metadata = { title: "Einstellungen" };
 
@@ -80,6 +81,16 @@ async function Settings({ params }: Pick<PageProps<"/app/[tenant]/projekte/[proj
             candidates={memberOptions.filter((option) => !inProject.has(option.id))}
           />
         </Section>
+        {project.isTemplate && permissions.has("projects.edit") && (
+          <Section title="Projekt aus dieser Vorlage" description="Übernimmt Status, Meilensteine, Aufgaben, Checklisten und Abhängigkeiten.">
+            <CopyProjectForm tenantId={tenant.id} sourceId={project.id} asTemplate={false} submitLabel="Projekt anlegen" />
+          </Section>
+        )}
+        {!project.isTemplate && permissions.has("projects.manage") && (
+          <Section title="Als Vorlage speichern" description="Aufgaben, Status und Meilensteine werden übernommen – ohne Zuständigkeiten, Kommentare und Zeiten.">
+            <CopyProjectForm tenantId={tenant.id} sourceId={project.id} asTemplate defaultName={`Vorlage: ${project.name}`.slice(0, 200)} submitLabel="Vorlage speichern" />
+          </Section>
+        )}
         {project.canManage && (
           <Section title="Archivieren oder löschen" description="Archivierte Projekte bleiben lesbar, lassen sich aber nicht mehr ändern.">
             <ProjectDangerZone

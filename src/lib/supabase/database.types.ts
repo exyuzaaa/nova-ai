@@ -1563,6 +1563,9 @@ isOneToOne: false
 "can_view":
 { Args: { "p_project": string }; Returns: boolean
                            },
+"copy_project":
+{ Args: { "p_name": string,"p_source": string,"p_start"?: string,"p_template"?: boolean }; Returns: string
+                           },
 "index_task":
 { Args: { "p_task": string }; Returns: undefined
                            },

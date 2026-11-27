@@ -202,6 +202,25 @@ Migration `20261128090000_crm.sql` (Schema `crm`):
 
 ---
 
+### Phase 2b-3 – Zeiterfassung, Zeitleiste, Vorlagen, umgesetzt am 27.11.2026
+
+- **Zeiterfassung**: Stoppuhr (je Projekt oder Aufgabe, eine laufende je Person, eine neue beendet die alte),
+  Zeiten nachtragen mit Beginn und Ende oder Dauer („1:30“, „2,5“) in der Zeitzone des Unternehmens, bearbeiten,
+  löschen, abrechenbar ja/nein. **Meine Zeiten** (`/projekte/zeiten`): Wochenansicht mit Summen; mit
+  `projects.time_all` auch Zeiten anderer Personen. **Projektzeiten** (Reiter „Zeiten“): Monatsansicht, Summe
+  abrechenbar, Gesamtzeit, Budgetverbrauch in Prozent, Auswertung nach Person und Aufgabe. Aufgaben zeigen erfasste
+  gegen geschätzte Zeit.
+- **Zeitleiste** (Reiter „Zeitleiste“): Hauptaufgaben mit Start/Fälligkeit als Balken, Meilensteine als Raute,
+  Heute-Linie, überfällige Aufgaben markiert; als Tabelle für Screenreader lesbar.
+- **Vorlagen** (`/projekte/vorlagen`, Migration `20261128170000_projects_templates.sql`, live, Prüfsumme gleich):
+  Projekt als Vorlage speichern (`projects.manage`), Projekt aus Vorlage anlegen – mit neuem Startdatum werden alle
+  Termine verschoben. Übernommen werden Status, Meilensteine, Aufgaben, Unteraufgaben, Checklisten (offen) und
+  Abhängigkeiten; nicht übernommen: Zuständigkeiten, Kommentare, Zeiten. Vorlagen erscheinen nicht in Liste, Suche
+  und Erinnerungen; auf Vorlagen lassen sich keine Zeiten buchen. Das Kopieren erzeugt einen Protokolleintrag.
+- Tests: 451 Datenbank-, 184 Unit-, 80 Browsertests.
+
+---
+
 ## 0. Bestandsaufnahme
 
 | Bereich | Bestand | Bewertung |

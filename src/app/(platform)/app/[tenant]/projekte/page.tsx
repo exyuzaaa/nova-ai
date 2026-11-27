@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Lock, Plus } from "lucide-react";
+import { Clock, Lock, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -53,14 +53,27 @@ async function ProjectList({ params, searchParams }: Pick<PageProps<"/app/[tenan
         title={query.archived ? "Archivierte Projekte" : "Projekte"}
         description={`${projects.length} ${projects.length === 1 ? "Projekt" : "Projekte"}`}
         actions={
-          permissions.has("projects.edit") && (
-            <Button asChild size="sm">
-              <Link href={`${base}/neu`}>
-                <Plus className="size-4" aria-hidden />
-                Neues Projekt
-              </Link>
+          <>
+            {permissions.has("projects.time") && (
+              <Button asChild size="sm" variant="outline">
+                <Link href={`${base}/zeiten`}>
+                  <Clock className="size-4" aria-hidden />
+                  Meine Zeiten
+                </Link>
+              </Button>
+            )}
+            <Button asChild size="sm" variant="outline">
+              <Link href={`${base}/vorlagen`}>Vorlagen</Link>
             </Button>
-          )
+            {permissions.has("projects.edit") && (
+              <Button asChild size="sm">
+                <Link href={`${base}/neu`}>
+                  <Plus className="size-4" aria-hidden />
+                  Neues Projekt
+                </Link>
+              </Button>
+            )}
+          </>
         }
       />
 

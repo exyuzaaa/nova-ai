@@ -34,6 +34,11 @@ async function ProjectHeader({ slug, projectId }: { slug: string; projectId: str
           <Badge variant={project.status === "active" ? "default" : "outline"} className="h-5 text-[11px]">
             {PROJECT_STATUS_LABELS[project.status]}
           </Badge>
+          {project.isTemplate && (
+            <Badge variant="outline" className="h-5 text-[11px]">
+              Vorlage
+            </Badge>
+          )}
           {project.archivedAt && (
             <Badge variant="outline" className="h-5 text-[11px]">
               Archiviert – schreibgeschützt
@@ -58,6 +63,8 @@ async function ProjectHeader({ slug, projectId }: { slug: string; projectId: str
           { href: "", label: "Aufgaben", exact: true },
           { href: "/board", label: "Board" },
           { href: "/meilensteine", label: "Meilensteine" },
+          { href: "/zeitleiste", label: "Zeitleiste" },
+          ...(!project.isTemplate && (permissions.has("projects.time") || permissions.has("projects.time_all")) ? [{ href: "/zeiten", label: "Zeiten" }] : []),
           { href: "/einstellungen", label: project.canManage ? "Einstellungen" : "Team und Details" },
         ]}
       />

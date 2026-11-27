@@ -125,6 +125,8 @@ const dateRange = <T extends { start_date: string | null; due_date: string | nul
 // -----------------------------------------------------------------------------
 // Formulare
 // -----------------------------------------------------------------------------
+export const projectNameSchema = z.string().trim().min(1, { error: "Bitte gib einen Namen ein." }).max(200, { error: "Der Name ist zu lang." });
+
 export const projectSchema = z
   .object({
     name: z.string().trim().min(1, { error: "Bitte gib einen Namen ein." }).max(200, { error: "Der Name ist zu lang." }),
@@ -219,3 +221,116 @@ export const dueState = (dueDate: string | null, today: string, completed: boole
 
 /** Heutiges Datum (YYYY-MM-DD) in einer Zeitzone. */
 export const todayIn = (timeZone: string, now = new Date()): string => new Intl.DateTimeFormat("sv-SE", { timeZone }).format(now);
+
+// -----------------------------------------------------------------------------
+// Zeiterfassung
+// -----------------------------------------------------------------------------
+const TIME = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+/**
+ * Zeiteintrag aus dem Formular: Datum + Beginn und entweder Ende oder Dauer.
+ * Ergebnis in Ortszeit („YYYY-MM-DDTHH:MM“); die Umrechnung nach UTC erfolgt mit der
+ * Zeitzone des Unternehmens im Server.
+ */
+export const timeEntrySchema = z
+  .object({
+    date: z.string().trim().refine(isRealDate, { error: "Bitte gib ein gültiges Datum ein." }),
+    start: z.string().trim().regex(TIME, { error: "Bitte gib den Beginn als Uhrzeit ein, z. B. 08:30." }),
+    end: z.string().trim(),
+    duration: z.string().trim(),
+    note: optional(1000, "Die Notiz"),
+    billable: z.boolean(),
+    task_id: optionalUuid,
+  })
+  .transform((value, ctx) => {
+    const [hours, minutes] = value.start.split(":").map(Number);
+    const startMinutes = hours * 60 + minutes;
+    let length: number | null = null;
+    if (value.end !== "") {
+      if (!TIME.test(value.end)) {
+        ctx.addIssue({ code: "custom", path: ["end"], message: "Bitte gib das Ende als Uhrzeit ein, z. B. 17:00." });
+        return z.NEVER;
+      }
+      const [endHours, endMinutes] = value.end.split(":").map(Number);
+      length = endHours * 60 + endMinutes - startMinutes;
+      if (length <= 0) {
+        ctx.addIssue({ code: "custom", path: ["end"], message: "Das Ende muss nach dem Beginn liegen." });
+        return z.NEVER;
+      }
+    } else {
+      length = parseDuration(value.duration);
+      if (length === null || Number.isNaN(length) || length <= 0) {
+        ctx.addIssue({ code: "custom", path: ["duration"], message: "Bitte gib ein Ende oder eine Dauer ein, z. B. 1:30." });
+        return z.NEVER;
+      }
+    }
+    if (length > 24 * 60) {
+      ctx.addIssue({ code: "custom", path: ["duration"], message: "Ein Eintrag darf höchstens 24 Stunden lang sein." });
+      return z.NEVER;
+    }
+    return {
+      startLocal: `${value.date}T${value.start}`,
+      minutes: length,
+      note: value.note,
+      billable: value.billable,
+      task_id: value.task_id,
+    };
+  });
+export type TimeEntryInput = z.infer<typeof timeEntrySchema>;
+
+/** Montag der Woche eines Datums (YYYY-MM-DD). */
+export const weekStart = (isoDate: string): string => {
+  const date = new Date(`${isoDate}T00:00:00Z`);
+  const day = (date.getUTCDay() + 6) % 7;
+  date.setUTCDate(date.getUTCDate() - day);
+  return date.toISOString().slice(0, 10);
+};
+
+export const addDays = (isoDate: string, days: number): string => {
+  const date = new Date(`${isoDate}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+};
+
+/** Monat „YYYY-MM“ aus der Adresse oder der aktuelle. */
+export const parseMonth = (value: unknown, today: string): string =>
+  typeof value === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(value) ? value : today.slice(0, 7);
+
+export const monthRange = (month: string): { from: string; to: string } => {
+  const [year, monthNumber] = month.split("-").map(Number);
+  const next = monthNumber === 12 ? `${year + 1}-01` : `${year}-${String(monthNumber + 1).padStart(2, "0")}`;
+  return { from: `${month}-01`, to: `${next}-01` };
+};
+
+export const shiftMonth = (month: string, delta: number): string => {
+  const [year, monthNumber] = month.split("-").map(Number);
+  const index = year * 12 + (monthNumber - 1) + delta;
+  return `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`;
+};
+
+// -----------------------------------------------------------------------------
+// Zeitleiste
+// -----------------------------------------------------------------------------
+export type TimelineItem = { id: string; start: string | null; end: string | null };
+
+/** Sichtbarer Zeitraum der Zeitleiste: vom frühesten bis zum spätesten Termin, auf Wochen gerundet, max. 52 Wochen. */
+export const timelineRange = (items: TimelineItem[], fallbackStart: string): { from: string; weeks: number } => {
+  const dates = items.flatMap((item) => [item.start, item.end]).filter((value): value is string => Boolean(value)).sort();
+  const first = weekStart(dates[0] ?? fallbackStart);
+  const last = dates.at(-1) ?? fallbackStart;
+  const days = Math.round((Date.parse(`${last}T00:00:00Z`) - Date.parse(`${first}T00:00:00Z`)) / 86400000) + 1;
+  return { from: first, weeks: Math.min(52, Math.max(4, Math.ceil(days / 7))) };
+};
+
+/** Position eines Balkens in Prozent (links, Breite) innerhalb des Zeitraums. */
+export const timelineBar = (item: TimelineItem, from: string, weeks: number): { left: number; width: number } | null => {
+  const start = item.start ?? item.end;
+  const end = item.end ?? item.start;
+  if (!start || !end) return null;
+  const total = weeks * 7;
+  const offset = (iso: string) => Math.round((Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000);
+  const left = Math.max(0, Math.min(total, offset(start)));
+  const right = Math.max(left, Math.min(total, offset(end) + 1));
+  if (offset(end) < 0 || offset(start) >= total) return null;
+  return { left: (left / total) * 100, width: Math.max(((right - left) / total) * 100, 0.8) };
+};

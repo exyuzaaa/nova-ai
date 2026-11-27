@@ -22,6 +22,8 @@ import {
   TaskForm,
 } from "@/modules/projects/ui/task-forms";
 import { TaskLine } from "@/modules/projects/ui/task-line";
+import { getRunningTimer, listTimeEntries } from "@/modules/projects/server/time";
+import { TimerCard } from "@/modules/projects/ui/time-forms";
 
 export const metadata: Metadata = { title: "Aufgabe" };
 
@@ -29,16 +31,22 @@ const date = new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeZone: "
 
 async function TaskDetail({ params }: Pick<PageProps<"/app/[tenant]/projekte/[projectId]/aufgaben/[taskId]">, "params">) {
   const { tenant: slug, projectId, taskId } = await params;
-  const { tenant, project, members, memberNames, user } = await loadProjectContext(decodeURIComponent(slug), projectId);
+  const { tenant, project, members, memberNames, user, permissions, myMemberId } = await loadProjectContext(decodeURIComponent(slug), projectId);
   if (!uuidSchema.safeParse(taskId).success) notFound();
   const task = await getTask(tenant.id, project.id, taskId);
   if (!task) notFound();
 
-  const [statuses, milestones, taskOptions] = await Promise.all([
+  const canTrack = permissions.has("projects.time") && !project.archivedAt && !project.isTemplate;
+  const [statuses, milestones, taskOptions, timeEntries, running] = await Promise.all([
     listStatuses(tenant.id, project.id),
     listMilestones(tenant.id, project.id),
     project.canEdit ? listTaskOptions(tenant.id, project.id) : Promise.resolve([]),
+    permissions.has("projects.time") || permissions.has("projects.time_all")
+      ? listTimeEntries(tenant.id, { projectId: project.id, limit: 5000 })
+      : Promise.resolve([]),
+    canTrack ? getRunningTimer(tenant.id, myMemberId) : Promise.resolve(null),
   ]);
+  const taskMinutes = timeEntries.filter((entry) => entry.taskId === task.id).reduce((sum, entry) => sum + (entry.minutes ?? 0), 0);
   const base = `${tenantBasePath(tenant.slug)}/projekte/${project.id}`;
   const today = todayIn(tenant.timezone);
   const status = statuses.find((entry) => entry.id === task.statusId);
@@ -171,6 +179,20 @@ async function TaskDetail({ params }: Pick<PageProps<"/app/[tenant]/projekte/[pr
                   estimateMinutes: task.estimateMinutes,
                   milestoneId: task.milestoneId,
                 }}
+              />
+            </Section>
+          )}
+          {canTrack && (
+            <Section
+              title="Zeit"
+              description={`${permissions.has("projects.time_all") ? "Erfasst" : "Von dir erfasst"}: ${formatMinutes(taskMinutes)}${task.estimateMinutes !== null ? ` von geschätzt ${formatMinutes(task.estimateMinutes)}` : ""}`}
+            >
+              <TimerCard
+                tenantId={tenant.id}
+                projectId={project.id}
+                taskId={task.id}
+                startLabel="Stoppuhr für diese Aufgabe"
+                running={running ? { projectName: running.projectName, taskTitle: running.taskTitle, startedAt: running.startedAt, note: running.note } : null}
               />
             </Section>
           )}

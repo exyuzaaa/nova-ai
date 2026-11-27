@@ -99,3 +99,41 @@ describe("Hilfsfunktionen", () => {
     expect(parseTaskListQuery({ zustaendig: "drop table" }).assignee).toBe("all");
   });
 });
+
+describe("Zeiterfassung", () => {
+  const base = { date: "2026-11-27", start: "08:30", end: "", duration: "", note: "", billable: true, task_id: "" };
+  it("Ende oder Dauer", async () => {
+    const { timeEntrySchema } = await import("./projects");
+    expect(timeEntrySchema.parse({ ...base, end: "10:00" })).toMatchObject({ startLocal: "2026-11-27T08:30", minutes: 90 });
+    expect(timeEntrySchema.parse({ ...base, duration: "2,5" }).minutes).toBe(150);
+    expect(timeEntrySchema.safeParse({ ...base, end: "08:00" }).error?.issues[0].message).toBe("Das Ende muss nach dem Beginn liegen.");
+    expect(timeEntrySchema.safeParse(base).error?.issues[0].path).toEqual(["duration"]);
+    expect(timeEntrySchema.safeParse({ ...base, duration: "30:00" }).success).toBe(false);
+    expect(timeEntrySchema.safeParse({ ...base, start: "25:00", end: "26:00" }).success).toBe(false);
+  });
+
+  it("Wochen und Monate", async () => {
+    const { weekStart, addDays, parseMonth, monthRange, shiftMonth } = await import("./projects");
+    expect(weekStart("2026-11-29")).toBe("2026-11-23");
+    expect(weekStart("2026-11-23")).toBe("2026-11-23");
+    expect(addDays("2026-12-30", 3)).toBe("2027-01-02");
+    expect(parseMonth("2026-13", "2026-11-27")).toBe("2026-11");
+    expect(monthRange("2026-12")).toEqual({ from: "2026-12-01", to: "2027-01-01" });
+    expect(shiftMonth("2026-01", -1)).toBe("2025-12");
+  });
+});
+
+describe("Zeitleiste", () => {
+  it("Zeitraum und Balken", async () => {
+    const { timelineRange, timelineBar } = await import("./projects");
+    const items = [
+      { id: "a", start: "2026-12-02", end: "2026-12-04" },
+      { id: "b", start: null, end: "2026-12-20" },
+    ];
+    const range = timelineRange(items, "2026-11-27");
+    expect(range).toEqual({ from: "2026-11-30", weeks: 4 });
+    expect(timelineBar(items[0], range.from, range.weeks)).toEqual({ left: (2 / 28) * 100, width: (3 / 28) * 100 });
+    expect(timelineBar({ id: "c", start: null, end: null }, range.from, range.weeks)).toBeNull();
+    expect(timelineBar({ id: "d", start: "2027-06-01", end: "2027-06-02" }, range.from, range.weeks)).toBeNull();
+  });
+});
