@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,14 +56,24 @@ async function LeadList({ params, searchParams }: Pick<PageProps<"/app/[tenant]/
         title="Leads"
         description={`${total} ${total === 1 ? "Lead" : "Leads"}${query.status === "open" ? " offen" : ""}`}
         actions={
-          permissions.has("crm.edit") && (
-            <Button asChild size="sm">
-              <Link href={`${base}/neu`}>
-                <Plus className="size-4" aria-hidden />
-                Neuer Lead
-              </Link>
-            </Button>
-          )
+          <>
+            {permissions.has("crm.export") && (
+              <Button asChild size="sm" variant="outline">
+                <a href={`${tenantBasePath(tenant.slug)}/crm/export?typ=leads`} download>
+                  <Download className="size-4" aria-hidden />
+                  CSV-Export
+                </a>
+              </Button>
+            )}
+            {permissions.has("crm.edit") && (
+              <Button asChild size="sm">
+                <Link href={`${base}/neu`}>
+                  <Plus className="size-4" aria-hidden />
+                  Neuer Lead
+                </Link>
+              </Button>
+            )}
+          </>
         }
       />
 

@@ -8,7 +8,8 @@ export const metadata: Metadata = { title: { default: "CRM", template: "%s · CR
 
 async function Tabs({ slug }: { slug: string }) {
   // Ohne CRM-Recht oder bei ausgeschaltetem Modul gibt es den Bereich nicht (404)
-  const { tenant } = await requireTenantContext(slug, "crm.view");
+  const { tenant, permissions } = await requireTenantContext(slug, "crm.view");
+  const manage = permissions.has("crm.manage");
   return (
     <CrmTabs
       base={`${tenantBasePath(tenant.slug)}/crm`}
@@ -17,6 +18,12 @@ async function Tabs({ slug }: { slug: string }) {
         { href: "/kunden", label: "Kunden" },
         { href: "/leads", label: "Leads" },
         { href: "/pipeline", label: "Pipeline" },
+        ...(manage
+          ? [
+              { href: "/import", label: "Import" },
+              { href: "/einstellungen", label: "Einstellungen" },
+            ]
+          : []),
       ]}
     />
   );

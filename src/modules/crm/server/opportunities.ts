@@ -8,6 +8,7 @@ export type Stage = { id: string; name: string; position: number; probability: n
 export type Pipeline = { id: string; name: string; isDefault: boolean; stages: Stage[] };
 
 const asKind = (value: string): StageKind => (value === "won" || value === "lost" ? value : "open");
+const KIND_ORDER: Record<StageKind, number> = { open: 0, won: 1, lost: 2 };
 
 export const listPipelines = async (tenantId: string): Promise<Pipeline[]> => {
   const client = await db();
@@ -23,6 +24,8 @@ export const listPipelines = async (tenantId: string): Promise<Pipeline[]> => {
     isDefault: pipeline.is_default,
     stages: stages.data
       .filter((stage) => stage.pipeline_id === pipeline.id)
+      // Offene Phasen in ihrer Reihenfolge, danach „Gewonnen“ und „Verloren“
+      .sort((a, b) => KIND_ORDER[asKind(a.kind)] - KIND_ORDER[asKind(b.kind)] || a.position - b.position)
       .map((stage) => ({ id: stage.id, name: stage.name, position: stage.position, probability: stage.probability, kind: asKind(stage.kind) })),
   }));
 };
@@ -162,4 +165,21 @@ export const getSalesSummary = async (tenantId: string, monthStartUtc: string): 
   }
   summary.weighted = Math.round(summary.weighted * 100) / 100;
   return summary;
+};
+
+/** Anzahl Verkaufschancen je Pipeline (für die Einstellungen: Löschen nur bei 0). */
+export const countOpportunitiesByPipeline = async (tenantId: string, pipelineIds: string[]): Promise<Map<string, number>> => {
+  const client = await db();
+  const counts = await Promise.all(
+    pipelineIds.map(async (id) => {
+      const { count, error } = await client
+        .from("opportunities")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .eq("pipeline_id", id);
+      if (error) throw error;
+      return [id, count ?? 0] as const;
+    }),
+  );
+  return new Map(counts);
 };

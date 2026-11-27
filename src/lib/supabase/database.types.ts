@@ -1290,6 +1290,9 @@ isOneToOne: false
             "convert_lead":
 { Args: { "p_create_opportunity"?: boolean,"p_customer"?: string,"p_lead": string }; Returns: string
                            },
+"create_pipeline":
+{ Args: { "p_name": string,"p_tenant": string }; Returns: string
+                           },
 "ensure_default_pipeline":
 { Args: { "p_tenant": string }; Returns: string
                            },
@@ -1298,11 +1301,25 @@ isOneToOne: false
               "email": string,"id": string,"name": string,"number": string,"reason": string
             }[]
                            },
+"import_duplicates":
+{ Args: { "p_rows": Json,"p_tenant": string }; Returns: {
+              "customer_id": string,"name": string,"number": string,"row_index": number
+            }[]
+                           },
+"log_export":
+{ Args: { "p_kind": string,"p_rows": number,"p_tenant": string }; Returns: undefined
+                           },
+"move_stage":
+{ Args: { "p_stage": string,"p_up": boolean }; Returns: undefined
+                           },
 "next_number":
 { Args: { "p_kind": string,"p_prefix": string,"p_tenant": string }; Returns: string
                            },
 "send_reminders":
 { Args: Record<PropertyKey, never>; Returns: number
+                           },
+"set_default_pipeline":
+{ Args: { "p_pipeline": string }; Returns: undefined
                            }
           }
           Enums: {

@@ -300,3 +300,17 @@ export const summarizeStage = (
   total: items.reduce((sum, item) => sum + item.amount, 0),
   weighted: Math.round(items.reduce((sum, item) => sum + weightedAmount(item.amount, stage, item.probability) * 100, 0)) / 100,
 });
+
+// -----------------------------------------------------------------------------
+// Pipeline-Einstellungen
+// -----------------------------------------------------------------------------
+export const pipelineNameSchema = z.string().trim().min(1, { error: "Bitte gib einen Namen ein." }).max(120, { error: "Der Name ist zu lang." });
+
+export const stageSchema = z.object({
+  name: z.string().trim().min(1, { error: "Bitte gib einen Namen ein." }).max(80, { error: "Der Name ist zu lang." }),
+  probability: z.coerce
+    .number({ error: "Bitte gib eine Zahl zwischen 0 und 100 ein." })
+    .int({ error: "Bitte gib eine ganze Zahl ein." })
+    .min(0, { error: "Bitte gib eine Zahl zwischen 0 und 100 ein." })
+    .max(100, { error: "Bitte gib eine Zahl zwischen 0 und 100 ein." }),
+});

@@ -154,6 +154,29 @@ Migration `20261128090000_crm.sql` (Schema `crm`):
 
 ---
 
+### Phase 2a-4 – CRM-Pipeline, Import, Export, Einstellungen, umgesetzt am 27.11.2026
+
+- **Pipeline** (`/crm/pipeline`): Kanban-Board je Pipeline, Phase per Auswahl wechseln (auch am Handy),
+  Summen und gewichteter Umsatz je Phase; Verkaufschancen mit Detailseite, Verlauf und Aufgaben;
+  Umsatzkarten in der CRM-Übersicht (offen, gewichtet, im Monat gewonnen).
+- **CSV-Export** (`/crm/export?typ=kunden|leads`, Recht `crm.export`): Excel-tauglich (UTF-8 mit BOM, Semikolon),
+  Zellen mit `= + - @` werden entschärft (Schutz vor Formel-Injection), bis 50.000 Zeilen; **jeder Export steht
+  im Protokoll** (`crm.log_export`: wer, wann, wie viele Zeilen).
+- **CSV-Import für Kunden** (`/crm/import`, Recht `crm.manage`): Datei bis 2 MB/2000 Zeilen, UTF-8 oder
+  Windows-1252, Semikolon/Komma; Spalten werden automatisch zugeordnet und sind änderbar; Prüfung vor dem Speichern
+  mit denselben Regeln wie beim manuellen Anlegen, Fehlerbericht mit Zeilennummern (auch als CSV),
+  Dubletten innerhalb der Datei und gegen bestehende Kunden (`crm.import_duplicates`), wahlweise überspringen.
+  Eine Exportdatei lässt sich unverändert wieder einlesen.
+- **Einstellungen** (`/crm/einstellungen`, Recht `crm.manage`): Phasen umbenennen, Wahrscheinlichkeit ändern,
+  ergänzen, sortieren, löschen; weitere Pipelines anlegen, Standard wechseln, leere Pipelines löschen.
+  Die Datenbank schützt: „Gewonnen“/„Verloren“ und die letzte offene Phase bleiben, Phasen/Pipelines mit
+  Verkaufschancen und die Standard-Pipeline sind nicht löschbar, die Art einer Phase ist unveränderlich.
+  Änderungen an Phasen werden protokolliert (ohne Grundphasen und reine Umsortierungen).
+- Migration `20261128120000_crm_settings_import_export.sql`, live eingespielt, Prüfsumme live = lokal.
+- Tests: 363 Datenbank-, 175 Unit-, 64 Browsertests.
+
+---
+
 ## 0. Bestandsaufnahme
 
 | Bereich | Bestand | Bewertung |

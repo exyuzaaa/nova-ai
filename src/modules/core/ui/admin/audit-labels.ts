@@ -49,6 +49,10 @@ const LABELS: Record<string, (meta: Record<string, unknown>) => string> = {
   "crm.pipelines.insert": (m) => `Pipeline „${text(m.name)}“ angelegt`,
   "crm.pipelines.update": (m) => `Pipeline „${text(m.name)}“ geändert`,
   "crm.pipelines.delete": (m) => `Pipeline „${text(m.name)}“ gelöscht`,
+  "crm.pipeline_stages.insert": (m) => `Phase „${text(m.name)}“ angelegt`,
+  "crm.pipeline_stages.update": (m) => `Phase „${text(m.name)}“ geändert`,
+  "crm.pipeline_stages.delete": (m) => `Phase „${text(m.name)}“ gelöscht`,
+  "crm.export": (m) => `${m.kind === "leads" ? "Leads" : "Kunden"} als CSV exportiert (${typeof m.rows === "number" ? m.rows : 0} Zeilen)`,
   "auth.session.revoked": () => "Gerät abgemeldet",
   // Einträge aus der Zeit vor dem gemeinsamen Kern
   "organizations.insert": (m) => `Unternehmen „${text(m.name)}“ angelegt`,
