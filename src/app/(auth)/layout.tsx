@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         >
           N
         </span>
-        <span className="text-sm font-semibold tracking-tight">NOVA Analytics</span>
+        <span className="text-sm font-semibold tracking-tight">NOVA</span>
       </div>
       <div className="w-full max-w-sm rounded-xl border bg-card p-6 shadow-xs">{children}</div>
     </main>

@@ -18,6 +18,16 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
 });
 
 /** Für geschützte Bereiche: ohne Anmeldung zur Login-Seite. */
+/**
+ * Gilt die Sitzung für die Datenbank noch? (Nein, wenn sie auf einem anderen Gerät
+ * beendet wurde oder der zweite Faktor fehlt.) Ungültige Sitzungen werden abgemeldet.
+ */
+export const ensureSessionAccepted = async (): Promise<void> => {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.schema("core").rpc("session_ok");
+  if (!error && data === false) redirect("/auth/beendet");
+};
+
 export const requireUser = async (nextPath?: string): Promise<CurrentUser> => {
   const user = await getCurrentUser();
   if (!user) redirect(nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : "/login");

@@ -18,7 +18,10 @@ export const safeNextPath = (value: unknown, fallback: string = DEFAULT_AFTER_LO
 };
 
 /** Bereiche, die eine Anmeldung voraussetzen. */
-export const PROTECTED_PREFIXES = ["/app", "/analytics", "/onboarding", "/passwort-neu"] as const;
+export const PROTECTED_PREFIXES = ["/app", "/analytics", "/konto", "/onboarding", "/passwort-neu"] as const;
+
+/** Seite zur Eingabe des zweiten Faktors nach der Anmeldung. */
+export const SECOND_FACTOR_PATH = "/login/bestaetigen";
 
 /** Seiten, die angemeldete Nutzer nicht mehr brauchen. */
 export const GUEST_ONLY_PATHS = ["/login", "/registrieren", "/passwort-vergessen"] as const;

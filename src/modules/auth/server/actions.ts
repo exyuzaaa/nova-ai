@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { needsSecondFactor } from "../domain/mfa";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { safeNextPath } from "../domain/redirects";
@@ -49,7 +50,11 @@ export async function signInAction(_state: AuthFormState, formData: FormData): P
   if (error) {
     return { status: "error", message: authErrorMessage(error.code), email: parsed.data.email };
   }
-  redirect(safeNextPath(formString(formData, "next")));
+  const next = safeNextPath(formString(formData, "next"));
+  // Mit eingerichtetem zweiten Faktor: erst den Code aus der App abfragen
+  const { data: level } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (needsSecondFactor(level)) redirect(`/login/bestaetigen?next=${encodeURIComponent(next)}`);
+  redirect(next);
 }
 
 export async function signUpAction(_state: AuthFormState, formData: FormData): Promise<AuthFormState> {

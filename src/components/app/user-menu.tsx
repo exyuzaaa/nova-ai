@@ -1,4 +1,5 @@
-import { LogOut } from "lucide-react";
+import Link from "next/link";
+import { LogOut, ShieldCheck } from "lucide-react";
 import { signOutAction } from "@/modules/auth/server/actions";
 
 /** Angemeldete Person und Abmelden (Server Action, kein Client-JavaScript nötig). */
@@ -14,6 +15,14 @@ export function UserMenu({ email }: { email: string }) {
       <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground" title={email}>
         {email}
       </span>
+      <Link
+        href="/konto/sicherheit"
+        className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+        aria-label="Konto und Sicherheit"
+        title="Konto und Sicherheit"
+      >
+        <ShieldCheck className="size-3.5" aria-hidden />
+      </Link>
       <form action={signOutAction}>
         <button
           type="submit"

@@ -9,6 +9,7 @@ import { FormField, FormMessage } from "./form-field";
 
 const NOTICES: Record<string, string> = {
   abgemeldet: "Du wurdest abgemeldet.",
+  "sitzung-beendet": "Diese Sitzung wurde beendet. Bitte melde dich erneut an.",
 };
 const ERRORS: Record<string, string> = {
   "link-ungueltig": "Der Link ist ungültig oder abgelaufen. Bitte fordere einen neuen an.",

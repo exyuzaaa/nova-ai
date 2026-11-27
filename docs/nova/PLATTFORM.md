@@ -97,6 +97,27 @@ Migration `20261127230000_core_notifications_search.sql`:
   Ergebnisseite `/app/[unternehmen]/suche`. Neue Module melden ihre Datensätze über `core.search_upsert()` an.
 - Tests: 256 Datenbank-, 142 Unit-, 42 Browsertests.
 
+### Phase 1d-2 – umgesetzt am 27.11.2026
+
+Migration `20261127235000_core_session_security.sql`:
+
+- **`core.session_ok()`** ist Teil jeder Rechteprüfung (`has_tenant_role`, `can`, Analytics):
+  - eine auf einem anderen Gerät beendete Sitzung verliert **sofort** den Zugriff auf Unternehmensdaten, auch wenn ihr
+    Zugriffstoken noch nicht abgelaufen ist;
+  - wer einen zweiten Faktor eingerichtet hat, sieht Unternehmensdaten nur mit bestätigter Sitzung (`aal2`) –
+    ein gestohlenes Passwort allein genügt nicht, auch nicht bei direkten API-Aufrufen.
+- **Zwei-Faktor-Anmeldung (TOTP)** unter `/konto/sicherheit`: Einrichten per QR-Code oder Schlüssel, Bestätigen mit
+  Code, Ersatzgerät hinzufügen (Supabase bietet keine Wiederherstellungscodes), Entfernen. Nach dem Passwort fragt
+  `/login/bestaetigen` den Code ab; der Proxy leitet ungeprüfte Sitzungen dorthin um.
+- **Geräteverwaltung**: Liste der eigenen Sitzungen (Gerät, IP, zuletzt aktiv, mit/ohne zweiten Faktor), einzelne
+  Geräte abmelden (`core.revoke_session`, protokolliert), alle anderen abmelden. Beendete Sitzungen landen auf
+  `/auth/beendet` → Anmeldung mit Hinweis.
+- **Sicherheitsheader** für alle Seiten: `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'; base-uri 'self';
+  form-action 'self'; object-src 'none'`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, HSTS.
+- Startseite `/` führt jetzt zur Plattform (`/app`), Marke in Anmeldung und Titeln: „NOVA“.
+- **Verschoben**: Dateiablage → Modul Dokumente (Phase 3), weil sie dort gebraucht wird und eine Virenprüfung braucht.
+- Tests: 280 Datenbank-, 145 Unit-, 47 Browsertests (inkl. echter TOTP-Codes im Browsertest).
+
 ---
 
 ## 0. Bestandsaufnahme

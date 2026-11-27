@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { notFound } from "next/navigation";
-import { requireUser, type CurrentUser } from "@/modules/auth/server/session";
+import { ensureSessionAccepted, requireUser, type CurrentUser } from "@/modules/auth/server/session";
 import type { Permission, PermissionSet } from "../domain/permissions";
 import { getMyPermissions, listTenantModules, type TenantModule } from "./permissions";
 import { listMyTenants, type Tenant } from "./tenants";
@@ -23,7 +23,10 @@ export const loadTenantContext = cache(async (slug: string): Promise<TenantConte
   const user = await requireUser(`/app/${encodeURIComponent(slug)}`);
   const tenants = await listMyTenants();
   const tenant = tenants.find((entry) => entry.slug === slug);
-  if (!tenant) notFound();
+  if (!tenant) {
+    await ensureSessionAccepted();
+    notFound();
+  }
   const [permissions, modules] = await Promise.all([getMyPermissions(tenant.id), listTenantModules(tenant.id)]);
   return { user, tenant, tenants, permissions, modules };
 });

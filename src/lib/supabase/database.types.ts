@@ -1054,8 +1054,16 @@ isOneToOne: false
 "module_entitled":
 { Args: { "p_module": string,"p_tenant": string }; Returns: boolean
                            },
+"my_mfa_required":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
 "my_permissions":
 { Args: { "p_tenant": string }; Returns: string[]
+                           },
+"my_sessions":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "aal": string,"created_at": string,"id": string,"ip": string,"is_current": boolean,"last_seen_at": string,"user_agent": string
+            }[]
                            },
 "notify":
 { Args: { "p_body"?: string,"p_href"?: string,"p_kind": string,"p_metadata"?: Json,"p_tenant": string,"p_title": string,"p_user": string }; Returns: undefined
@@ -1065,6 +1073,9 @@ isOneToOne: false
                            },
 "purge_notifications":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"revoke_session":
+{ Args: { "p_session": string }; Returns: boolean
                            },
 "search":
 { Args: { "p_limit"?: number,"p_query": string,"p_tenant": string }; Returns: {
@@ -1079,6 +1090,9 @@ isOneToOne: false
                            },
 "search_upsert":
 { Args: { "p_href": string,"p_id": string,"p_permission": string,"p_subtitle": string,"p_tenant": string,"p_title": string,"p_type": string }; Returns: undefined
+                           },
+"session_ok":
+{ Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "set_module_enabled":
 { Args: { "p_enabled": boolean,"p_module": string,"p_tenant": string }; Returns: undefined

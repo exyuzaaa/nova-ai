@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { DEFAULT_AFTER_LOGIN, isGuestOnlyPath, isProtectedPath } from "@/modules/auth/domain/redirects";
+import { needsSecondFactor } from "@/modules/auth/domain/mfa";
+import { DEFAULT_AFTER_LOGIN, isGuestOnlyPath, isProtectedPath, SECOND_FACTOR_PATH } from "@/modules/auth/domain/redirects";
 
 /**
  * Erneuert die Supabase-Sitzung bei jeder Anfrage und schützt Bereiche, die eine
@@ -45,6 +46,17 @@ export async function proxy(request: NextRequest) {
     const login = new URL("/login", request.url);
     login.searchParams.set("next", `${pathname}${search}`);
     return redirectTo(login);
+  }
+
+  // Zweiter Faktor eingerichtet, aber noch nicht bestätigt → Code abfragen.
+  // (Die Datenbank sperrt Unternehmensdaten in diesem Zustand zusätzlich selbst.)
+  if (isAuthenticated && isProtectedPath(pathname) && data?.claims?.aal !== "aal2") {
+    const { data: level } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (needsSecondFactor(level)) {
+      const verify = new URL(SECOND_FACTOR_PATH, request.url);
+      verify.searchParams.set("next", `${pathname}${search}`);
+      return redirectTo(verify);
+    }
   }
 
   if (isAuthenticated && isGuestOnlyPath(pathname)) {

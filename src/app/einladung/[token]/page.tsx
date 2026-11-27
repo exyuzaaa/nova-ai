@@ -18,7 +18,7 @@ async function InvitationContent({ params }: Pick<PageProps<"/einladung/[token]"
     return (
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight">Einladung zu NOVA Analytics</h1>
+          <h1 className="text-lg font-semibold tracking-tight">Einladung zu NOVA</h1>
           <p className="text-sm text-muted-foreground">
             Melde dich an oder erstelle ein Konto mit der E-Mail-Adresse, an die die Einladung ging.
           </p>

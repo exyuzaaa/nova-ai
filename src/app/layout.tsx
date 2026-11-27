@@ -6,8 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "NOVA Analytics", template: "%s · NOVA Analytics" },
-  description: "Datenschutzfreundliche Web-Analyse für Unternehmen.",
+  title: { default: "NOVA", template: "%s · NOVA" },
+  description: "NOVA – die Unternehmensplattform für CRM, Projekte, Team, Finanzen und Analytics.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
