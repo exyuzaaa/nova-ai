@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireUser } from "@/modules/auth/server/session";
-import { hasRole } from "../../domain/roles";
-import { listMyOrganizations } from "../../server/organizations";
+import { hasRole } from "@/modules/core/domain/roles";
+import { listMyTenants } from "@/modules/core/server/tenants";
 import { getSite, listSites, type Site } from "../../server/sites";
 import { MobileNav } from "./mobile-nav";
 import { SidebarNav } from "./sidebar-nav";
@@ -22,9 +22,9 @@ const toOption = ({ id, name, domain, isDemo, organizationName }: Site): SiteOpt
 /** Lädt Nutzer, aktuelle Website, alle Websites und ob Websites angelegt werden dürfen. */
 const loadShell = async (siteId: string) => {
   const user = await requireUser(`/analytics/${siteId}`);
-  const [site, sites, organizations] = await Promise.all([getSite(siteId), listSites(), listMyOrganizations()]);
+  const [site, sites, tenants] = await Promise.all([getSite(siteId), listSites(), listMyTenants()]);
   if (!site) notFound();
-  const canAddWebsite = organizations.some((organization) => hasRole(organization.role, "admin"));
+  const canAddWebsite = tenants.some((tenant) => hasRole(tenant.role, "admin"));
   return { user, site, sites: sites.map(toOption), canAddWebsite };
 };
 

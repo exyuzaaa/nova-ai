@@ -3,14 +3,11 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormField, FormMessage } from "@/modules/auth/ui/form-field";
-import { invitableRoles, ROLE_LABELS, type MemberRole } from "../../domain/roles";
+import { invitableRoles, ROLE_LABELS, type MemberRole } from "@/modules/core/domain/roles";
 import { COMMON_TIME_ZONES } from "../../domain/tenancy-validation";
-import {
-  inviteMemberAction,
-  updateOrganizationAction,
-  updateWebsiteAction,
-  type ActionState,
-} from "../../server/actions/tenancy-actions";
+import { inviteMemberAction, updateTenantAction } from "@/modules/core/server/actions/tenant-actions";
+import type { ActionState } from "@/modules/core/server/action-state";
+import { updateWebsiteAction } from "../../server/actions/website-actions";
 import { CopyButton } from "../components/copy-button";
 import { NativeSelect } from "./native-select";
 
@@ -63,24 +60,24 @@ export function WebsiteSettingsForm({
   );
 }
 
-export function OrganizationSettingsForm({
-  organization,
+export function TenantSettingsForm({
+  tenant,
   canEdit,
 }: {
-  organization: { id: string; name: string };
+  tenant: { id: string; name: string };
   canEdit: boolean;
 }) {
-  const [state, formAction, isPending] = useActionState(updateOrganizationAction, IDLE);
+  const [state, formAction, isPending] = useActionState(updateTenantAction, IDLE);
   return (
     <form action={formAction} className="flex flex-col gap-3" noValidate>
-      <input type="hidden" name="organizationId" value={organization.id} />
+      <input type="hidden" name="tenantId" value={tenant.id} />
       <FormMessage status={state.status} message={state.message} />
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="min-w-0 flex-1 sm:max-w-md">
           <FormField
-            label="Name der Organisation"
+            label="Name des Unternehmens"
             name="name"
-            defaultValue={organization.name}
+            defaultValue={tenant.name}
             required
             disabled={!canEdit}
             error={state.fieldErrors?.name}
@@ -96,14 +93,14 @@ export function OrganizationSettingsForm({
   );
 }
 
-export function InviteMemberForm({ organizationId, actorRole }: { organizationId: string; actorRole: MemberRole }) {
+export function InviteMemberForm({ tenantId, actorRole }: { tenantId: string; actorRole: MemberRole }) {
   const [state, formAction, isPending] = useActionState(inviteMemberAction, IDLE);
   const roles = invitableRoles(actorRole);
 
   return (
     <div className="flex flex-col gap-3">
       <form action={formAction} className="flex flex-col gap-3 sm:flex-row sm:items-start" noValidate>
-        <input type="hidden" name="organizationId" value={organizationId} />
+        <input type="hidden" name="tenantId" value={tenantId} />
         <div className="flex-1">
           <FormField
             label="E-Mail-Adresse"

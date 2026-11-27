@@ -1,19 +1,19 @@
-/** Rollen in aufsteigender Berechtigung – identisch mit dem DB-Enum analytics.member_role. */
-export const MEMBER_ROLES = ["viewer", "analyst", "admin", "owner"] as const;
+/** Basisrollen je Unternehmen in aufsteigender Berechtigung – identisch mit dem DB-Enum core.member_role. */
+export const MEMBER_ROLES = ["viewer", "member", "admin", "owner"] as const;
 export type MemberRole = (typeof MEMBER_ROLES)[number];
 
 export const ROLE_LABELS: Record<MemberRole, string> = {
-  viewer: "Viewer",
-  analyst: "Analyst",
+  viewer: "Betrachter",
+  member: "Mitglied",
   admin: "Administrator",
   owner: "Owner",
 };
 
 export const ROLE_DESCRIPTIONS: Record<MemberRole, string> = {
-  viewer: "Sieht Dashboards und Berichte.",
-  analyst: "Pflegt zusätzlich Ziele, Funnels, Kampagnen und Berichte.",
-  admin: "Verwaltet zusätzlich Websites, Tracking und Mitglieder.",
-  owner: "Volle Kontrolle inklusive Owner-Rechten und Löschung.",
+  viewer: "Sieht Inhalte und Berichte, ändert nichts.",
+  member: "Arbeitet in den freigegebenen Modulen mit, z. B. Ziele, Funnels, Kampagnen und Berichte in Analytics.",
+  admin: "Verwaltet zusätzlich Mitglieder, Einstellungen und Websites.",
+  owner: "Volle Kontrolle inklusive Owner-Rechten, Abonnement und Löschung.",
 };
 
 export const isMemberRole = (value: unknown): value is MemberRole =>
@@ -25,7 +25,7 @@ export const hasRole = (role: MemberRole, minimum: MemberRole): boolean =>
 /** Rollen, die eine Person mit `actor`-Rolle vergeben darf (Owner nur durch Owner). */
 export const assignableRoles = (actor: MemberRole): MemberRole[] => {
   if (actor === "owner") return [...MEMBER_ROLES];
-  if (actor === "admin") return ["viewer", "analyst", "admin"];
+  if (actor === "admin") return ["viewer", "member", "admin"];
   return [];
 };
 

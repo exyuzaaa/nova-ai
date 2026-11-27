@@ -29,3 +29,7 @@ export const createSupabaseServerClient = async () => {
 
 export const analyticsSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) =>
   client.schema("analytics");
+
+/** Gemeinsamer Kern: Unternehmen, Mitglieder, Einladungen, Audit-Log. */
+export const coreSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) =>
+  client.schema("core");

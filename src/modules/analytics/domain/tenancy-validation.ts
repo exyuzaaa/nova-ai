@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MEMBER_ROLES } from "./roles";
+import { requiredName } from "@/modules/core/domain/tenant-validation";
 
 /**
  * Domain aus einer Eingabe wie "https://www.Beispiel.de/kontakt" normalisieren:
@@ -22,23 +22,6 @@ export const normalizeDomain = (input: string): string | null => {
   return host;
 };
 
-/** URL-taugliches Kürzel aus einem Namen ("Müller & Söhne GmbH" → "mueller-soehne-gmbh"). */
-export const slugify = (name: string): string => {
-  const slug = name
-    .toLowerCase()
-    .replace(/ä/g, "ae")
-    .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue")
-    .replace(/ß/g, "ss")
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 48)
-    .replace(/-+$/g, "");
-  return slug.length >= 2 ? slug : `org-${slug || "neu"}`;
-};
-
 const supportedTimeZones = new Set(
   typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : ["Europe/Berlin", "UTC"],
 );
@@ -55,17 +38,8 @@ export const COMMON_TIME_ZONES = [
   "UTC",
 ] as const;
 
-const name = (label: string) =>
-  z
-    .string()
-    .trim()
-    .min(1, { error: `Bitte gib einen ${label} ein.` })
-    .max(120, { error: `Der ${label} darf höchstens 120 Zeichen lang sein.` });
-
-export const organizationSchema = z.object({ name: name("Namen") });
-
 export const websiteSchema = z.object({
-  name: name("Namen"),
+  name: requiredName("Namen"),
   domain: z
     .string()
     .transform((value, context) => {
@@ -78,14 +52,3 @@ export const websiteSchema = z.object({
     }),
   timezone: z.string().refine((value) => supportedTimeZones.has(value), { error: "Unbekannte Zeitzone." }),
 });
-
-export const invitationSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .pipe(z.email({ error: "Bitte gib eine gültige E-Mail-Adresse ein." })),
-  role: z.enum(MEMBER_ROLES).refine((role) => role !== "owner", { error: "Owner können nicht eingeladen werden." }),
-});
-
-export const uuidSchema = z.uuid();

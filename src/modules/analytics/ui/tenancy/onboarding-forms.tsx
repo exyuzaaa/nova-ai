@@ -4,25 +4,27 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormField, FormMessage } from "@/modules/auth/ui/form-field";
 import { COMMON_TIME_ZONES } from "../../domain/tenancy-validation";
-import { createOrganizationAction, createWebsiteAction, type ActionState } from "../../server/actions/tenancy-actions";
+import { createTenantAction } from "@/modules/core/server/actions/tenant-actions";
+import type { ActionState } from "@/modules/core/server/action-state";
+import { createWebsiteAction } from "../../server/actions/website-actions";
 import { NativeSelect } from "./native-select";
 
 const IDLE: ActionState = { status: "idle" };
 
-export function CreateOrganizationForm() {
-  const [state, formAction, isPending] = useActionState(createOrganizationAction, IDLE);
+export function CreateTenantForm() {
+  const [state, formAction, isPending] = useActionState(createTenantAction, IDLE);
   return (
     <form action={formAction} className="flex flex-col gap-4" noValidate>
       <div>
         <p className="text-xs font-medium text-muted-foreground">Schritt 1 von 2</p>
-        <h1 className="text-lg font-semibold tracking-tight">Organisation anlegen</h1>
+        <h1 className="text-lg font-semibold tracking-tight">Unternehmen anlegen</h1>
         <p className="text-sm text-muted-foreground">
-          Unter einer Organisation verwaltest du Websites und Teammitglieder. Daten verschiedener Organisationen sind
+          In deinem Unternehmen verwaltest du Teammitglieder, Module und Websites. Daten verschiedener Unternehmen sind
           strikt getrennt.
         </p>
       </div>
       <FormMessage status={state.status} message={state.message} />
-      <FormField label="Name der Organisation" name="name" required maxLength={120} autoComplete="organization" error={state.fieldErrors?.name} />
+      <FormField label="Name des Unternehmens" name="name" required maxLength={120} autoComplete="organization" error={state.fieldErrors?.name} />
       <Button type="submit" disabled={isPending}>
         {isPending ? "Wird angelegt …" : "Weiter"}
       </Button>
@@ -31,10 +33,10 @@ export function CreateOrganizationForm() {
 }
 
 export function CreateWebsiteForm({
-  organizations,
+  tenants,
   isFirst,
 }: {
-  organizations: { id: string; name: string }[];
+  tenants: { id: string; name: string }[];
   isFirst: boolean;
 }) {
   const [state, formAction, isPending] = useActionState(createWebsiteAction, IDLE);
@@ -46,16 +48,16 @@ export function CreateWebsiteForm({
         <p className="text-sm text-muted-foreground">Jede Website erhält eine eigene Tracking-ID.</p>
       </div>
       <FormMessage status={state.status} message={state.message} />
-      {organizations.length > 1 ? (
-        <NativeSelect label="Organisation" name="organizationId" defaultValue={organizations[0].id}>
-          {organizations.map((organization) => (
-            <option key={organization.id} value={organization.id}>
-              {organization.name}
+      {tenants.length > 1 ? (
+        <NativeSelect label="Unternehmen" name="tenantId" defaultValue={tenants[0].id}>
+          {tenants.map((tenant) => (
+            <option key={tenant.id} value={tenant.id}>
+              {tenant.name}
             </option>
           ))}
         </NativeSelect>
       ) : (
-        <input type="hidden" name="organizationId" value={organizations[0]?.id ?? ""} />
+        <input type="hidden" name="tenantId" value={tenants[0]?.id ?? ""} />
       )}
       <FormField label="Name der Website" name="name" required maxLength={120} placeholder="z. B. Unternehmenswebsite" error={state.fieldErrors?.name} />
       <FormField

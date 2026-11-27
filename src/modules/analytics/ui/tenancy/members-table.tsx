@@ -3,20 +3,21 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/modules/auth/ui/form-field";
-import { assignableRoles, hasRole, ROLE_LABELS, type MemberRole } from "../../domain/roles";
-import { changeMemberRoleAction, removeMemberAction, type ActionState } from "../../server/actions/tenancy-actions";
-import type { Member } from "../../server/organizations";
+import { assignableRoles, hasRole, ROLE_LABELS, type MemberRole } from "@/modules/core/domain/roles";
+import { changeMemberRoleAction, removeMemberAction } from "@/modules/core/server/actions/tenant-actions";
+import type { ActionState } from "@/modules/core/server/action-state";
+import type { Member } from "@/modules/core/server/tenants";
 import { NativeSelect } from "./native-select";
 
 const IDLE: ActionState = { status: "idle" };
 
 function MemberRow({
   member,
-  organizationId,
+  tenantId,
   actorRole,
 }: {
   member: Member;
-  organizationId: string;
+  tenantId: string;
   actorRole: MemberRole;
 }) {
   const [roleState, roleAction, roleSaving] = useActionState(changeMemberRoleAction, IDLE);
@@ -42,7 +43,7 @@ function MemberRow({
       <td className="py-3 pr-3">
         {canManage ? (
           <form action={roleAction} className="flex items-center gap-2">
-            <input type="hidden" name="organizationId" value={organizationId} />
+            <input type="hidden" name="tenantId" value={tenantId} />
             <input type="hidden" name="memberId" value={member.memberId} />
             <NativeSelect label={`Rolle von ${member.email}`} hideLabel name="role" defaultValue={member.role} className="w-40">
               {roles.map((role) => (
@@ -65,12 +66,12 @@ function MemberRow({
             action={removeAction}
             onSubmit={(event) => {
               const question = member.isSelf
-                ? "Möchtest du die Organisation wirklich verlassen?"
-                : `${member.email} wirklich aus der Organisation entfernen?`;
+                ? "Möchtest du das Unternehmen wirklich verlassen?"
+                : `${member.email} wirklich aus dem Unternehmen entfernen?`;
               if (!window.confirm(question)) event.preventDefault();
             }}
           >
-            <input type="hidden" name="organizationId" value={organizationId} />
+            <input type="hidden" name="tenantId" value={tenantId} />
             <input type="hidden" name="memberId" value={member.memberId} />
             <Button type="submit" variant="ghost" size="sm" disabled={removing} className="text-negative hover:text-negative">
               {member.isSelf ? "Verlassen" : "Entfernen"}
@@ -84,16 +85,16 @@ function MemberRow({
 
 export function MembersTable({
   members,
-  organizationId,
+  tenantId,
   actorRole,
 }: {
   members: Member[];
-  organizationId: string;
+  tenantId: string;
   actorRole: MemberRole;
 }) {
   return (
     <table className="w-full table-fixed text-sm">
-      <caption className="sr-only">Mitglieder der Organisation</caption>
+      <caption className="sr-only">Mitglieder des Unternehmens</caption>
       <thead className="text-xs text-muted-foreground">
         <tr className="border-b">
           <th scope="col" className="pb-2 text-left font-medium">E-Mail-Adresse</th>
@@ -105,7 +106,7 @@ export function MembersTable({
       </thead>
       <tbody>
         {members.map((member) => (
-          <MemberRow key={member.memberId} member={member} organizationId={organizationId} actorRole={actorRole} />
+          <MemberRow key={member.memberId} member={member} tenantId={tenantId} actorRole={actorRole} />
         ))}
       </tbody>
     </table>

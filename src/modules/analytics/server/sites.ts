@@ -2,13 +2,14 @@ import "server-only";
 import { cache } from "react";
 import { analyticsSchema, createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/modules/auth/server/session";
-import { hasRole, isMemberRole, type MemberRole } from "../domain/roles";
-import { uuidSchema } from "../domain/tenancy-validation";
+import { hasRole, type MemberRole } from "@/modules/core/domain/roles";
+import { uuidSchema } from "@/modules/core/domain/tenant-validation";
+import { listMyTenants } from "@/modules/core/server/tenants";
 
 /**
  * Website-Verzeichnis des angemeldeten Nutzers.
  * Lesen ausschließlich über RLS: Es erscheinen nur Websites, auf die der Nutzer
- * über seine Organisationsmitgliedschaft Zugriff hat.
+ * über seine Mitgliedschaft im Unternehmen (core.tenant_members) Zugriff hat.
  */
 
 export type Site = {
@@ -46,38 +47,37 @@ export const isDemoEnabled = (env: NodeJS.ProcessEnv = process.env): boolean => 
   return env.NODE_ENV !== "production";
 };
 
-/** Eigene Websites (ohne Demo), sortiert nach Organisation und Name. */
+/** Eigene Websites (ohne Demo), sortiert nach Unternehmen und Name. */
 export const listOwnSites = cache(async (): Promise<Site[]> => {
   const user = await getCurrentUser();
   if (!user) return [];
   const db = analyticsSchema(await createSupabaseServerClient());
 
-  const [websites, memberships] = await Promise.all([
+  const [websites, tenants] = await Promise.all([
     db
       .from("websites")
-      .select("id, organization_id, name, domain, timezone, public_site_id, is_demo, organizations(name)")
+      .select("id, organization_id, name, domain, timezone, public_site_id, is_demo")
       .is("deleted_at", null)
       .order("name"),
-    db.from("organization_members").select("organization_id, role").eq("user_id", user.id),
+    listMyTenants(),
   ]);
   if (websites.error) throw websites.error;
-  if (memberships.error) throw memberships.error;
 
-  const roleByOrg = new Map(memberships.data.map((row) => [row.organization_id, row.role]));
+  const tenantById = new Map(tenants.map((tenant) => [tenant.id, tenant]));
   return websites.data
     .map((row): Site | null => {
-      const role = roleByOrg.get(row.organization_id);
-      if (!isMemberRole(role)) return null;
+      const tenant = tenantById.get(row.organization_id);
+      if (!tenant) return null;
       return {
         id: row.id,
         organizationId: row.organization_id,
-        organizationName: row.organizations?.name ?? "",
+        organizationName: tenant.name,
         name: row.name,
         domain: row.domain,
         timezone: row.timezone,
         isDemo: row.is_demo,
         publicSiteId: row.public_site_id,
-        role,
+        role: tenant.role,
       };
     })
     .filter((site): site is Site => site !== null)

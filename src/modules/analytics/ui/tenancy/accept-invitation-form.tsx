@@ -3,7 +3,8 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/modules/auth/ui/form-field";
-import { acceptInvitationAction, type ActionState } from "../../server/actions/tenancy-actions";
+import { acceptInvitationAction } from "@/modules/core/server/actions/tenant-actions";
+import type { ActionState } from "@/modules/core/server/action-state";
 
 export function AcceptInvitationForm({ token }: { token: string }) {
   const [state, formAction, isPending] = useActionState<ActionState, FormData>(acceptInvitationAction, {

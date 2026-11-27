@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ROLE_DESCRIPTIONS, ROLE_LABELS } from "@/modules/analytics/domain/roles";
-import { getInvitationPreview } from "@/modules/analytics/server/organizations";
+import { ROLE_DESCRIPTIONS, ROLE_LABELS } from "@/modules/core/domain/roles";
+import { getInvitationPreview } from "@/modules/core/server/tenants";
 import { AcceptInvitationForm } from "@/modules/analytics/ui/tenancy/accept-invitation-form";
 import { getCurrentUser } from "@/modules/auth/server/session";
 
@@ -56,7 +56,7 @@ async function InvitationContent({ params }: Pick<PageProps<"/einladung/[token]"
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h1 className="text-lg font-semibold tracking-tight">Einladung zu „{invitation.organizationName}“</h1>
+        <h1 className="text-lg font-semibold tracking-tight">Einladung zu „{invitation.tenantName}“</h1>
         <p className="text-sm text-muted-foreground">
           Rolle: <span className="font-medium text-foreground">{ROLE_LABELS[invitation.role]}</span> –{" "}
           {ROLE_DESCRIPTIONS[invitation.role]}

@@ -26,7 +26,7 @@ und rollen sie zurück, sie sollten nicht gegen Produktion laufen.
 
 | Bereich | Einstellung |
 |---|---|
-| Project Settings → Data API → Exposed schemas | `analytics` ergänzen |
+| Project Settings → Data API → Exposed schemas | `analytics, core, billing, platform, crm, projects, calendar, hr, finance, documents, messaging, support, inventory, marketing, automation` ergänzen (Liste in `supabase/config.jsonc`) |
 | Authentication → Sign In / Providers → Email | „Confirm email“ aktivieren |
 | Authentication → Sign In / Providers → Email | Minimum password length **10**, Password requirements **Letters and digits** |
 | Authentication → URL Configuration → Site URL | Produktions-URL, z. B. `https://nova.example.de` |

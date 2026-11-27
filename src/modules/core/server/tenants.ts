@@ -1,10 +1,12 @@
 import "server-only";
 import { cache } from "react";
-import { analyticsSchema, createSupabaseServerClient } from "@/lib/supabase/server";
+import { coreSchema, createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/modules/auth/server/session";
 import { hasRole, isMemberRole, type MemberRole } from "../domain/roles";
+import { isInvitationToken, uuidSchema } from "../domain/tenant-validation";
 
-export type Organization = { id: string; name: string; slug: string; role: MemberRole };
+/** Ein Unternehmen (Mandant), in dem der angemeldete Nutzer Mitglied ist, samt seiner Rolle. */
+export type Tenant = { id: string; name: string; slug: string; role: MemberRole };
 
 export type Member = {
   memberId: string;
@@ -22,30 +24,38 @@ export type PendingInvitation = {
   expiresAt: string;
 };
 
-export const listMyOrganizations = cache(async (): Promise<Organization[]> => {
+/**
+ * Alle Unternehmen des angemeldeten Nutzers. Grundlage jeder Tenant-Auflösung:
+ * Ein Unternehmen gilt nur dann als ausgewählt, wenn es in dieser Liste steht.
+ */
+export const listMyTenants = cache(async (): Promise<Tenant[]> => {
   const user = await getCurrentUser();
   if (!user) return [];
-  const db = analyticsSchema(await createSupabaseServerClient());
+  const db = coreSchema(await createSupabaseServerClient());
   const { data, error } = await db
-    .from("organization_members")
-    .select("role, organizations(id, name, slug)")
+    .from("tenant_members")
+    .select("role, tenants(id, name, slug)")
     .eq("user_id", user.id);
   if (error) throw error;
   return data
     .flatMap((row) =>
-      row.organizations && isMemberRole(row.role)
-        ? [{ id: row.organizations.id, name: row.organizations.name, slug: row.organizations.slug, role: row.role }]
+      row.tenants && isMemberRole(row.role)
+        ? [{ id: row.tenants.id, name: row.tenants.name, slug: row.tenants.slug, role: row.role }]
         : [],
     )
     .sort((a, b) => a.name.localeCompare(b.name, "de"));
 });
 
-export const getOrganization = async (organizationId: string): Promise<Organization | null> =>
-  (await listMyOrganizations()).find((org) => org.id === organizationId) ?? null;
+/** Unternehmen nur zurückgeben, wenn der Nutzer Mitglied ist (und optional mindestens `minimum` hat). */
+export const getTenant = async (tenantId: string, minimum: MemberRole = "viewer"): Promise<Tenant | null> => {
+  if (!uuidSchema.safeParse(tenantId).success) return null;
+  const tenant = (await listMyTenants()).find((entry) => entry.id === tenantId);
+  return tenant && hasRole(tenant.role, minimum) ? tenant : null;
+};
 
-export const listMembers = async (organizationId: string): Promise<Member[]> => {
-  const db = analyticsSchema(await createSupabaseServerClient());
-  const { data, error } = await db.rpc("list_members", { p_org: organizationId });
+export const listMembers = async (tenantId: string): Promise<Member[]> => {
+  const db = coreSchema(await createSupabaseServerClient());
+  const { data, error } = await db.rpc("list_members", { p_tenant: tenantId });
   if (error) throw error;
   return (data ?? []).flatMap((row) =>
     isMemberRole(row.role)
@@ -64,13 +74,13 @@ export const listMembers = async (organizationId: string): Promise<Member[]> => 
 };
 
 /** Offene Einladungen – nur für Admins sichtbar (RLS), sonst leer. */
-export const listPendingInvitations = async (organization: Organization): Promise<PendingInvitation[]> => {
-  if (!hasRole(organization.role, "admin")) return [];
-  const db = analyticsSchema(await createSupabaseServerClient());
+export const listPendingInvitations = async (tenant: Tenant): Promise<PendingInvitation[]> => {
+  if (!hasRole(tenant.role, "admin")) return [];
+  const db = coreSchema(await createSupabaseServerClient());
   const { data, error } = await db
-    .from("organization_invitations")
+    .from("invitations")
     .select("id, email, role, expires_at")
-    .eq("organization_id", organization.id)
+    .eq("tenant_id", tenant.id)
     .is("accepted_at", null)
     .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: false });
@@ -81,7 +91,7 @@ export const listPendingInvitations = async (organization: Organization): Promis
 };
 
 export type InvitationPreview = {
-  organizationName: string;
+  tenantName: string;
   email: string;
   role: MemberRole;
   expiresAt: string;
@@ -89,12 +99,12 @@ export type InvitationPreview = {
 };
 
 export const getInvitationPreview = async (token: string): Promise<InvitationPreview | null> => {
-  if (!/^[a-f0-9]{48}$/.test(token)) return null;
-  const db = analyticsSchema(await createSupabaseServerClient());
+  if (!isInvitationToken(token)) return null;
+  const db = coreSchema(await createSupabaseServerClient());
   const { data, error } = await db.rpc("get_invitation", { p_token: token });
   if (error) throw error;
   const row = data?.[0];
   if (!row || !isMemberRole(row.role)) return null;
   const status = row.status === "accepted" || row.status === "expired" ? row.status : "pending";
-  return { organizationName: row.organization_name, email: row.email, role: row.role, expiresAt: row.expires_at, status };
+  return { tenantName: row.tenant_name, email: row.email, role: row.role, expiresAt: row.expires_at, status };
 };

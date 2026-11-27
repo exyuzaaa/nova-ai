@@ -18,6 +18,14 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 6 | Echtzeit (aktive Besucher, alle 10 s) und Besucheranalyse | ✓ |
 | 7 | Traffic- und Seitenanalyse | offen |
 
+**NOVA-Plattform** ([Plan](docs/nova/PLATTFORM.md))
+
+| Phase | Inhalt | Status |
+|---|---|---|
+| 0 | Bestandsaufnahme, Architektur, Entwicklungsplan | ✓ |
+| 1a | Gemeinsamer Kern `core`: Unternehmen, Mitglieder, Einladungen, Audit-Log; Analytics nutzt ihn | ✓ |
+| 1b | Rollen und Rechte, Abteilungen/Teams, Modulfreischaltung | offen |
+
 ### Phase 3 im Überblick
 
 - **Anmeldung** mit E-Mail und Passwort über Supabase Auth: Registrierung mit E-Mail-Bestätigung, Login, Logout,
@@ -63,7 +71,7 @@ E-Mails (Bestätigung, Passwort zurücksetzen) landen lokal in Mailpit: http://1
 | Befehl | Inhalt |
 |---|---|
 | `npm run check` | Typprüfung, ESLint, Unit-Tests (Vitest) |
-| `npm run db:test` | Datenbanktests (pgTAP): Mandantentrennung, Rollen, Einladungen, Audit-Log |
+| `npm run db:test` | Datenbanktests (pgTAP): Kern, Mandantentrennung, Rollen, Einladungen, Audit-Log, Analytics |
 | `npm run build && npm run test:e2e` | End-to-End (Playwright) gegen echten lokalen Supabase-Stack inkl. axe-Prüfungen |
 
 Nach Schemaänderungen: `npx supabase db reset` (spielt alle Migrationen neu ein) und `npm run db:types`.
@@ -83,8 +91,9 @@ src/app/einladung/[token]/                Einladung ansehen und annehmen
 src/app/(analytics)/analytics/            Dashboard, Einstellungen
 src/lib/supabase/                         Server-Client, Umgebung, generierte DB-Typen
 src/modules/auth/                         Validierung, Weiterleitungsschutz, Sitzung, Server Actions, Formulare
+src/modules/core/                         NOVA Core: Rollen, Unternehmen, Mitglieder, Einladungen (Server + Domain)
 src/modules/analytics/                    Domain-Logik, Datenquellen, Mandanten, UI
-supabase/migrations/                      Schema analytics (Kern + Analysedaten)
+supabase/migrations/                      Schemas analytics und core (+ leere Modul-Schemas)
 supabase/tests/                           pgTAP-Tests
 supabase/templates/                       Deutsche E-Mail-Vorlagen
 e2e/                                      Playwright-Tests

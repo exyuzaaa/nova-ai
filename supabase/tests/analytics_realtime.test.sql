@@ -9,8 +9,8 @@ select no_plan();
 insert into auth.users (id, email, email_confirmed_at, aud, role) values
   ('a0000000-0000-0000-0000-00000000000a', 'owner@example.com', now(), 'authenticated', 'authenticated'),
   ('b0000000-0000-0000-0000-00000000000b', 'fremd@example.com', now(), 'authenticated', 'authenticated');
-insert into analytics.organizations (id, name, slug) values ('11111111-0000-4000-8000-000000000001', 'Org', 'org-realtime');
-insert into analytics.organization_members (organization_id, user_id, role)
+insert into core.tenants (id, name, slug) values ('11111111-0000-4000-8000-000000000001', 'Org', 'org-realtime');
+insert into core.tenant_members (tenant_id, user_id, role)
   values ('11111111-0000-4000-8000-000000000001', 'a0000000-0000-0000-0000-00000000000a', 'viewer');
 insert into analytics.websites (id, organization_id, name, domain, public_site_id)
   values ('22222222-0000-4000-8000-000000000002', '11111111-0000-4000-8000-000000000001', 'Site', 'live.example', 'ns_00000000000000aa');

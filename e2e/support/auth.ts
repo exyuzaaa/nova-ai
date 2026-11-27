@@ -27,10 +27,10 @@ export const logInAndWait = async (page: Page, email: string, password = TEST_PA
   await expect(page).not.toHaveURL(/\/login/);
 };
 
-/** Organisation und erste Website im Onboarding anlegen; gibt die Website-ID zurück. */
+/** Unternehmen und erste Website im Onboarding anlegen; gibt die Website-ID zurück. */
 export const completeOnboarding = async (page: Page, organization: string, website: string, domain: string) => {
-  await expect(page.getByRole("heading", { name: "Organisation anlegen" })).toBeVisible();
-  await page.getByLabel("Name der Organisation").fill(organization);
+  await expect(page.getByRole("heading", { name: "Unternehmen anlegen" })).toBeVisible();
+  await page.getByLabel("Name des Unternehmens").fill(organization);
   await page.getByRole("button", { name: "Weiter" }).click();
   await expect(page.getByRole("heading", { name: "Erste Website hinzufügen" })).toBeVisible();
   await page.getByLabel("Name der Website").fill(website);

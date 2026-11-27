@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { hasRole, ROLE_LABELS } from "@/modules/analytics/domain/roles";
-import { revokeInvitationAction } from "@/modules/analytics/server/actions/tenancy-actions";
-import { getOrganization, listMembers, listPendingInvitations } from "@/modules/analytics/server/organizations";
+import { hasRole, ROLE_LABELS } from "@/modules/core/domain/roles";
+import { revokeInvitationAction } from "@/modules/core/server/actions/tenant-actions";
+import { getTenant, listMembers, listPendingInvitations } from "@/modules/core/server/tenants";
 import { getSite } from "@/modules/analytics/server/sites";
 import { getTrackingStatus } from "@/modules/analytics/server/tracking-status";
 import { TrackingInstallation } from "@/modules/analytics/ui/tenancy/tracking-installation";
@@ -14,7 +14,7 @@ import { CopyButton } from "@/modules/analytics/ui/components/copy-button";
 import { MembersTable } from "@/modules/analytics/ui/tenancy/members-table";
 import {
   InviteMemberForm,
-  OrganizationSettingsForm,
+  TenantSettingsForm,
   WebsiteSettingsForm,
 } from "@/modules/analytics/ui/tenancy/settings-forms";
 
@@ -47,12 +47,12 @@ async function SettingsContent({ params }: Pick<PageProps<"/analytics/[siteId]/s
     );
   }
 
-  const organization = await getOrganization(site.organizationId);
-  if (!organization) notFound();
-  const isAdmin = hasRole(organization.role, "admin");
+  const tenant = await getTenant(site.organizationId);
+  if (!tenant) notFound();
+  const isAdmin = hasRole(tenant.role, "admin");
   const [members, invitations, status, origin] = await Promise.all([
-    listMembers(organization.id),
-    listPendingInvitations(organization),
+    listMembers(tenant.id),
+    listPendingInvitations(tenant),
     getTrackingStatus(site.id),
     getAppOrigin(),
   ]);
@@ -85,15 +85,15 @@ async function SettingsContent({ params }: Pick<PageProps<"/analytics/[siteId]/s
         <TrackingInstallation snippet={snippet} status={status} testUrl={testUrl} now={new Date()} />
       </Section>
 
-      <Section title="Organisation" description={`Deine Rolle: ${ROLE_LABELS[organization.role]}`}>
-        <OrganizationSettingsForm organization={{ id: organization.id, name: organization.name }} canEdit={isAdmin} />
+      <Section title="Unternehmen" description={`Deine Rolle: ${ROLE_LABELS[tenant.role]}`}>
+        <TenantSettingsForm tenant={{ id: tenant.id, name: tenant.name }} canEdit={isAdmin} />
       </Section>
 
-      <Section title="Mitglieder" description="Alle Mitglieder haben Zugriff auf die Websites dieser Organisation.">
+      <Section title="Mitglieder" description="Alle Mitglieder haben Zugriff auf die Websites dieses Unternehmens.">
         {/* relative: hält absolut positionierte Screenreader-Texte im Scroll-Container */}
         <div className="relative overflow-x-auto">
           <div className="min-w-[560px]">
-            <MembersTable members={members} organizationId={organization.id} actorRole={organization.role} />
+            <MembersTable members={members} tenantId={tenant.id} actorRole={tenant.role} />
           </div>
         </div>
       </Section>
@@ -103,7 +103,7 @@ async function SettingsContent({ params }: Pick<PageProps<"/analytics/[siteId]/s
           title="Mitglieder einladen"
           description="Die eingeladene Person meldet sich mit genau dieser E-Mail-Adresse an und nimmt die Einladung über den Link an."
         >
-          <InviteMemberForm organizationId={organization.id} actorRole={organization.role} />
+          <InviteMemberForm tenantId={tenant.id} actorRole={tenant.role} />
           {invitations.length > 0 && (
             <div className="flex flex-col gap-2">
               <h3 className="text-xs font-medium text-muted-foreground">Offene Einladungen</h3>
@@ -137,7 +137,7 @@ export default function SettingsPage({ params }: PageProps<"/analytics/[siteId]/
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
       <header>
         <h1 className="text-xl font-semibold tracking-tight">Einstellungen</h1>
-        <p className="text-sm text-muted-foreground">Website, Organisation und Team</p>
+        <p className="text-sm text-muted-foreground">Website, Unternehmen und Team</p>
       </header>
       <Suspense
         fallback={

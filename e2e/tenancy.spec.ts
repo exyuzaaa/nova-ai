@@ -9,14 +9,14 @@ test.describe.configure({ mode: "serial" });
 const newPage = async (browser: Browser): Promise<Page> =>
   (await browser.newContext({ storageState: { cookies: [], origins: [] } })).newPage();
 
-test.describe("Organisationen, Rollen und Mandantentrennung", () => {
+test.describe("Unternehmen, Rollen und Mandantentrennung", () => {
   const ownerEmail = uniqueEmail("org-owner");
   const memberEmail = uniqueEmail("org-member");
   const outsiderEmail = uniqueEmail("outsider");
   let siteId = "";
   let invitationLink = "";
 
-  test("Owner richtet Organisation ein und lädt ein Mitglied ein", async ({ browser }) => {
+  test("Owner richtet Unternehmen ein und lädt ein Mitglied ein", async ({ browser }) => {
     const owner = await newPage(browser);
     await signUpAndConfirm(owner, ownerEmail);
     siteId = await completeOnboarding(owner, "Agentur Nord", "Kundenportal", "kundenportal.example.de");
@@ -92,7 +92,7 @@ test.describe("Organisationen, Rollen und Mandantentrennung", () => {
     await expect(member.getByRole("region", { name: "Mitglieder einladen" }).getByRole("option", { name: "Owner" })).toHaveCount(0);
   });
 
-  test("Andere Organisationen sehen die Website nicht", async ({ browser }) => {
+  test("Andere Unternehmen sehen die Website nicht", async ({ browser }) => {
     const outsider = await newPage(browser);
     await logInAndWait(outsider, outsiderEmail);
     await expect(outsider).toHaveURL(/\/onboarding/);

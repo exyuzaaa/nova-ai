@@ -11,7 +11,7 @@ Plattform aufgebaut wird, in welcher Reihenfolge gebaut wird und was für einen 
 2. **Gemeinsamer Kern**: Die Mandanten-Tabellen ziehen von `analytics` nach `core` um (verschieben, nicht kopieren);
    die Rolle „Analyst“ heißt künftig „Mitglied“.
 
-### Nächster Arbeitsschritt (Phase 1a) – vorbereitet
+### Phase 1a – umgesetzt am 27.11.2026
 
 Migration `core_tenancy`:
 
@@ -33,8 +33,11 @@ Schemas aller geplanten Module angelegt (`core`, `billing`, `platform`, `crm`, `
 `finance`, `documents`, `messaging`, `support`, `inventory`, `marketing`, `automation`), damit sie in Supabase
 **einmalig** unter „Data API → Exposed schemas“ freigegeben werden können (lässt sich nicht per SQL setzen).
 
-Reihenfolge: lokal migrieren → 133 DB-Tests + E2E grün → Code umstellen → Migration produktiv → Schemas freigeben →
-Deployment → Prüfung mit den echten Daten.
+Ergebnis: Migration `20261127200000_core_tenancy.sql`, 165 Datenbanktests (davon 32 neu für den Kern), 120 Unit- und
+34 Browsertests grün. Produktiv eingespielt; alle Daten erhalten (Unternehmen, Owner, Audit-Log, Website, Events,
+Sitzungen). Funktionsdefinitionen in Produktion sind bis auf Kommentare identisch mit den getesteten. Im Code liegt der
+Kern unter `src/modules/core` (Rollen, Validierung, `tenants.ts`, Server Actions); Analytics nutzt ihn. In der
+Oberfläche heißt „Organisation“ jetzt „Unternehmen“.
 
 ---
 

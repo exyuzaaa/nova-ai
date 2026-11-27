@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assignableRoles, hasRole, invitableRoles } from "./roles";
-import { invitationSchema, normalizeDomain, slugify, websiteSchema } from "./tenancy-validation";
+import { normalizeDomain, websiteSchema } from "./tenancy-validation";
 
 describe("normalizeDomain", () => {
   it.each([
@@ -18,20 +17,7 @@ describe("normalizeDomain", () => {
   });
 });
 
-describe("slugify", () => {
-  it("bildet deutsche Umlaute ab", () => {
-    expect(slugify("Müller & Söhne GmbH")).toBe("mueller-soehne-gmbh");
-    expect(slugify("Straße 1")).toBe("strasse-1");
-  });
-
-  it("erfüllt die Datenbankregel für Kürzel", () => {
-    for (const name of ["A", "!!!", "Sehr langer Name ".repeat(10), "Ärger"]) {
-      expect(slugify(name)).toMatch(/^[a-z0-9][a-z0-9-]{1,62}$/);
-    }
-  });
-});
-
-describe("Formulare für Websites und Einladungen", () => {
+describe("Formular für Websites", () => {
   it("normalisiert die Domain beim Anlegen", () => {
     const result = websiteSchema.safeParse({ name: " Shop ", domain: "https://www.shop.de/", timezone: "Europe/Berlin" });
     expect(result.success && result.data).toEqual({ name: "Shop", domain: "shop.de", timezone: "Europe/Berlin" });
@@ -39,26 +25,5 @@ describe("Formulare für Websites und Einladungen", () => {
 
   it("lehnt unbekannte Zeitzonen ab", () => {
     expect(websiteSchema.safeParse({ name: "x", domain: "x.de", timezone: "Mars/Olympus" }).success).toBe(false);
-  });
-
-  it("erlaubt keine Owner-Einladung", () => {
-    expect(invitationSchema.safeParse({ email: "a@b.de", role: "owner" }).success).toBe(false);
-    expect(invitationSchema.safeParse({ email: "a@b.de", role: "admin" }).success).toBe(true);
-    expect(invitationSchema.safeParse({ email: "a@b.de", role: "superuser" }).success).toBe(false);
-  });
-});
-
-describe("Rollen", () => {
-  it("bildet die Hierarchie ab", () => {
-    expect(hasRole("owner", "admin")).toBe(true);
-    expect(hasRole("analyst", "admin")).toBe(false);
-    expect(hasRole("viewer", "viewer")).toBe(true);
-  });
-
-  it("lässt Owner-Rechte nur durch Owner vergeben", () => {
-    expect(assignableRoles("owner")).toContain("owner");
-    expect(assignableRoles("admin")).not.toContain("owner");
-    expect(assignableRoles("analyst")).toEqual([]);
-    expect(invitableRoles("owner")).not.toContain("owner");
   });
 });

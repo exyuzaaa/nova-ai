@@ -17,13 +17,7 @@ export type Database = {
                     "answer"?: string | null,"created_at"?: string,"id"?: string,"model"?: string | null,"organization_id"?: string,"question"?: string,"tool_calls"?: NonNullable<Json>,"unverified_numbers"?: NonNullable<Json>,"user_id"?: string | null,"website_ids"?: (string)[]
                   }
                   Relationships: [
-                    {
-      foreignKeyName: "ai_query_logs_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
+                    
                   ]
                 },"analytics_daily": {
                   Row: {
@@ -148,12 +142,6 @@ isOneToOne: false
                   }
                   Relationships: [
                     {
-      foreignKeyName: "analytics_integrations_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    },{
       foreignKeyName: "analytics_integrations_website_id_fkey"
       columns: ["website_id"]
 isOneToOne: false
@@ -244,36 +232,10 @@ isOneToOne: false
                   }
                   Relationships: [
                     {
-      foreignKeyName: "api_keys_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    },{
       foreignKeyName: "api_keys_website_id_fkey"
       columns: ["website_id"]
 isOneToOne: false
       referencedRelation: "websites"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"audit_logs": {
-                  Row: {
-                    "action": string,"actor_id": string | null,"actor_type": string,"created_at": string,"id": number,"metadata": NonNullable<Json>,"organization_id": string | null,"target_id": string | null,"target_type": string | null
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "action": string,"actor_id"?: string | null,"actor_type": string,"created_at"?: string,"id"?: never,"metadata"?: NonNullable<Json>,"organization_id"?: string | null,"target_id"?: string | null,"target_type"?: string | null
-                  }
-                  Update: {
-                    "action"?: string,"actor_id"?: string | null,"actor_type"?: string,"created_at"?: string,"id"?: never,"metadata"?: NonNullable<Json>,"organization_id"?: string | null,"target_id"?: string | null,"target_type"?: string | null
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "audit_logs_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
       referencedColumns: ["id"]
     }
                   ]
@@ -310,12 +272,6 @@ isOneToOne: false
                   }
                   Relationships: [
                     {
-      foreignKeyName: "campaigns_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    },{
       foreignKeyName: "campaigns_website_id_fkey"
       columns: ["website_id"]
 isOneToOne: false
@@ -436,12 +392,6 @@ isOneToOne: false
                   }
                   Relationships: [
                     {
-      foreignKeyName: "dashboard_layouts_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    },{
       foreignKeyName: "dashboard_layouts_website_id_fkey"
       columns: ["website_id"]
 isOneToOne: false
@@ -462,12 +412,6 @@ isOneToOne: false
                   }
                   Relationships: [
                     {
-      foreignKeyName: "data_deletion_requests_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    },{
       foreignKeyName: "data_deletion_requests_website_id_fkey"
       columns: ["website_id"]
 isOneToOne: false
@@ -540,56 +484,10 @@ isOneToOne: false
       referencedRelation: "conversion_goals"
       referencedColumns: ["id"]
     },{
-      foreignKeyName: "lead_attributions_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    },{
       foreignKeyName: "lead_attributions_website_id_fkey"
       columns: ["website_id"]
 isOneToOne: false
       referencedRelation: "websites"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"organization_branding": {
-                  Row: {
-                    "display_name": string | null,"email_sender_name": string | null,"hide_nova_branding": boolean,"logo_storage_path": string | null,"organization_id": string,"primary_color": string | null,"report_footer": string | null,"updated_at": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "display_name"?: string | null,"email_sender_name"?: string | null,"hide_nova_branding"?: boolean,"logo_storage_path"?: string | null,"organization_id": string,"primary_color"?: string | null,"report_footer"?: string | null,"updated_at"?: string
-                  }
-                  Update: {
-                    "display_name"?: string | null,"email_sender_name"?: string | null,"hide_nova_branding"?: boolean,"logo_storage_path"?: string | null,"organization_id"?: string,"primary_color"?: string | null,"report_footer"?: string | null,"updated_at"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "organization_branding_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: true
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"organization_invitations": {
-                  Row: {
-                    "accepted_at": string | null,"accepted_by": string | null,"created_at": string,"email": string,"expires_at": string,"id": string,"invited_by": string | null,"organization_id": string,"role": Database["analytics"]['Enums']["member_role"],"token_hash": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "accepted_at"?: string | null,"accepted_by"?: string | null,"created_at"?: string,"email": string,"expires_at": string,"id"?: string,"invited_by"?: string | null,"organization_id": string,"role"?: Database["analytics"]['Enums']["member_role"],"token_hash": string
-                  }
-                  Update: {
-                    "accepted_at"?: string | null,"accepted_by"?: string | null,"created_at"?: string,"email"?: string,"expires_at"?: string,"id"?: string,"invited_by"?: string | null,"organization_id"?: string,"role"?: Database["analytics"]['Enums']["member_role"],"token_hash"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "organization_invitations_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
       referencedColumns: ["id"]
     }
                   ]
@@ -606,52 +504,12 @@ isOneToOne: false
                   }
                   Relationships: [
                     {
-      foreignKeyName: "organization_member_websites_member_id_fkey"
-      columns: ["member_id"]
-isOneToOne: false
-      referencedRelation: "organization_members"
-      referencedColumns: ["id"]
-    },{
       foreignKeyName: "organization_member_websites_website_id_fkey"
       columns: ["website_id"]
 isOneToOne: false
       referencedRelation: "websites"
       referencedColumns: ["id"]
     }
-                  ]
-                },"organization_members": {
-                  Row: {
-                    "created_at": string,"id": string,"invited_by": string | null,"organization_id": string,"role": Database["analytics"]['Enums']["member_role"],"updated_at": string,"user_id": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "created_at"?: string,"id"?: string,"invited_by"?: string | null,"organization_id": string,"role"?: Database["analytics"]['Enums']["member_role"],"updated_at"?: string,"user_id": string
-                  }
-                  Update: {
-                    "created_at"?: string,"id"?: string,"invited_by"?: string | null,"organization_id"?: string,"role"?: Database["analytics"]['Enums']["member_role"],"updated_at"?: string,"user_id"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "organization_members_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"organizations": {
-                  Row: {
-                    "ai_enabled": boolean,"created_at": string,"deleted_at": string | null,"id": string,"is_demo": boolean,"name": string,"plan": string,"slug": string,"updated_at": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "ai_enabled"?: boolean,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"is_demo"?: boolean,"name": string,"plan"?: string,"slug": string,"updated_at"?: string
-                  }
-                  Update: {
-                    "ai_enabled"?: boolean,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"is_demo"?: boolean,"name"?: string,"plan"?: string,"slug"?: string,"updated_at"?: string
-                  }
-                  Relationships: [
-                    
                   ]
                 },"report_definitions": {
                   Row: {
@@ -665,13 +523,7 @@ isOneToOne: false
                     "created_at"?: string,"created_by"?: string | null,"formats"?: (string)[],"id"?: string,"is_active"?: boolean,"name"?: string,"next_run_at"?: string | null,"organization_id"?: string,"period"?: string,"recipients"?: (string)[],"schedule_cron"?: string | null,"template"?: NonNullable<Json>,"timezone"?: string,"updated_at"?: string,"website_ids"?: (string)[],"white_label"?: boolean
                   }
                   Relationships: [
-                    {
-      foreignKeyName: "report_definitions_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
+                    
                   ]
                 },"report_runs": {
                   Row: {
@@ -725,13 +577,7 @@ isOneToOne: true
                     "additional_domains"?: (string)[],"created_at"?: string,"currency"?: string,"deleted_at"?: string | null,"domain"?: string,"id"?: string,"is_demo"?: boolean,"name"?: string,"organization_id"?: string,"public_site_id"?: string,"status"?: string,"timezone"?: string,"updated_at"?: string
                   }
                   Relationships: [
-                    {
-      foreignKeyName: "websites_organization_id_fkey"
-      columns: ["organization_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
+                    
                   ]
                 }
           }
@@ -739,36 +585,17 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "accept_invitation":
-{ Args: { "p_token": string }; Returns: string
-                           },
-"accessible_website_ids":
-{ Args: { "p_min": Database["analytics"]['Enums']["member_role"] }; Returns: string[]
+            "accessible_website_ids":
+{ Args: { "p_min": Database["core"]['Enums']["member_role"] }; Returns: string[]
                            },
 "assert_site_access":
 { Args: { "p_website": string }; Returns: string
                            },
-"create_invitation":
-{ Args: { "p_email": string,"p_org": string,"p_role"?: Database["analytics"]['Enums']["member_role"] }; Returns: string
-                           },
-"create_organization":
-{ Args: { "p_name": string,"p_slug": string }; Returns: string
-                           },
 "ensure_partitions":
 { Args: { "p_months_ahead"?: number }; Returns: undefined
                            },
-"get_invitation":
-{ Args: { "p_token": string }; Returns: {
-              "email": string,"expires_at": string,"organization_name": string,"role": Database["analytics"]['Enums']["member_role"],"status": string
-            }[]
-                           },
 "has_org_role":
-{ Args: { "p_min": Database["analytics"]['Enums']["member_role"],"p_org": string }; Returns: boolean
-                           },
-"list_members":
-{ Args: { "p_org": string }; Returns: {
-              "created_at": string,"email": string,"is_self": boolean,"member_id": string,"role": Database["analytics"]['Enums']["member_role"],"user_id": string
-            }[]
+{ Args: { "p_min": Database["core"]['Enums']["member_role"],"p_org": string }; Returns: boolean
                            },
 "purge_daily_salts":
 { Args: Record<PropertyKey, never>; Returns: undefined
@@ -804,7 +631,141 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "match_operator": "equals"|"starts_with"|"contains"|"regex","member_role": "viewer"|"analyst"|"admin"|"owner","tracking_mode": "cookieless"|"consent_upgrade"|"consent_required","traffic_channel": "organic_search"|"paid_search"|"direct"|"referral"|"social"|"email"|"display"|"unassigned","visitor_id_type": "daily_hash"|"consented_id"
+            "match_operator": "equals"|"starts_with"|"contains"|"regex","tracking_mode": "cookieless"|"consent_upgrade"|"consent_required","traffic_channel": "organic_search"|"paid_search"|"direct"|"referral"|"social"|"email"|"display"|"unassigned","visitor_id_type": "daily_hash"|"consented_id"
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
+        },"core": {
+          Tables: {
+            "audit_logs": {
+                  Row: {
+                    "action": string,"actor_id": string | null,"actor_type": string,"created_at": string,"id": number,"metadata": NonNullable<Json>,"target_id": string | null,"target_type": string | null,"tenant_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "action": string,"actor_id"?: string | null,"actor_type": string,"created_at"?: string,"id"?: never,"metadata"?: NonNullable<Json>,"target_id"?: string | null,"target_type"?: string | null,"tenant_id"?: string | null
+                  }
+                  Update: {
+                    "action"?: string,"actor_id"?: string | null,"actor_type"?: string,"created_at"?: string,"id"?: never,"metadata"?: NonNullable<Json>,"target_id"?: string | null,"target_type"?: string | null,"tenant_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "audit_logs_organization_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"invitations": {
+                  Row: {
+                    "accepted_at": string | null,"accepted_by": string | null,"created_at": string,"email": string,"expires_at": string,"id": string,"invited_by": string | null,"role": Database["core"]['Enums']["member_role"],"tenant_id": string,"token_hash": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "accepted_at"?: string | null,"accepted_by"?: string | null,"created_at"?: string,"email": string,"expires_at": string,"id"?: string,"invited_by"?: string | null,"role"?: Database["core"]['Enums']["member_role"],"tenant_id": string,"token_hash": string
+                  }
+                  Update: {
+                    "accepted_at"?: string | null,"accepted_by"?: string | null,"created_at"?: string,"email"?: string,"expires_at"?: string,"id"?: string,"invited_by"?: string | null,"role"?: Database["core"]['Enums']["member_role"],"tenant_id"?: string,"token_hash"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "organization_invitations_organization_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"tenant_branding": {
+                  Row: {
+                    "display_name": string | null,"email_sender_name": string | null,"hide_nova_branding": boolean,"logo_storage_path": string | null,"primary_color": string | null,"report_footer": string | null,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "display_name"?: string | null,"email_sender_name"?: string | null,"hide_nova_branding"?: boolean,"logo_storage_path"?: string | null,"primary_color"?: string | null,"report_footer"?: string | null,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "display_name"?: string | null,"email_sender_name"?: string | null,"hide_nova_branding"?: boolean,"logo_storage_path"?: string | null,"primary_color"?: string | null,"report_footer"?: string | null,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "organization_branding_organization_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: true
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"tenant_members": {
+                  Row: {
+                    "created_at": string,"id": string,"invited_by": string | null,"role": Database["core"]['Enums']["member_role"],"tenant_id": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"invited_by"?: string | null,"role"?: Database["core"]['Enums']["member_role"],"tenant_id": string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"invited_by"?: string | null,"role"?: Database["core"]['Enums']["member_role"],"tenant_id"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "organization_members_organization_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"tenants": {
+                  Row: {
+                    "ai_enabled": boolean,"created_at": string,"deleted_at": string | null,"id": string,"is_demo": boolean,"name": string,"plan": string,"slug": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ai_enabled"?: boolean,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"is_demo"?: boolean,"name": string,"plan"?: string,"slug": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "ai_enabled"?: boolean,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"is_demo"?: boolean,"name"?: string,"plan"?: string,"slug"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                }
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "accept_invitation":
+{ Args: { "p_token": string }; Returns: string
+                           },
+"create_invitation":
+{ Args: { "p_email": string,"p_role"?: Database["core"]['Enums']["member_role"],"p_tenant": string }; Returns: string
+                           },
+"create_tenant":
+{ Args: { "p_name": string,"p_slug": string }; Returns: string
+                           },
+"get_invitation":
+{ Args: { "p_token": string }; Returns: {
+              "email": string,"expires_at": string,"role": Database["core"]['Enums']["member_role"],"status": string,"tenant_name": string
+            }[]
+                           },
+"has_tenant_role":
+{ Args: { "p_min": Database["core"]['Enums']["member_role"],"p_tenant": string }; Returns: boolean
+                           },
+"list_members":
+{ Args: { "p_tenant": string }; Returns: {
+              "created_at": string,"email": string,"is_self": boolean,"member_id": string,"role": Database["core"]['Enums']["member_role"],"user_id": string
+            }[]
+                           },
+"log_audit":
+{ Args: { "p_action": string,"p_metadata"?: Json,"p_target_id": string,"p_target_type": string,"p_tenant": string }; Returns: undefined
+                           }
+          }
+          Enums: {
+            "member_role": "viewer"|"member"|"admin"|"owner"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -938,7 +899,11 @@ export type CompositeTypes<
 export const Constants = {
   "analytics": {
           Enums: {
-            "match_operator": ["equals", "starts_with", "contains", "regex"],"member_role": ["viewer", "analyst", "admin", "owner"],"tracking_mode": ["cookieless", "consent_upgrade", "consent_required"],"traffic_channel": ["organic_search", "paid_search", "direct", "referral", "social", "email", "display", "unassigned"],"visitor_id_type": ["daily_hash", "consented_id"]
+            "match_operator": ["equals", "starts_with", "contains", "regex"],"tracking_mode": ["cookieless", "consent_upgrade", "consent_required"],"traffic_channel": ["organic_search", "paid_search", "direct", "referral", "social", "email", "display", "unassigned"],"visitor_id_type": ["daily_hash", "consented_id"]
+          }
+        },"core": {
+          Enums: {
+            "member_role": ["viewer", "member", "admin", "owner"]
           }
         },"public": {
           Enums: {
