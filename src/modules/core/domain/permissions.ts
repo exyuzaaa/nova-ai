@@ -33,6 +33,10 @@ export const PERMISSIONS = [
   "analytics.view",
   "analytics.edit",
   "analytics.manage",
+  "crm.view",
+  "crm.edit",
+  "crm.export",
+  "crm.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

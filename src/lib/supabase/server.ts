@@ -33,3 +33,6 @@ export const analyticsSchema = (client: Awaited<ReturnType<typeof createSupabase
 /** Gemeinsamer Kern: Unternehmen, Mitglieder, Einladungen, Audit-Log. */
 export const coreSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) =>
   client.schema("core");
+
+/** Modul CRM: Kunden, Ansprechpartner, Leads, Pipelines, Verkaufschancen, Aktivitäten. */
+export const crmSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) => client.schema("crm");

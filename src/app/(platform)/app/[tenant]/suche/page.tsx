@@ -16,6 +16,10 @@ const TYPE_LABELS: Record<string, string> = {
   team: "Teams",
   role: "Rollen",
   website: "Websites",
+  customer: "Kunden",
+  contact: "Ansprechpartner",
+  lead: "Leads",
+  opportunity: "Verkaufschancen",
 };
 
 async function Results({ params, searchParams }: Pick<PageProps<"/app/[tenant]/suche">, "params" | "searchParams">) {
@@ -68,7 +72,7 @@ async function Results({ params, searchParams }: Pick<PageProps<"/app/[tenant]/s
 export default function SearchPage({ params, searchParams }: PageProps<"/app/[tenant]/suche">) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-      <PageHeader title="Suche" description="Mitglieder, Abteilungen, Teams, Rollen und Websites – künftig auch Kunden, Projekte und mehr" />
+      <PageHeader title="Suche" description="Kunden, Ansprechpartner, Leads, Verkaufschancen, Mitglieder, Abteilungen, Teams und Websites" />
       <Suspense fallback={<Skeleton className="h-48 rounded-xl" role="status" aria-label="Suche läuft" />}>
         <Results params={params} searchParams={searchParams} />
       </Suspense>

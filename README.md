@@ -28,7 +28,9 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 1c | Plattform-Oberfläche `/app/[unternehmen]`: Navigation, Unternehmenswechsel, Übersicht, Verwaltung (Profil, Mitglieder, Rollen, Abteilungen/Teams, Module, Protokoll) | ✓ |
 | 1d-1 | Benachrichtigungen (Glocke, Eingang, Einstellungen) und globale Suche mit Rechteprüfung | ✓ |
 | 1d-2 | Zwei-Faktor-Anmeldung (TOTP), Geräteverwaltung, sofortiger Entzug beendeter Sitzungen, Sicherheitsheader | ✓ |
-| 2 | CRM, Projekte, Kalender, Personal | offen |
+| 2a-1/2 | CRM: Datenmodell (Kunden, Ansprechpartner, Leads, Pipelines, Verkaufschancen, Aktivitäten) und Kundenverwaltung | ✓ |
+| 2a-3/4 | CRM: Leads, Pipeline, Dashboard, CSV-Import/-Export | offen |
+| 2b–d | Projekte, Kalender, Personal | offen |
 
 ### Phase 3 im Überblick
 

@@ -13,6 +13,8 @@ export type Tenant = {
   role: MemberRole;
   /** Vom Betreiber gesperrte Unternehmen bleiben sichtbar, aber ohne Rechte (core.can). */
   suspended: boolean;
+  /** IANA-Zeitzone für Termine und Fälligkeiten. */
+  timezone: string;
 };
 
 export type Member = {
@@ -41,7 +43,7 @@ export const listMyTenants = cache(async (): Promise<Tenant[]> => {
   const db = coreSchema(await createSupabaseServerClient());
   const { data, error } = await db
     .from("tenant_members")
-    .select("role, tenants(id, name, slug, status)")
+    .select("role, tenants(id, name, slug, status, timezone)")
     .eq("user_id", user.id);
   if (error) throw error;
   return data
@@ -54,6 +56,7 @@ export const listMyTenants = cache(async (): Promise<Tenant[]> => {
               slug: row.tenants.slug,
               role: row.role,
               suspended: row.tenants.status !== "active",
+              timezone: row.tenants.timezone,
             },
           ]
         : [],

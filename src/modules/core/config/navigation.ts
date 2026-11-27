@@ -34,7 +34,7 @@ type ModuleNav = { label: string; icon: PlatformIcon; segment: string | null; pe
 
 /** segment = null: Modul hat noch keine Oberfläche und wird nicht verlinkt. */
 export const MODULE_NAVIGATION: Record<Exclude<ModuleKey, "core">, ModuleNav> = {
-  crm: { label: "CRM", icon: "crm", segment: null, permission: null },
+  crm: { label: "CRM", icon: "crm", segment: "crm", permission: "crm.view" },
   projects: { label: "Projekte", icon: "projects", segment: null, permission: null },
   calendar: { label: "Kalender", icon: "calendar", segment: null, permission: null },
   hr: { label: "Personal", icon: "hr", segment: null, permission: null },

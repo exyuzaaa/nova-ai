@@ -8,6 +8,10 @@ export const NOTIFICATION_KINDS = [
   { kind: "core.role.assigned", label: "Zusätzliche Rollen", description: "Dir wurde eine eigene Rolle zugewiesen." },
   { kind: "core.team.joined", label: "Teams", description: "Du wurdest einem Team hinzugefügt." },
   { kind: "core.module.changed", label: "Module", description: "Ein Modul wurde ein- oder ausgeschaltet (für Administratoren)." },
+  { kind: "crm.assigned", label: "CRM: Zuständigkeit", description: "Dir wurde ein Kunde, Lead oder eine Verkaufschance zugewiesen." },
+  { kind: "crm.task.assigned", label: "CRM: Aufgaben", description: "Dir wurde eine Aufgabe zugewiesen." },
+  { kind: "crm.task.due", label: "CRM: Fällige Aufgaben", description: "Eine deiner Aufgaben ist fällig." },
+  { kind: "crm.follow_up.due", label: "CRM: Wiedervorlagen", description: "Ein Lead steht zur Wiedervorlage an." },
 ] as const;
 
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number]["kind"];

@@ -118,6 +118,28 @@ Migration `20261127235000_core_session_security.sql`:
 - **Verschoben**: Dateiablage → Modul Dokumente (Phase 3), weil sie dort gebraucht wird und eine Virenprüfung braucht.
 - Tests: 280 Datenbank-, 145 Unit-, 47 Browsertests (inkl. echter TOTP-Codes im Browsertest).
 
+### Phase 2a-1/2 – CRM, umgesetzt am 27.11.2026
+
+Migration `20261128090000_crm.sql` (Schema `crm`):
+
+- **Tabellen**: Kunden (Firma/Privat, Status, Kategorie, Schlagwörter, Zuständigkeit, Archiv), Ansprechpartner (ein
+  Hauptansprechpartner je Kunde), Leads (Quelle, Status, Bewertung, Wert, Wiedervorlage), Pipelines und Phasen
+  (offen/gewonnen/verloren, Wahrscheinlichkeit), Verkaufschancen (Betrag, Abschlussdatum automatisch), Aktivitäten
+  (Notiz, Anruf, Termin, E-Mail, Aufgabe mit Fälligkeit und Zuständigkeit).
+- **Integrität**: alle Verweise über `(tenant_id, id)`; die Phase einer Verkaufschance muss zur Pipeline gehören.
+- **Nummernkreise** je Unternehmen (K-, L-, V-), vom System vergeben und unveränderlich.
+- **Rechte**: `crm.view` (Betrachter), `crm.edit` (Mitglied), `crm.export` (Mitglied, sensibel), `crm.manage` (Admin,
+  Löschen und Pipelines). Aktivitäten nur im eigenen Namen; löschen eigene oder mit `crm.manage`.
+- **Fachfunktionen**: Dublettenprüfung (`crm.find_duplicates`, ähnlicher Name per Trigramm oder gleiche E-Mail),
+  Lead-Umwandlung (`crm.convert_lead`: Kunde, Hauptansprechpartner, optional Verkaufschance, Aktivitäten wandern mit).
+- **Kern-Anbindung**: Suche (Kunden, Ansprechpartner, Leads, Chancen), Protokoll, Benachrichtigungen bei Zuständigkeit
+  und Aufgaben, Wiedervorlagen und fällige Aufgaben alle 15 Minuten (pg_cron), Standard-Pipeline beim Einschalten.
+- **Oberfläche** (`/app/[unternehmen]/crm`): Übersicht (Kennzahlen, nächste Aufgaben, neueste Kunden), Kundenliste
+  (Suche, Filter, Sortierung, Seiten, Archiv), Neuer Kunde mit Dublettenwarnung, Kundendetail (Stammdaten,
+  Ansprechpartner, Verlauf/Aufgaben, Verkaufschancen, Archivieren, Löschen).
+- **Zeitzonen**: Fälligkeiten werden in der Zeitzone des Unternehmens eingegeben und angezeigt (`core/domain/time-zone`).
+- Tests: 332 Datenbank-, 159 Unit-, 53 Browsertests.
+
 ---
 
 ## 0. Bestandsaufnahme

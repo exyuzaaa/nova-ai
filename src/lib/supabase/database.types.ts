@@ -1107,6 +1107,210 @@ isOneToOne: false
           CompositeTypes: {
             [_ in never]: never
           }
+        },"crm": {
+          Tables: {
+            "activities": {
+                  Row: {
+                    "assigned_member_id": string | null,"body": string | null,"contact_id": string | null,"created_at": string,"created_by": string | null,"customer_id": string | null,"done_at": string | null,"due_at": string | null,"id": string,"kind": string,"lead_id": string | null,"opportunity_id": string | null,"reminder_notified_at": string | null,"subject": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "assigned_member_id"?: string | null,"body"?: string | null,"contact_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"customer_id"?: string | null,"done_at"?: string | null,"due_at"?: string | null,"id"?: string,"kind"?: string,"lead_id"?: string | null,"opportunity_id"?: string | null,"reminder_notified_at"?: string | null,"subject": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "assigned_member_id"?: string | null,"body"?: string | null,"contact_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"customer_id"?: string | null,"done_at"?: string | null,"due_at"?: string | null,"id"?: string,"kind"?: string,"lead_id"?: string | null,"opportunity_id"?: string | null,"reminder_notified_at"?: string | null,"subject"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "activities_tenant_id_contact_id_fkey"
+      columns: ["tenant_id","contact_id"]
+isOneToOne: false
+      referencedRelation: "contacts"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "activities_tenant_id_customer_id_fkey"
+      columns: ["tenant_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "activities_tenant_id_lead_id_fkey"
+      columns: ["tenant_id","lead_id"]
+isOneToOne: false
+      referencedRelation: "leads"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "activities_tenant_id_opportunity_id_fkey"
+      columns: ["tenant_id","opportunity_id"]
+isOneToOne: false
+      referencedRelation: "opportunities"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"contacts": {
+                  Row: {
+                    "created_at": string,"customer_id": string,"email": string | null,"first_name": string | null,"id": string,"is_primary": boolean,"last_name": string | null,"notes": string | null,"phone": string | null,"position": string | null,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"customer_id": string,"email"?: string | null,"first_name"?: string | null,"id"?: string,"is_primary"?: boolean,"last_name"?: string | null,"notes"?: string | null,"phone"?: string | null,"position"?: string | null,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"customer_id"?: string,"email"?: string | null,"first_name"?: string | null,"id"?: string,"is_primary"?: boolean,"last_name"?: string | null,"notes"?: string | null,"phone"?: string | null,"position"?: string | null,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "contacts_tenant_id_customer_id_fkey"
+      columns: ["tenant_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"customers": {
+                  Row: {
+                    "archived_at": string | null,"category": string | null,"city": string | null,"country_code": string,"created_at": string,"created_by": string | null,"description": string | null,"email": string | null,"id": string,"kind": string,"name": string,"number": string,"owner_member_id": string | null,"phone": string | null,"postal_code": string | null,"status": string,"street": string | null,"tags": (string)[],"tenant_id": string,"updated_at": string,"vat_id": string | null,"website": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived_at"?: string | null,"category"?: string | null,"city"?: string | null,"country_code"?: string,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"email"?: string | null,"id"?: string,"kind"?: string,"name": string,"number"?: string,"owner_member_id"?: string | null,"phone"?: string | null,"postal_code"?: string | null,"status"?: string,"street"?: string | null,"tags"?: (string)[],"tenant_id": string,"updated_at"?: string,"vat_id"?: string | null,"website"?: string | null
+                  }
+                  Update: {
+                    "archived_at"?: string | null,"category"?: string | null,"city"?: string | null,"country_code"?: string,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"email"?: string | null,"id"?: string,"kind"?: string,"name"?: string,"number"?: string,"owner_member_id"?: string | null,"phone"?: string | null,"postal_code"?: string | null,"status"?: string,"street"?: string | null,"tags"?: (string)[],"tenant_id"?: string,"updated_at"?: string,"vat_id"?: string | null,"website"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"leads": {
+                  Row: {
+                    "company_name": string | null,"contact_name": string | null,"converted_at": string | null,"converted_customer_id": string | null,"created_at": string,"created_by": string | null,"email": string | null,"estimated_value": number | null,"follow_up_at": string | null,"follow_up_notified_at": string | null,"id": string,"notes": string | null,"number": string,"owner_member_id": string | null,"phone": string | null,"score": number,"source": string,"status": string,"tenant_id": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "company_name"?: string | null,"contact_name"?: string | null,"converted_at"?: string | null,"converted_customer_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"estimated_value"?: number | null,"follow_up_at"?: string | null,"follow_up_notified_at"?: string | null,"id"?: string,"notes"?: string | null,"number"?: string,"owner_member_id"?: string | null,"phone"?: string | null,"score"?: number,"source"?: string,"status"?: string,"tenant_id": string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "company_name"?: string | null,"contact_name"?: string | null,"converted_at"?: string | null,"converted_customer_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"estimated_value"?: number | null,"follow_up_at"?: string | null,"follow_up_notified_at"?: string | null,"id"?: string,"notes"?: string | null,"number"?: string,"owner_member_id"?: string | null,"phone"?: string | null,"score"?: number,"source"?: string,"status"?: string,"tenant_id"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "leads_tenant_id_converted_customer_id_fkey"
+      columns: ["tenant_id","converted_customer_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"number_sequences": {
+                  Row: {
+                    "kind": string,"next_value": number,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "kind": string,"next_value"?: number,"tenant_id": string
+                  }
+                  Update: {
+                    "kind"?: string,"next_value"?: number,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"opportunities": {
+                  Row: {
+                    "amount": number,"closed_at": string | null,"created_at": string,"created_by": string | null,"currency": string,"customer_id": string,"expected_close_date": string | null,"id": string,"lead_id": string | null,"lost_reason": string | null,"notes": string | null,"number": string,"owner_member_id": string | null,"pipeline_id": string,"probability": number | null,"stage_id": string,"tenant_id": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount"?: number,"closed_at"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_id": string,"expected_close_date"?: string | null,"id"?: string,"lead_id"?: string | null,"lost_reason"?: string | null,"notes"?: string | null,"number"?: string,"owner_member_id"?: string | null,"pipeline_id": string,"probability"?: number | null,"stage_id": string,"tenant_id": string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "amount"?: number,"closed_at"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_id"?: string,"expected_close_date"?: string | null,"id"?: string,"lead_id"?: string | null,"lost_reason"?: string | null,"notes"?: string | null,"number"?: string,"owner_member_id"?: string | null,"pipeline_id"?: string,"probability"?: number | null,"stage_id"?: string,"tenant_id"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "opportunities_tenant_id_customer_id_fkey"
+      columns: ["tenant_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "opportunities_tenant_id_lead_id_fkey"
+      columns: ["tenant_id","lead_id"]
+isOneToOne: false
+      referencedRelation: "leads"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "opportunities_tenant_id_pipeline_id_stage_id_fkey"
+      columns: ["tenant_id","pipeline_id","stage_id"]
+isOneToOne: false
+      referencedRelation: "pipeline_stages"
+      referencedColumns: ["tenant_id","pipeline_id","id"]
+    }
+                  ]
+                },"pipeline_stages": {
+                  Row: {
+                    "created_at": string,"id": string,"kind": string,"name": string,"pipeline_id": string,"position": number,"probability": number,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"kind"?: string,"name": string,"pipeline_id": string,"position"?: number,"probability"?: number,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"kind"?: string,"name"?: string,"pipeline_id"?: string,"position"?: number,"probability"?: number,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "pipeline_stages_tenant_id_pipeline_id_fkey"
+      columns: ["tenant_id","pipeline_id"]
+isOneToOne: false
+      referencedRelation: "pipelines"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"pipelines": {
+                  Row: {
+                    "created_at": string,"id": string,"is_default": boolean,"name": string,"position": number,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"is_default"?: boolean,"name": string,"position"?: number,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"is_default"?: boolean,"name"?: string,"position"?: number,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                }
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "convert_lead":
+{ Args: { "p_create_opportunity"?: boolean,"p_customer"?: string,"p_lead": string }; Returns: string
+                           },
+"ensure_default_pipeline":
+{ Args: { "p_tenant": string }; Returns: string
+                           },
+"find_duplicates":
+{ Args: { "p_email"?: string,"p_exclude"?: string,"p_name": string,"p_tenant": string }; Returns: {
+              "email": string,"id": string,"name": string,"number": string,"reason": string
+            }[]
+                           },
+"next_number":
+{ Args: { "p_kind": string,"p_prefix": string,"p_tenant": string }; Returns: string
+                           },
+"send_reminders":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           }
+          }
+          Enums: {
+            [_ in never]: never
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
         },"public": {
           Tables: {
             [_ in never]: never
@@ -1241,6 +1445,10 @@ export const Constants = {
         },"core": {
           Enums: {
             "member_role": ["viewer", "member", "admin", "owner"]
+          }
+        },"crm": {
+          Enums: {
+            
           }
         },"public": {
           Enums: {

@@ -75,7 +75,7 @@ describe("Plattform-Navigation", () => {
   const all = new Set(["core.members.read", "core.departments.read", "core.audit.read", "analytics.view"]);
 
   it("zeigt nur freigeschaltete Module mit Oberfläche", () => {
-    const groups = buildPlatformNavigation("firma", all, new Set(["analytics", "crm"]));
+    const groups = buildPlatformNavigation("firma", all, new Set(["analytics", "projects"]));
     const modules = groups.find((group) => group.label === "Module");
     expect(modules?.items.map((item) => item.id)).toEqual(["analytics"]);
     expect(modules?.items[0].href).toBe("/app/firma/analytics");
