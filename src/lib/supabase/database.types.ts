@@ -1490,6 +1490,164 @@ isOneToOne: false
           CompositeTypes: {
             [_ in never]: never
           }
+        },"finance": {
+          Tables: {
+            "articles": {
+                  Row: {
+                    "archived_at": string | null,"created_at": string,"description": string | null,"id": string,"name": string,"tax_rate": number,"tenant_id": string,"unit": string,"unit_price": number,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived_at"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"name": string,"tax_rate"?: number,"tenant_id": string,"unit"?: string,"unit_price"?: number,"updated_at"?: string
+                  }
+                  Update: {
+                    "archived_at"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"name"?: string,"tax_rate"?: number,"tenant_id"?: string,"unit"?: string,"unit_price"?: number,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"document_lines": {
+                  Row: {
+                    "article_id": string | null,"created_at": string,"description": string | null,"discount_percent": number,"document_id": string,"id": string,"line_net": number | null,"position": number,"quantity": number,"tax_rate": number,"tenant_id": string,"title": string,"unit": string,"unit_price": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "article_id"?: string | null,"created_at"?: string,"description"?: string | null,"discount_percent"?: number,"document_id": string,"id"?: string,"line_net"?: never,"position"?: number,"quantity"?: number,"tax_rate"?: number,"tenant_id": string,"title": string,"unit"?: string,"unit_price"?: number
+                  }
+                  Update: {
+                    "article_id"?: string | null,"created_at"?: string,"description"?: string | null,"discount_percent"?: number,"document_id"?: string,"id"?: string,"line_net"?: never,"position"?: number,"quantity"?: number,"tax_rate"?: number,"tenant_id"?: string,"title"?: string,"unit"?: string,"unit_price"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "document_lines_tenant_id_article_id_fkey"
+      columns: ["tenant_id","article_id"]
+isOneToOne: false
+      referencedRelation: "articles"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "document_lines_tenant_id_document_id_fkey"
+      columns: ["tenant_id","document_id"]
+isOneToOne: false
+      referencedRelation: "documents"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"documents": {
+                  Row: {
+                    "cancel_reason": string | null,"cancels_id": string | null,"closing_text": string | null,"created_at": string,"created_by": string | null,"currency": string,"customer_id": string | null,"due_date": string | null,"gross_total": number,"id": string,"intro_text": string | null,"issue_date": string | null,"issued_at": string | null,"issued_by": string | null,"kind": string,"net_total": number,"number": string | null,"paid_total": number,"project_id": string | null,"quote_id": string | null,"recipient_city": string | null,"recipient_country": string,"recipient_extra": string | null,"recipient_name": string | null,"recipient_postal": string | null,"recipient_street": string | null,"recipient_vat_id": string | null,"seller": Json | null,"service_date": string | null,"service_end_date": string | null,"small_business": boolean,"status": string,"tax_breakdown": NonNullable<Json>,"tax_total": number,"tenant_id": string,"title": string | null,"updated_at": string,"valid_until": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cancel_reason"?: string | null,"cancels_id"?: string | null,"closing_text"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_id"?: string | null,"due_date"?: string | null,"gross_total"?: number,"id"?: string,"intro_text"?: string | null,"issue_date"?: string | null,"issued_at"?: string | null,"issued_by"?: string | null,"kind": string,"net_total"?: number,"number"?: string | null,"paid_total"?: number,"project_id"?: string | null,"quote_id"?: string | null,"recipient_city"?: string | null,"recipient_country"?: string,"recipient_extra"?: string | null,"recipient_name"?: string | null,"recipient_postal"?: string | null,"recipient_street"?: string | null,"recipient_vat_id"?: string | null,"seller"?: Json | null,"service_date"?: string | null,"service_end_date"?: string | null,"small_business"?: boolean,"status"?: string,"tax_breakdown"?: NonNullable<Json>,"tax_total"?: number,"tenant_id": string,"title"?: string | null,"updated_at"?: string,"valid_until"?: string | null
+                  }
+                  Update: {
+                    "cancel_reason"?: string | null,"cancels_id"?: string | null,"closing_text"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_id"?: string | null,"due_date"?: string | null,"gross_total"?: number,"id"?: string,"intro_text"?: string | null,"issue_date"?: string | null,"issued_at"?: string | null,"issued_by"?: string | null,"kind"?: string,"net_total"?: number,"number"?: string | null,"paid_total"?: number,"project_id"?: string | null,"quote_id"?: string | null,"recipient_city"?: string | null,"recipient_country"?: string,"recipient_extra"?: string | null,"recipient_name"?: string | null,"recipient_postal"?: string | null,"recipient_street"?: string | null,"recipient_vat_id"?: string | null,"seller"?: Json | null,"service_date"?: string | null,"service_end_date"?: string | null,"small_business"?: boolean,"status"?: string,"tax_breakdown"?: NonNullable<Json>,"tax_total"?: number,"tenant_id"?: string,"title"?: string | null,"updated_at"?: string,"valid_until"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "documents_tenant_id_cancels_id_fkey"
+      columns: ["tenant_id","cancels_id"]
+isOneToOne: false
+      referencedRelation: "documents"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "documents_tenant_id_quote_id_fkey"
+      columns: ["tenant_id","quote_id"]
+isOneToOne: false
+      referencedRelation: "documents"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"number_sequences": {
+                  Row: {
+                    "kind": string,"next_value": number,"tenant_id": string,"year": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "kind": string,"next_value"?: number,"tenant_id": string,"year": number
+                  }
+                  Update: {
+                    "kind"?: string,"next_value"?: number,"tenant_id"?: string,"year"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"payments": {
+                  Row: {
+                    "amount": number,"created_at": string,"created_by": string | null,"document_id": string,"id": string,"method": string,"note": string | null,"paid_on": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount": number,"created_at"?: string,"created_by"?: string | null,"document_id": string,"id"?: string,"method"?: string,"note"?: string | null,"paid_on": string,"tenant_id": string
+                  }
+                  Update: {
+                    "amount"?: number,"created_at"?: string,"created_by"?: string | null,"document_id"?: string,"id"?: string,"method"?: string,"note"?: string | null,"paid_on"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payments_tenant_id_document_id_fkey"
+      columns: ["tenant_id","document_id"]
+isOneToOne: false
+      referencedRelation: "documents"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"settings": {
+                  Row: {
+                    "bank_name": string | null,"bic": string | null,"city": string | null,"country_code": string,"default_tax_rate": number,"email": string | null,"iban": string | null,"invoice_footer": string | null,"legal_name": string | null,"managing_directors": string | null,"payment_terms_days": number,"phone": string | null,"postal_code": string | null,"quote_valid_days": number,"register_info": string | null,"small_business": boolean,"street": string | null,"tax_number": string | null,"tenant_id": string,"updated_at": string,"vat_id": string | null,"website": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bank_name"?: string | null,"bic"?: string | null,"city"?: string | null,"country_code"?: string,"default_tax_rate"?: number,"email"?: string | null,"iban"?: string | null,"invoice_footer"?: string | null,"legal_name"?: string | null,"managing_directors"?: string | null,"payment_terms_days"?: number,"phone"?: string | null,"postal_code"?: string | null,"quote_valid_days"?: number,"register_info"?: string | null,"small_business"?: boolean,"street"?: string | null,"tax_number"?: string | null,"tenant_id": string,"updated_at"?: string,"vat_id"?: string | null,"website"?: string | null
+                  }
+                  Update: {
+                    "bank_name"?: string | null,"bic"?: string | null,"city"?: string | null,"country_code"?: string,"default_tax_rate"?: number,"email"?: string | null,"iban"?: string | null,"invoice_footer"?: string | null,"legal_name"?: string | null,"managing_directors"?: string | null,"payment_terms_days"?: number,"phone"?: string | null,"postal_code"?: string | null,"quote_valid_days"?: number,"register_info"?: string | null,"small_business"?: boolean,"street"?: string | null,"tax_number"?: string | null,"tenant_id"?: string,"updated_at"?: string,"vat_id"?: string | null,"website"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                }
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "cancel_invoice":
+{ Args: { "p_invoice": string,"p_reason": string }; Returns: string
+                           },
+"delete_payment":
+{ Args: { "p_payment": string }; Returns: undefined
+                           },
+"issue_document":
+{ Args: { "p_document": string,"p_issue_date"?: string }; Returns: string
+                           },
+"next_number":
+{ Args: { "p_kind": string,"p_tenant": string,"p_year": number }; Returns: string
+                           },
+"overview":
+{ Args: { "p_month_start": string,"p_tenant": string }; Returns: {
+              "issued_month": number,"open_count": number,"open_total": number,"overdue_count": number,"overdue_total": number,"paid_month": number,"quotes_open": number,"quotes_open_total": number
+            }[]
+                           },
+"quote_to_invoice":
+{ Args: { "p_quote": string }; Returns: string
+                           },
+"recalc":
+{ Args: { "p_document": string }; Returns: undefined
+                           },
+"record_payment":
+{ Args: { "p_amount": number,"p_document": string,"p_method"?: string,"p_note"?: string,"p_paid_on": string }; Returns: string
+                           },
+"sync_payment_status":
+{ Args: { "p_document": string }; Returns: undefined
+                           }
+          }
+          Enums: {
+            [_ in never]: never
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
         },"hr": {
           Tables: {
             "absence_types": {
@@ -2104,6 +2262,10 @@ export const Constants = {
             "member_role": ["viewer", "member", "admin", "owner"]
           }
         },"crm": {
+          Enums: {
+            
+          }
+        },"finance": {
           Enums: {
             
           }

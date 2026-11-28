@@ -267,6 +267,39 @@ Migration `20261128090000_crm.sql` (Schema `crm`):
 
 ---
 
+### Phase 3a – Finanzen, umgesetzt am 28.11.2026
+
+- **Datenbank** (Schema `finance`, Migration `20261128230000_finance.sql`, live in zwei Teilen, Prüfsumme live = lokal):
+  Rechnungsdaten des Unternehmens (Firma, Anschrift, Steuernummer/USt-IdNr., Register, Geschäftsführung, Bank mit
+  IBAN-Prüfung, Zahlungsziel, Angebotsgültigkeit, Standard-Steuersatz, Kleinunternehmer § 19 UStG, Fußtext),
+  Artikel/Leistungen, Belege (Angebot, Rechnung, Gutschrift), Positionen, Zahlungen, Nummernkreise.
+- **Rechte**: `finance.view` (ansehen), `finance.edit` (Angebote und Entwürfe bearbeiten, Artikel), `finance.issue`
+  (Rechnungen ausstellen, stornieren, Zahlungen erfassen; sensibel, standardmäßig Admin), `finance.manage`
+  (Rechnungsdaten).
+- **Regeln (GoBD, § 14 UStG)**: Belege starten als Entwurf ohne Nummer. Beim Ausstellen prüft die Datenbank die
+  Pflichtangaben (Firmendaten, Empfängeranschrift, mindestens eine Position), vergibt die lückenlose Nummer je Art und
+  Jahr (AN-/RE-/GS-2026-0001) und friert Absender, Empfänger, Positionen und Beträge ein. Änderungen oder Löschen
+  ausgestellter Belege lehnt die Datenbank ab (auch über die API). Korrektur nur per Storno: Gutschrift mit negativen
+  Positionen und Verweis auf das Original, Pflichtgrund.
+- **Rechnen**: Position netto = Menge × Preis − Rabatt (kaufmännisch gerundet), Umsatzsteuer je Steuersatz auf die
+  Netto-Summe; Kleinunternehmer ohne Umsatzsteuer mit gesetzlichem Hinweis. Zahlungen (auch Teilzahlungen) setzen den
+  Status „Teilweise bezahlt“/„Bezahlt“; überfällig ergibt sich aus dem Fälligkeitsdatum.
+- **Angebote**: Ausstellen → „Versendet“, annehmen/ablehnen, in Rechnungsentwurf übernehmen (Positionen werden kopiert).
+- **PDF** (DIN A4, ohne externen Dienst, `pdf-lib`): Briefkopf, Anschriftfeld, Infoblock, Positionstabelle mit
+  Seitenumbruch, Steuer je Satz, Zahlungshinweis mit IBAN, Fußzeile mit Firmendaten, Wasserzeichen „ENTWURF“.
+- **Protokoll** (Anlegen, Statuswechsel, Löschen von Entwürfen, Zahlungen, Rechnungsdaten) und **Suche** (ausgestellte
+  Belege nach Nummer, Empfänger, Betreff).
+- **Oberfläche** (`/finanzen`): Übersicht (offen, überfällig, Zahlungseingang, offene Angebote, Entwürfe), Listen für
+  Rechnungen/Angebote/Gutschriften mit Suche und Statusfilter, Beleg mit Kopfdaten, Positionen (aus Artikel oder frei,
+  Reihenfolge), Ausstellen, Zahlungen, Storno, PDF; Artikel; Einstellungen. Im CRM zeigt jeder Kunde seine Belege mit
+  „Neues Angebot“/„Neue Rechnung“.
+- **Noch nicht enthalten**: E-Mail-Versand der Belege (braucht einen E-Mail-Anbieter), E-Rechnung (XRechnung/ZUGFeRD,
+  im B2B-Bereich in Deutschland schrittweise Pflicht), Mahnwesen, DATEV-Export, Fremdwährungen. Die steuerliche
+  Richtigkeit der Einstellungen verantwortet das Unternehmen bzw. seine Steuerberatung.
+- Tests: 574 Datenbank-, 205 Unit-, 103 Browsertests.
+
+---
+
 ## 0. Bestandsaufnahme
 
 | Bereich | Bestand | Bewertung |

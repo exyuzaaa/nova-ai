@@ -49,6 +49,10 @@ export const PERMISSIONS = [
   "hr.absences.request",
   "hr.manage",
   "hr.sensitive",
+  "finance.view",
+  "finance.edit",
+  "finance.issue",
+  "finance.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

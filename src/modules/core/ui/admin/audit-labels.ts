@@ -68,6 +68,25 @@ const LABELS: Record<string, (meta: Record<string, unknown>) => string> = {
   "projects.tasks.delete": (m) => `Aufgabe „${text(m.name)}“ gelöscht`,
   "projects.time_entries.update": (m) => `Zeiteintrag einer anderen Person korrigiert${m.minutes ? ` (${text(m.minutes)} Min.)` : ""}`,
   "projects.time_entries.delete": () => "Zeiteintrag einer anderen Person gelöscht",
+  "finance.documents.insert": (m) => `${m.kind === "quote" ? "Angebotsentwurf" : m.kind === "credit_note" ? "Gutschrift" : "Rechnungsentwurf"} angelegt`,
+  "finance.documents.delete": (m) => `${m.kind === "quote" ? "Angebotsentwurf" : "Rechnungsentwurf"} gelöscht`,
+  "finance.documents.status": (m) => {
+    const what = m.kind === "quote" ? "Angebot" : m.kind === "credit_note" ? "Gutschrift" : "Rechnung";
+    const status: Record<string, string> = {
+      sent: "versendet",
+      accepted: "angenommen",
+      rejected: "abgelehnt",
+      issued: "ausgestellt",
+      partially_paid: "teilweise bezahlt",
+      paid: "bezahlt",
+      cancelled: "storniert",
+    };
+    return `${what} ${text(m.number)} ${status[text(m.status)] ?? text(m.status)}`;
+  },
+  "finance.payments.insert": (m) => `Zahlung zu ${text(m.number)} erfasst (${text(m.amount)} €)`,
+  "finance.payments.delete": (m) => `Zahlung zu ${text(m.number)} gelöscht`,
+  "finance.settings.insert": () => "Rechnungsdaten des Unternehmens erfasst",
+  "finance.settings.update": () => "Rechnungsdaten des Unternehmens geändert",
   "hr.employees.insert": (m) => `Mitarbeiter ${text(m.number)} „${text(m.name)}“ angelegt`,
   "hr.employees.update": (m) => `Mitarbeiter ${text(m.number)} „${text(m.name)}“ geändert`,
   "hr.employees.delete": (m) => `Mitarbeiter ${text(m.number)} „${text(m.name)}“ gelöscht`,

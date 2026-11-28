@@ -40,10 +40,10 @@ insert into analytics.websites (id, organization_id, name, domain, public_site_i
 -- Module ------------------------------------------------------------------------
 select is((select enabled from core.tenant_modules where tenant_id = '11111111-0000-4000-8000-00000000000a' and module_key = 'analytics'),
   true, 'Neue Unternehmen erhalten Analytics automatisch');
-select is((select count(*)::int from core.tenant_modules where tenant_id = '11111111-0000-4000-8000-00000000000a' and module_key = 'finance'),
+select is((select count(*)::int from core.tenant_modules where tenant_id = '11111111-0000-4000-8000-00000000000a' and module_key = 'documents'),
   0, 'Geplante Module werden nicht automatisch freigeschaltet');
 select ok(core.module_enabled('11111111-0000-4000-8000-00000000000a', 'core'), 'Kern ist immer freigeschaltet');
-select ok(not core.module_enabled('11111111-0000-4000-8000-00000000000a', 'finance'), 'Finanzen sind (noch) nicht freigeschaltet');
+select ok(not core.module_enabled('11111111-0000-4000-8000-00000000000a', 'documents'), 'Dokumente sind (noch) nicht freigeschaltet');
 
 -- Basisrollen -------------------------------------------------------------------
 select pg_temp.login('c0000000-0000-0000-0000-00000000000c');
@@ -116,7 +116,7 @@ select pg_temp.login('b0000000-0000-0000-0000-00000000000b');
 select is((select count(*)::int from core.roles), 0, 'B sieht keine Rollen von A');
 select is((select count(*)::int from core.departments), 0, 'B sieht keine Abteilungen von A');
 select is((select count(*)::int from core.teams), 0, 'B sieht keine Teams von A');
-select is((select count(*)::int from core.tenant_modules), 5, 'B sieht nur die eigenen Module (Analytics, CRM, Projekte, Kalender, Personal)');
+select is((select count(*)::int from core.tenant_modules), 6, 'B sieht nur die eigenen Module (Analytics, CRM, Projekte, Kalender, Personal, Finanzen)');
 select throws_ok($$insert into core.departments (tenant_id, name) values ('11111111-0000-4000-8000-00000000000a', 'Eingeschleust')$$,
   '42501', null, 'B kann keine Abteilung in A anlegen');
 select throws_ok($$insert into core.member_roles (tenant_id, member_id, role_id) values
@@ -134,7 +134,7 @@ select pg_temp.login('c0000000-0000-0000-0000-00000000000c');
 select throws_ok($$select core.set_module_enabled('11111111-0000-4000-8000-00000000000a', 'analytics', false)$$,
   '42501', null, 'Viewer schaltet keine Module');
 select pg_temp.login('e0000000-0000-0000-0000-00000000000e');
-select throws_ok($$select core.set_module_enabled('11111111-0000-4000-8000-00000000000a', 'finance', true)$$,
+select throws_ok($$select core.set_module_enabled('11111111-0000-4000-8000-00000000000a', 'documents', true)$$,
   '22023', null, 'Geplante Module sind nicht aktivierbar');
 select throws_ok($$select core.set_module_enabled('11111111-0000-4000-8000-00000000000a', 'core', false)$$,
   '22023', null, 'Der Kern ist nicht abschaltbar');

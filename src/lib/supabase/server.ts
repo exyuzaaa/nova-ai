@@ -37,6 +37,9 @@ export const coreSchema = (client: Awaited<ReturnType<typeof createSupabaseServe
 /** Modul CRM: Kunden, Ansprechpartner, Leads, Pipelines, Verkaufschancen, Aktivitäten. */
 export const crmSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) => client.schema("crm");
 
+/** Zugriff auf das Schema finance (RLS: finance.view/edit; Ausstellen nur über geprüfte Funktionen). */
+export const financeSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) => client.schema("finance");
+
 /** Zugriff auf das Schema hr (RLS: Verzeichnis mit hr.view, vertrauliche Daten mit hr.sensitive). */
 export const hrSchema = (client: Awaited<ReturnType<typeof createSupabaseServerClient>>) => client.schema("hr");
 

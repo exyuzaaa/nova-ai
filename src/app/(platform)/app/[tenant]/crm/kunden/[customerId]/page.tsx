@@ -19,6 +19,8 @@ import {
   listCustomerOpportunities,
 } from "@/modules/crm/server/customers";
 import { listPipelines } from "@/modules/crm/server/opportunities";
+import { KIND_LABELS, formatEuro } from "@/modules/finance/domain/finance";
+import { listDocuments } from "@/modules/finance/server/finance";
 import { ActivityFeed } from "@/modules/crm/ui/activity-feed";
 import { OpportunityForm } from "@/modules/crm/ui/opportunity-forms";
 import { CustomerForm } from "@/modules/crm/ui/customer-form";
@@ -39,12 +41,14 @@ async function CustomerDetail({ params }: Pick<PageProps<"/app/[tenant]/crm/kund
   const customer = await getCustomer(tenant.id, customerId);
   if (!customer) notFound();
 
-  const [contacts, activities, opportunities, members, pipelines] = await Promise.all([
+  const canFinance = permissions.has("finance.view");
+  const [contacts, activities, opportunities, members, pipelines, documents] = await Promise.all([
     listContacts(tenant.id, customer.id),
     listActivities(tenant.id, { customerId: customer.id }),
     listCustomerOpportunities(tenant.id, customer.id),
     listMembers(tenant.id),
     listPipelines(tenant.id),
+    canFinance ? listDocuments(tenant.id, { customerId }) : Promise.resolve([]),
   ]);
   const defaultPipeline = pipelines.find((pipeline) => pipeline.isDefault) ?? pipelines[0];
   const firstOpenStage = defaultPipeline?.stages.find((stage) => stage.kind === "open");
@@ -250,6 +254,35 @@ async function CustomerDetail({ params }: Pick<PageProps<"/app/[tenant]/crm/kund
               </details>
             )}
           </Section>
+
+          {canFinance && (
+            <Section title="Angebote und Rechnungen">
+              {documents.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Noch keine Belege.</p>
+              ) : (
+                <ul className="flex flex-col divide-y">
+                  {documents.slice(0, 10).map((document) => (
+                    <li key={document.id} className="flex items-baseline justify-between gap-3 py-2 text-sm">
+                      <Link href={`${base}/finanzen/belege/${document.id}`} className="min-w-0 font-medium hover:underline">
+                        {KIND_LABELS[document.kind]} {document.number ?? "(Entwurf)"}
+                      </Link>
+                      <span className="shrink-0 tabular-nums">{formatEuro(document.grossTotal)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {permissions.has("finance.edit") && !customer.archivedAt && (
+                <p className="flex gap-3 text-sm">
+                  <Link href={`${base}/finanzen/neu?art=angebot&kunde=${customer.id}`} className="font-medium hover:underline">
+                    Neues Angebot
+                  </Link>
+                  <Link href={`${base}/finanzen/neu?art=rechnung&kunde=${customer.id}`} className="font-medium hover:underline">
+                    Neue Rechnung
+                  </Link>
+                </p>
+              )}
+            </Section>
+          )}
 
           <p className="text-xs text-muted-foreground">
             Angelegt am{" "}
