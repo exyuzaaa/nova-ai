@@ -1490,6 +1490,203 @@ isOneToOne: false
           CompositeTypes: {
             [_ in never]: never
           }
+        },"hr": {
+          Tables: {
+            "absence_types": {
+                  Row: {
+                    "archived_at": string | null,"color": string,"created_at": string,"deducts_vacation": boolean,"id": string,"is_sick": boolean,"name": string,"position": number,"requires_approval": boolean,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived_at"?: string | null,"color"?: string,"created_at"?: string,"deducts_vacation"?: boolean,"id"?: string,"is_sick"?: boolean,"name": string,"position"?: number,"requires_approval"?: boolean,"tenant_id": string
+                  }
+                  Update: {
+                    "archived_at"?: string | null,"color"?: string,"created_at"?: string,"deducts_vacation"?: boolean,"id"?: string,"is_sick"?: boolean,"name"?: string,"position"?: number,"requires_approval"?: boolean,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"absences": {
+                  Row: {
+                    "created_at": string,"days": number,"decided_at": string | null,"decided_by": string | null,"decision_note": string | null,"employee_id": string,"end_date": string,"half_day_end": boolean,"half_day_start": boolean,"id": string,"note": string | null,"requested_by": string | null,"start_date": string,"status": string,"tenant_id": string,"type_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"days"?: number,"decided_at"?: string | null,"decided_by"?: string | null,"decision_note"?: string | null,"employee_id": string,"end_date": string,"half_day_end"?: boolean,"half_day_start"?: boolean,"id"?: string,"note"?: string | null,"requested_by"?: string | null,"start_date": string,"status"?: string,"tenant_id": string,"type_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"days"?: number,"decided_at"?: string | null,"decided_by"?: string | null,"decision_note"?: string | null,"employee_id"?: string,"end_date"?: string,"half_day_end"?: boolean,"half_day_start"?: boolean,"id"?: string,"note"?: string | null,"requested_by"?: string | null,"start_date"?: string,"status"?: string,"tenant_id"?: string,"type_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "absences_tenant_id_employee_id_fkey"
+      columns: ["tenant_id","employee_id"]
+isOneToOne: false
+      referencedRelation: "employees"
+      referencedColumns: ["tenant_id","id"]
+    },{
+      foreignKeyName: "absences_tenant_id_type_id_fkey"
+      columns: ["tenant_id","type_id"]
+isOneToOne: false
+      referencedRelation: "absence_types"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"counters": {
+                  Row: {
+                    "next_value": number,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "next_value"?: number,"tenant_id": string
+                  }
+                  Update: {
+                    "next_value"?: number,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"employee_private": {
+                  Row: {
+                    "bic": string | null,"birth_date": string | null,"city": string | null,"country_code": string | null,"emergency_contact": string | null,"employee_id": string,"health_insurance": string | null,"iban": string | null,"notes": string | null,"postal_code": string | null,"private_email": string | null,"private_phone": string | null,"salary_amount": number | null,"salary_period": string | null,"social_security_no": string | null,"street": string | null,"tax_id": string | null,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bic"?: string | null,"birth_date"?: string | null,"city"?: string | null,"country_code"?: string | null,"emergency_contact"?: string | null,"employee_id": string,"health_insurance"?: string | null,"iban"?: string | null,"notes"?: string | null,"postal_code"?: string | null,"private_email"?: string | null,"private_phone"?: string | null,"salary_amount"?: number | null,"salary_period"?: string | null,"social_security_no"?: string | null,"street"?: string | null,"tax_id"?: string | null,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "bic"?: string | null,"birth_date"?: string | null,"city"?: string | null,"country_code"?: string | null,"emergency_contact"?: string | null,"employee_id"?: string,"health_insurance"?: string | null,"iban"?: string | null,"notes"?: string | null,"postal_code"?: string | null,"private_email"?: string | null,"private_phone"?: string | null,"salary_amount"?: number | null,"salary_period"?: string | null,"social_security_no"?: string | null,"street"?: string | null,"tax_id"?: string | null,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "employee_private_tenant_id_employee_id_fkey"
+      columns: ["tenant_id","employee_id"]
+isOneToOne: false
+      referencedRelation: "employees"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"employees": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"department_id": string | null,"employment_type": string,"entry_date": string | null,"exit_date": string | null,"first_name": string,"id": string,"last_name": string,"manager_employee_id": string | null,"member_id": string | null,"personnel_number": string,"position": string | null,"tenant_id": string,"updated_at": string,"vacation_days": number,"weekly_hours": number | null,"work_days": (number)[],"work_email": string | null,"work_phone": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"department_id"?: string | null,"employment_type"?: string,"entry_date"?: string | null,"exit_date"?: string | null,"first_name": string,"id"?: string,"last_name": string,"manager_employee_id"?: string | null,"member_id"?: string | null,"personnel_number"?: string,"position"?: string | null,"tenant_id": string,"updated_at"?: string,"vacation_days"?: number,"weekly_hours"?: number | null,"work_days"?: (number)[],"work_email"?: string | null,"work_phone"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"department_id"?: string | null,"employment_type"?: string,"entry_date"?: string | null,"exit_date"?: string | null,"first_name"?: string,"id"?: string,"last_name"?: string,"manager_employee_id"?: string | null,"member_id"?: string | null,"personnel_number"?: string,"position"?: string | null,"tenant_id"?: string,"updated_at"?: string,"vacation_days"?: number,"weekly_hours"?: number | null,"work_days"?: (number)[],"work_email"?: string | null,"work_phone"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "employees_tenant_id_manager_employee_id_fkey"
+      columns: ["tenant_id","manager_employee_id"]
+isOneToOne: false
+      referencedRelation: "employees"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"onboarding_tasks": {
+                  Row: {
+                    "assignee_member_id": string | null,"created_at": string,"done_at": string | null,"due_date": string | null,"employee_id": string,"id": string,"position": number,"tenant_id": string,"title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "assignee_member_id"?: string | null,"created_at"?: string,"done_at"?: string | null,"due_date"?: string | null,"employee_id": string,"id"?: string,"position"?: number,"tenant_id": string,"title": string
+                  }
+                  Update: {
+                    "assignee_member_id"?: string | null,"created_at"?: string,"done_at"?: string | null,"due_date"?: string | null,"employee_id"?: string,"id"?: string,"position"?: number,"tenant_id"?: string,"title"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "onboarding_tasks_tenant_id_employee_id_fkey"
+      columns: ["tenant_id","employee_id"]
+isOneToOne: false
+      referencedRelation: "employees"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"public_holidays": {
+                  Row: {
+                    "date": string,"name": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "date": string,"name": string,"tenant_id": string
+                  }
+                  Update: {
+                    "date"?: string,"name"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"vacation_adjustments": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"days": number,"employee_id": string,"id": string,"reason": string,"tenant_id": string,"year": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"days": number,"employee_id": string,"id"?: string,"reason": string,"tenant_id": string,"year": number
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"days"?: number,"employee_id"?: string,"id"?: string,"reason"?: string,"tenant_id"?: string,"year"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "vacation_adjustments_tenant_id_employee_id_fkey"
+      columns: ["tenant_id","employee_id"]
+isOneToOne: false
+      referencedRelation: "employees"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                }
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "absence_overview":
+{ Args: { "p_from": string,"p_tenant": string,"p_to": string }; Returns: {
+              "absence_id": string,"color": string,"days": number,"details_visible": boolean,"employee_id": string,"employee_name": string,"end_date": string,"label": string,"start_date": string,"status": string
+            }[]
+                           },
+"can_see_absence_details":
+{ Args: { "p_employee": string }; Returns: boolean
+                           },
+"cancel_absence":
+{ Args: { "p_absence": string }; Returns: undefined
+                           },
+"count_days":
+{ Args: { "p_employee": string,"p_end": string,"p_half_end": boolean,"p_half_start": boolean,"p_start": string }; Returns: number
+                           },
+"decide_absence":
+{ Args: { "p_absence": string,"p_approve": boolean,"p_note"?: string }; Returns: undefined
+                           },
+"is_manager_of":
+{ Args: { "p_employee": string }; Returns: boolean
+                           },
+"my_employee_id":
+{ Args: { "p_tenant": string }; Returns: string
+                           },
+"request_absence":
+{ Args: { "p_employee": string,"p_end": string,"p_half_end"?: boolean,"p_half_start"?: boolean,"p_note"?: string,"p_start": string,"p_type": string }; Returns: string
+                           },
+"setup_tenant":
+{ Args: { "p_tenant": string }; Returns: undefined
+                           },
+"vacation_balance":
+{ Args: { "p_employee": string,"p_year": number }; Returns: {
+              "adjustments": number,"entitlement": number,"planned": number,"remaining": number,"taken": number
+            }[]
+                           }
+          }
+          Enums: {
+            [_ in never]: never
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
         },"projects": {
           Tables: {
             "checklist_items": {
@@ -1907,6 +2104,10 @@ export const Constants = {
             "member_role": ["viewer", "member", "admin", "owner"]
           }
         },"crm": {
+          Enums: {
+            
+          }
+        },"hr": {
           Enums: {
             
           }

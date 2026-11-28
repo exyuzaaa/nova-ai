@@ -34,7 +34,7 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 2b-1/2 | Projekte: Projekte, Team, Sichtbarkeit, Aufgaben mit Unteraufgaben, Checklisten, Abhängigkeiten, Kommentare, Board, Meilensteine, Status | ✓ |
 | 2b-3 | Projekte: Zeiterfassung (Stoppuhr, Nachtragen, Wochen- und Monatsauswertung, Budget), Zeitleiste, Vorlagen | ✓ |
 | 2c | Kalender: persönlich/Team/Unternehmen, Wiederholungen, Einladungen mit Zusage, Frei/Belegt, Erinnerungen, iCal-Abo und .ics, fällige Aufgaben | ✓ |
-| 2d | Personal | offen |
+| 2d | Personal: Mitarbeiterverzeichnis, Vorgesetzte, vertrauliche Daten (eigenes Recht), Urlaub/Abwesenheiten mit Genehmigung, Resturlaub, Feiertage, Onboarding | ✓ |
 
 ### Phase 3 im Überblick
 

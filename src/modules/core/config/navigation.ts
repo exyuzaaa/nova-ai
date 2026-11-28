@@ -37,7 +37,7 @@ export const MODULE_NAVIGATION: Record<Exclude<ModuleKey, "core">, ModuleNav> = 
   crm: { label: "CRM", icon: "crm", segment: "crm", permission: "crm.view" },
   projects: { label: "Projekte", icon: "projects", segment: "projekte", permission: "projects.view" },
   calendar: { label: "Kalender", icon: "calendar", segment: "kalender", permission: "calendar.view" },
-  hr: { label: "Personal", icon: "hr", segment: null, permission: null },
+  hr: { label: "Personal", icon: "hr", segment: "personal", permission: "hr.view" },
   finance: { label: "Finanzen", icon: "finance", segment: null, permission: null },
   documents: { label: "Dokumente", icon: "documents", segment: null, permission: null },
   messaging: { label: "Kommunikation", icon: "messaging", segment: null, permission: null },

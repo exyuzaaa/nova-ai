@@ -242,6 +242,31 @@ Migration `20261128090000_crm.sql` (Schema `crm`):
 
 ---
 
+### Phase 2d – Personal, umgesetzt am 28.11.2026
+
+- **Datenbank** (Schema `hr`, Migration `20261128210000_hr.sql`, live in zwei Teilen, Prüfsumme live = lokal):
+  Mitarbeiter (MA-00001, Position, Abteilung aus dem Kern, Vorgesetzte ohne Kreise, optional verknüpft mit einem
+  NOVA-Zugang, Beschäftigungsart, Ein-/Austritt, Wochenstunden, Arbeitstage, Urlaubsanspruch), vertrauliche Daten in
+  eigener Tabelle (Geburtsdatum, private Kontakte, Anschrift, IBAN mit Prüfziffer, BIC, Steuer-ID, SV-Nummer,
+  Krankenkasse, Vergütung, Notfallkontakt), Abwesenheitsarten (Urlaub, Krankheit, Sonderurlaub, Fortbildung,
+  Überstundenabbau; eigene Arten), Feiertage, Urlaubskorrekturen, Abwesenheiten, Onboarding-Aufgaben.
+- **Rechte**: `hr.view` (Verzeichnis, Übersicht ohne Gründe), `hr.absences.request` (eigene Anträge),
+  `hr.manage` (Personalverwaltung), `hr.sensitive` (vertrauliche Daten; standardmäßig nur Owner, per Rolle vergebbar).
+- **Abwesenheiten**: Antrag durch die Person oder die Personalverwaltung; Arbeitstage werden nach Arbeitszeitmodell
+  und Feiertagen gezählt (halbe Tage möglich); keine Überschneidungen; Genehmigung durch die direkte Führungskraft
+  oder `hr.manage` (nicht für sich selbst ohne `hr.manage`); Arten ohne Genehmigung (Krankheit) gelten sofort;
+  Zurückziehen vor Beginn durch die Person, danach durch Führungskraft/Personalverwaltung; Benachrichtigungen an
+  Führungskraft bzw. Admins und an die Person. Krankheit ist Gesundheitsdatum: andere sehen nur „Abwesend“.
+- **Urlaubskonto**: Anspruch (anteilig im Ein-/Austrittsjahr), Korrekturen, genommen, beantragt, Resturlaub.
+- **Protokoll** ohne vertrauliche Inhalte (nur „Vertrauliche Daten von MA-… geändert“); Verzeichnis in der Suche.
+- **Oberfläche** (`/personal`): Verzeichnis mit Suche/Abteilung/Ehemalige, Mitarbeiter anlegen, Profil mit
+  Urlaubskonto, Abwesenheiten, direkten Mitarbeitenden, Onboarding, Stammdaten und vertraulichen Daten;
+  Abwesenheiten (Mein Urlaub, Antrag, Meine Anträge, Zu entscheiden, Wer fehlt in 8 Wochen); Einstellungen
+  (Abwesenheitsarten, Feiertage).
+- Tests: 535 Datenbank-, 198 Unit-, 96 Browsertests.
+
+---
+
 ## 0. Bestandsaufnahme
 
 | Bereich | Bestand | Bewertung |

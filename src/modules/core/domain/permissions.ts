@@ -45,6 +45,10 @@ export const PERMISSIONS = [
   "calendar.view",
   "calendar.edit",
   "calendar.manage",
+  "hr.view",
+  "hr.absences.request",
+  "hr.manage",
+  "hr.sensitive",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

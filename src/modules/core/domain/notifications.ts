@@ -15,6 +15,8 @@ export const NOTIFICATION_KINDS = [
   { kind: "projects.task.assigned", label: "Projekte: Aufgaben", description: "Dir wurde eine Projektaufgabe zugewiesen." },
   { kind: "projects.task.due", label: "Projekte: Fällige Aufgaben", description: "Eine deiner Projektaufgaben ist fällig." },
   { kind: "projects.task.commented", label: "Projekte: Kommentare", description: "Neuer Kommentar zu einer deiner Aufgaben." },
+  { kind: "hr.absence.requested", label: "Personal: Anträge", description: "Jemand aus deinem Team hat Urlaub oder eine Abwesenheit beantragt." },
+  { kind: "hr.absence.decided", label: "Personal: Entscheidungen", description: "Dein Antrag wurde genehmigt oder abgelehnt." },
   { kind: "calendar.invited", label: "Kalender: Einladungen", description: "Du wurdest zu einem Termin eingeladen." },
   { kind: "calendar.updated", label: "Kalender: Änderungen", description: "Ein Termin, zu dem du eingeladen bist, wurde verschoben." },
   { kind: "calendar.response", label: "Kalender: Antworten", description: "Jemand hat auf deine Einladung geantwortet." },
