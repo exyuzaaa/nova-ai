@@ -68,6 +68,10 @@ const LABELS: Record<string, (meta: Record<string, unknown>) => string> = {
   "projects.tasks.delete": (m) => `Aufgabe „${text(m.name)}“ gelöscht`,
   "projects.time_entries.update": (m) => `Zeiteintrag einer anderen Person korrigiert${m.minutes ? ` (${text(m.minutes)} Min.)` : ""}`,
   "projects.time_entries.delete": () => "Zeiteintrag einer anderen Person gelöscht",
+  "calendar.events.insert": (m) => `${m.calendar === "company" ? "Unternehmenstermin" : "Teamtermin"} „${text(m.name)}“ angelegt`,
+  "calendar.events.update": (m) => `${m.calendar === "company" ? "Unternehmenstermin" : "Teamtermin"} „${text(m.name)}“ geändert`,
+  "calendar.events.delete": (m) => `${m.calendar === "company" ? "Unternehmenstermin" : "Teamtermin"} „${text(m.name)}“ gelöscht`,
+  "calendar.feed.created": () => "Kalender-Abo-Link erstellt",
   "auth.session.revoked": () => "Gerät abgemeldet",
   // Einträge aus der Zeit vor dem gemeinsamen Kern
   "organizations.insert": (m) => `Unternehmen „${text(m.name)}“ angelegt`,

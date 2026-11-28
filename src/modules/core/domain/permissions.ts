@@ -42,6 +42,9 @@ export const PERMISSIONS = [
   "projects.time",
   "projects.time_all",
   "projects.manage",
+  "calendar.view",
+  "calendar.edit",
+  "calendar.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

@@ -636,6 +636,168 @@ isOneToOne: true
           CompositeTypes: {
             [_ in never]: never
           }
+        },"calendar": {
+          Tables: {
+            "attendees": {
+                  Row: {
+                    "created_at": string,"event_id": string,"member_id": string,"responded_at": string | null,"response": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"event_id": string,"member_id": string,"responded_at"?: string | null,"response"?: string,"tenant_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"event_id"?: string,"member_id"?: string,"responded_at"?: string | null,"response"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "attendees_tenant_id_event_id_fkey"
+      columns: ["tenant_id","event_id"]
+isOneToOne: false
+      referencedRelation: "events"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"calendars": {
+                  Row: {
+                    "color": string,"created_at": string,"id": string,"kind": string,"name": string,"owner_member_id": string | null,"team_id": string | null,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "color"?: string,"created_at"?: string,"id"?: string,"kind": string,"name": string,"owner_member_id"?: string | null,"team_id"?: string | null,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "color"?: string,"created_at"?: string,"id"?: string,"kind"?: string,"name"?: string,"owner_member_id"?: string | null,"team_id"?: string | null,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"events": {
+                  Row: {
+                    "all_day": boolean,"calendar_id": string,"created_at": string,"created_by": string | null,"description": string | null,"ends_at": string,"exception_dates": (string)[],"id": string,"location": string | null,"reminder_minutes": number | null,"repeat_count": number | null,"repeat_freq": string | null,"repeat_interval": number,"repeat_until": string | null,"repeat_weekdays": (number)[],"starts_at": string,"tenant_id": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "all_day"?: boolean,"calendar_id": string,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"ends_at": string,"exception_dates"?: (string)[],"id"?: string,"location"?: string | null,"reminder_minutes"?: number | null,"repeat_count"?: number | null,"repeat_freq"?: string | null,"repeat_interval"?: number,"repeat_until"?: string | null,"repeat_weekdays"?: (number)[],"starts_at": string,"tenant_id": string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "all_day"?: boolean,"calendar_id"?: string,"created_at"?: string,"created_by"?: string | null,"description"?: string | null,"ends_at"?: string,"exception_dates"?: (string)[],"id"?: string,"location"?: string | null,"reminder_minutes"?: number | null,"repeat_count"?: number | null,"repeat_freq"?: string | null,"repeat_interval"?: number,"repeat_until"?: string | null,"repeat_weekdays"?: (number)[],"starts_at"?: string,"tenant_id"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "events_tenant_id_calendar_id_fkey"
+      columns: ["tenant_id","calendar_id"]
+isOneToOne: false
+      referencedRelation: "calendars"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
+                },"feed_tokens": {
+                  Row: {
+                    "created_at": string,"last_used_at": string | null,"member_id": string,"tenant_id": string,"token_hash": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"last_used_at"?: string | null,"member_id": string,"tenant_id": string,"token_hash": string
+                  }
+                  Update: {
+                    "created_at"?: string,"last_used_at"?: string | null,"member_id"?: string,"tenant_id"?: string,"token_hash"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"reminders_sent": {
+                  Row: {
+                    "event_id": string,"occurrence_start": string,"sent_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "event_id": string,"occurrence_start": string,"sent_at"?: string
+                  }
+                  Update: {
+                    "event_id"?: string,"occurrence_start"?: string,"sent_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reminders_sent_event_id_fkey"
+      columns: ["event_id"]
+isOneToOne: false
+      referencedRelation: "events"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "agenda":
+{ Args: { "p_from": string,"p_tenant": string,"p_to": string }; Returns: {
+              "all_day": boolean,"calendar_id": string,"calendar_kind": string,"calendar_name": string,"can_edit": boolean,"color": string,"event_id": string,"is_recurring": boolean,"location": string,"my_response": string,"occurrence_end": string,"occurrence_start": string,"title": string
+            }[]
+                           },
+"busy":
+{ Args: { "p_from": string,"p_members": (string)[],"p_tenant": string,"p_to": string }; Returns: {
+              "ends_at": string,"member_id": string,"starts_at": string
+            }[]
+                           },
+"can_edit_calendar":
+{ Args: { "p_calendar": string }; Returns: boolean
+                           },
+"can_edit_event":
+{ Args: { "p_event": string }; Returns: boolean
+                           },
+"can_view_calendar":
+{ Args: { "p_calendar": string }; Returns: boolean
+                           },
+"can_view_event":
+{ Args: { "p_event": string }; Returns: boolean
+                           },
+"create_feed_token":
+{ Args: { "p_tenant": string }; Returns: string
+                           },
+"ensure_company_calendar":
+{ Args: { "p_tenant": string }; Returns: string
+                           },
+"feed_events":
+{ Args: { "p_token": string }; Returns: {
+              "all_day": boolean,"calendar_name": string,"description": string,"ends_at": string,"event_id": string,"exception_dates": (string)[],"location": string,"repeat_count": number,"repeat_freq": string,"repeat_interval": number,"repeat_until": string,"repeat_weekdays": (number)[],"starts_at": string,"tenant_name": string,"timezone": string,"title": string,"updated_at": string
+            }[]
+                           },
+"has_feed_token":
+{ Args: { "p_tenant": string }; Returns: boolean
+                           },
+"is_attendee":
+{ Args: { "p_event": string }; Returns: boolean
+                           },
+"my_member_id":
+{ Args: { "p_tenant": string }; Returns: string
+                           },
+"occurrences":
+{ Args: { "p_event": Omit<Database["calendar"]['Tables']["events"]['Row'], Database["calendar"]['Tables']["events"]['ComputedFields']>,"p_from": string,"p_to": string,"p_tz": string }; Returns: {
+              "occurrence_end": string,"occurrence_start": string
+            }[]
+                           },
+"respond":
+{ Args: { "p_event": string,"p_response": string }; Returns: undefined
+                           },
+"revoke_feed_token":
+{ Args: { "p_tenant": string }; Returns: undefined
+                           },
+"send_reminders":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"skip_occurrence":
+{ Args: { "p_date": string,"p_event": string }; Returns: undefined
+                           }
+          }
+          Enums: {
+            [_ in never]: never
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
         },"core": {
           Tables: {
             "audit_logs": {
@@ -1735,6 +1897,10 @@ export const Constants = {
   "analytics": {
           Enums: {
             "match_operator": ["equals", "starts_with", "contains", "regex"],"tracking_mode": ["cookieless", "consent_upgrade", "consent_required"],"traffic_channel": ["organic_search", "paid_search", "direct", "referral", "social", "email", "display", "unassigned"],"visitor_id_type": ["daily_hash", "consented_id"]
+          }
+        },"calendar": {
+          Enums: {
+            
           }
         },"core": {
           Enums: {

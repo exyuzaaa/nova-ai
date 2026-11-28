@@ -33,7 +33,8 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 2a-4 | CRM: Pipeline, Verkaufschancen, Umsatz im Dashboard, CSV-Import/-Export, Pipeline-Einstellungen | ✓ |
 | 2b-1/2 | Projekte: Projekte, Team, Sichtbarkeit, Aufgaben mit Unteraufgaben, Checklisten, Abhängigkeiten, Kommentare, Board, Meilensteine, Status | ✓ |
 | 2b-3 | Projekte: Zeiterfassung (Stoppuhr, Nachtragen, Wochen- und Monatsauswertung, Budget), Zeitleiste, Vorlagen | ✓ |
-| 2c–d | Kalender, Personal | offen |
+| 2c | Kalender: persönlich/Team/Unternehmen, Wiederholungen, Einladungen mit Zusage, Frei/Belegt, Erinnerungen, iCal-Abo und .ics, fällige Aufgaben | ✓ |
+| 2d | Personal | offen |
 
 ### Phase 3 im Überblick
 

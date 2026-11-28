@@ -221,6 +221,27 @@ Migration `20261128090000_crm.sql` (Schema `crm`):
 
 ---
 
+### Phase 2c – Kalender, umgesetzt am 28.11.2026
+
+- **Datenbank** (Schema `calendar`, Migration `20261128190000_calendar.sql`, live in drei Teilen, Prüfsumme live = lokal):
+  persönliche Kalender (je Mitglied automatisch), Teamkalender (je Team automatisch, nur Teammitglieder und
+  `calendar.manage`), Unternehmenskalender (alle sehen, `calendar.manage` pflegt). Termine mit Ort, Beschreibung,
+  ganztägig oder mit Uhrzeit (max. 31 Tage), Wiederholung täglich/wöchentlich (mit Wochentagen)/monatlich/jährlich,
+  Intervall, Ende nach Datum oder Anzahl, einzelne Termine streichbar. Wiederholungen werden in der Zeitzone des
+  Unternehmens berechnet (gleiche Uhrzeit über die Zeitumstellung; der 31. entfällt in kürzeren Monaten).
+- **Einladungen**: Teilnehmende sehen den Termin auch ohne Zugriff auf den Kalender, antworten mit Zusage/Vielleicht/
+  Absage; Benachrichtigungen bei Einladung, Verschiebung, Antwort und als Erinnerung (Cron alle 5 Minuten).
+  Frei/Belegt (`calendar.busy`) zeigt nur Zeiten, keine Titel; der Termin zeigt „Zu dieser Zeit belegt“.
+- **Datenschutz**: persönliche Termine stehen weder in der Suche noch mit Titel im Protokoll; Unternehmenstermine
+  sind suchbar, Team-/Unternehmenstermine werden protokolliert.
+- **iCal**: persönlicher Abo-Link (`/api/kalender/<token>`, Token nur als SHA-256-Hash gespeichert, widerrufbar,
+  unbekannte Links liefern einen leeren Kalender) für Outlook, Google, Apple; einzelner Termin als `.ics`.
+- **Oberfläche** (`/kalender`): Monats-, Wochen- und 30-Tage-Ansicht, neuer Termin, Termindetail mit Bearbeiten,
+  Serienhinweis, Antworten, Streichen/Löschen; eigene fällige Projektaufgaben werden eingeblendet.
+- Tests: 498 Datenbank-, 192 Unit-, 89 Browsertests.
+
+---
+
 ## 0. Bestandsaufnahme
 
 | Bereich | Bestand | Bewertung |

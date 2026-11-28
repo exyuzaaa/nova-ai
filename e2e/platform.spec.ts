@@ -143,7 +143,7 @@ test.describe("NOVA-Plattform: Verwaltung eines Unternehmens", () => {
     await page.goto(`${base}/verwaltung/module`);
     await page.getByRole("button", { name: "Analytics einschalten" }).click();
     await expect(page.getByRole("button", { name: "Analytics ausschalten" })).toBeVisible();
-    await expect(page.getByRole("region", { name: "In Entwicklung" })).toContainText("Kalender");
+    await expect(page.getByRole("region", { name: "In Entwicklung" })).toContainText("Personal");
     await expect(page.getByRole("region", { name: "Verfügbare Module" })).toContainText("CRM");
     await expectAccessible(page);
   });
