@@ -231,3 +231,33 @@ export const getOverview = async (tenantId: string, monthStart: string): Promise
     quotesOpenTotal: Number(row?.quotes_open_total ?? 0),
   };
 };
+
+// -----------------------------------------------------------------------------
+// E-Mail-Versand (Gmail)
+// -----------------------------------------------------------------------------
+export type MailAccount = { email: string; connectedAt: string; lastUsedAt: string | null; lastError: string | null };
+
+/** Verbundenes Postfach (ohne Token – das ist für Nutzer ohnehin nicht lesbar). */
+export const getMailAccount = async (tenantId: string): Promise<MailAccount | null> => {
+  const { data, error } = await (await db())
+    .from("mail_accounts")
+    .select("email, connected_at, last_used_at, last_error")
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? { email: data.email, connectedAt: data.connected_at, lastUsedAt: data.last_used_at, lastError: data.last_error } : null;
+};
+
+export type DocumentEmail = { id: string; sentFrom: string; recipients: string[]; cc: string[]; subject: string; sentAt: string };
+
+export const listDocumentEmails = async (tenantId: string, documentId: string): Promise<DocumentEmail[]> => {
+  const { data, error } = await (await db())
+    .from("document_emails")
+    .select("id, sent_from, recipients, cc, subject, sent_at")
+    .eq("tenant_id", tenantId)
+    .eq("document_id", documentId)
+    .order("sent_at", { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  return data.map((row) => ({ id: row.id, sentFrom: row.sent_from, recipients: row.recipients, cc: row.cc, subject: row.subject, sentAt: row.sent_at }));
+};

@@ -1506,6 +1506,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"document_emails": {
+                  Row: {
+                    "cc": (string)[],"document_id": string,"id": string,"message_id": string | null,"recipients": (string)[],"sent_at": string,"sent_by": string | null,"sent_from": string,"subject": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cc"?: (string)[],"document_id": string,"id"?: string,"message_id"?: string | null,"recipients": (string)[],"sent_at"?: string,"sent_by"?: string | null,"sent_from": string,"subject": string,"tenant_id": string
+                  }
+                  Update: {
+                    "cc"?: (string)[],"document_id"?: string,"id"?: string,"message_id"?: string | null,"recipients"?: (string)[],"sent_at"?: string,"sent_by"?: string | null,"sent_from"?: string,"subject"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "document_emails_tenant_id_document_id_fkey"
+      columns: ["tenant_id","document_id"]
+isOneToOne: false
+      referencedRelation: "documents"
+      referencedColumns: ["tenant_id","id"]
+    }
+                  ]
                 },"document_lines": {
                   Row: {
                     "article_id": string | null,"created_at": string,"description": string | null,"discount_percent": number,"document_id": string,"id": string,"line_net": number | null,"position": number,"quantity": number,"tax_rate": number,"tenant_id": string,"title": string,"unit": string,"unit_price": number
@@ -1557,6 +1577,20 @@ isOneToOne: false
       referencedRelation: "documents"
       referencedColumns: ["tenant_id","id"]
     }
+                  ]
+                },"mail_accounts": {
+                  Row: {
+                    "connected_at": string,"connected_by": string | null,"email": string,"last_error": string | null,"last_used_at": string | null,"provider": string,"refresh_token_enc": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "connected_at"?: string,"connected_by"?: string | null,"email": string,"last_error"?: string | null,"last_used_at"?: string | null,"provider"?: string,"refresh_token_enc": string,"tenant_id": string
+                  }
+                  Update: {
+                    "connected_at"?: string,"connected_by"?: string | null,"email"?: string,"last_error"?: string | null,"last_used_at"?: string | null,"provider"?: string,"refresh_token_enc"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 },"number_sequences": {
                   Row: {
@@ -1615,11 +1649,22 @@ isOneToOne: false
             "cancel_invoice":
 { Args: { "p_invoice": string,"p_reason": string }; Returns: string
                            },
+"connect_mail_account":
+{ Args: { "p_email": string,"p_tenant": string,"p_token_enc": string }; Returns: undefined
+                           },
 "delete_payment":
 { Args: { "p_payment": string }; Returns: undefined
                            },
+"disconnect_mail_account":
+{ Args: { "p_tenant": string }; Returns: string
+                           },
 "issue_document":
 { Args: { "p_document": string,"p_issue_date"?: string }; Returns: string
+                           },
+"mail_credentials":
+{ Args: { "p_document": string }; Returns: {
+              "email": string,"refresh_token_enc": string
+            }[]
                            },
 "next_number":
 { Args: { "p_kind": string,"p_tenant": string,"p_year": number }; Returns: string
@@ -1634,6 +1679,12 @@ isOneToOne: false
                            },
 "recalc":
 { Args: { "p_document": string }; Returns: undefined
+                           },
+"record_document_email":
+{ Args: { "p_cc": (string)[],"p_document": string,"p_from": string,"p_message_id": string,"p_subject": string,"p_to": (string)[] }; Returns: string
+                           },
+"record_mail_error":
+{ Args: { "p_document": string,"p_error": string }; Returns: undefined
                            },
 "record_payment":
 { Args: { "p_amount": number,"p_document": string,"p_method"?: string,"p_note"?: string,"p_paid_on": string }; Returns: string

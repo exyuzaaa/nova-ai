@@ -3,6 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const STORAGE_STATE = "e2e/.auth/user.json";
 
 const PORT = Number(process.env.E2E_PORT ?? 3100);
+const GOOGLE_MOCK_PORT = Number(process.env.E2E_GOOGLE_PORT ?? 3199);
 /** Optional: vorinstalliertes Chromium verwenden (z. B. in Cloud-Sandboxes). */
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_PATH || undefined;
 /** nova.test → lokaler Server, damit Tracking-Tests eine „echte“ Domain haben. */
@@ -44,5 +45,11 @@ export default defineConfig({
     command: `npx next start -p ${PORT}`,
     port: PORT,
     reuseExistingServer: true,
+    // Gmail-Versand gegen die Google-Attrappe aus e2e/support/google-mock.ts (niemals echte Google-Server)
+    env: {
+      GOOGLE_CLIENT_ID: "e2e-client",
+      GOOGLE_CLIENT_SECRET: "e2e-secret",
+      NOVA_TEST_GOOGLE_BASE_URL: `http://127.0.0.1:${GOOGLE_MOCK_PORT}`,
+    },
   },
 });

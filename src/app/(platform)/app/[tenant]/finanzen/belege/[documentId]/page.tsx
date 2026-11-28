@@ -10,7 +10,11 @@ import { tenantBasePath } from "@/modules/core/config/navigation";
 import { uuidSchema } from "@/modules/core/domain/tenant-validation";
 import { requireTenantContext } from "@/modules/core/server/tenant-context";
 import { KIND_LABELS, PAYMENT_METHODS, formatEuro, formatQuantity, totals } from "@/modules/finance/domain/finance";
-import { getDocument, getSettings, listArticles } from "@/modules/finance/server/finance";
+import { getDocument, getMailAccount, getSettings, listArticles, listDocumentEmails } from "@/modules/finance/server/finance";
+import { isGmailConfigured } from "@/modules/finance/server/gmail";
+import { defaultMail } from "@/modules/finance/domain/mail";
+import { SendMailForm } from "@/modules/finance/ui/mail-forms";
+import { getCustomer } from "@/modules/crm/server/customers";
 import { StatusBadge, formatDate } from "@/modules/finance/ui/document-list";
 import {
   CancelInvoiceForm,
@@ -41,12 +45,17 @@ async function DocumentPage({ params }: Pick<PageProps<"/app/[tenant]/finanzen/b
   const canEdit = permissions.has("finance.edit");
   const canIssue = permissions.has("finance.issue");
   const editable = draft && canEdit;
-  const [settings, articles, customers, projects] = await Promise.all([
+  const canSend = !draft && (doc.kind === "quote" ? canEdit : canIssue);
+  const [settings, articles, customers, projects, mailAccount, emails, customer] = await Promise.all([
     getSettings(tenant.id),
     editable ? listArticles(tenant.id) : Promise.resolve([]),
     editable && permissions.has("crm.view") ? listCustomerOptions(tenant.id) : Promise.resolve([]),
     editable && permissions.has("projects.view") ? listTimeProjectOptions(tenant.id).catch(() => []) : Promise.resolve([]),
+    canSend ? getMailAccount(tenant.id) : Promise.resolve(null),
+    draft ? Promise.resolve([]) : listDocumentEmails(tenant.id, doc.id),
+    canSend && doc.customerId && permissions.has("crm.view") ? getCustomer(tenant.id, doc.customerId).catch(() => null) : Promise.resolve(null),
   ]);
+  const formatDateTime = (value: string) => new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short", timeZone: tenant.timezone }).format(new Date(value));
   const smallBusiness = draft ? Boolean(settings?.small_business) : doc.smallBusiness;
   const sums = draft ? totals(doc.lines, smallBusiness) : { net: doc.netTotal, tax: doc.taxTotal, gross: doc.grossTotal, breakdown: doc.taxBreakdown };
   const open = Math.round((doc.grossTotal - doc.paidTotal) * 100) / 100;
@@ -282,6 +291,61 @@ async function DocumentPage({ params }: Pick<PageProps<"/app/[tenant]/finanzen/b
         </dl>
         {smallBusiness && <p className="text-xs text-muted-foreground">Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.</p>}
       </Section>
+
+
+      {!draft && (canSend || emails.length > 0) && (
+        <Section title="Per E-Mail senden" description={emails.length > 0 ? `Bereits ${emails.length}× versendet.` : undefined}>
+          {canSend &&
+            (!isGmailConfigured() ? (
+              <p className="text-sm text-muted-foreground">Der E-Mail-Versand ist auf dieser NOVA-Installation noch nicht eingerichtet.</p>
+            ) : !mailAccount ? (
+              <p className="text-sm text-muted-foreground">
+                Es ist noch kein Gmail-Konto verbunden.{" "}
+                {permissions.has("finance.manage") ? (
+                  <Link href={`${base}/einstellungen`} className="font-medium text-foreground underline">
+                    Gmail verbinden
+                  </Link>
+                ) : (
+                  "Bitte wende dich an eine Person mit Verwaltungsrechten."
+                )}
+              </p>
+            ) : (
+              <SendMailForm
+                tenantId={tenant.id}
+                documentId={doc.id}
+                from={mailAccount.email}
+                defaults={{
+                  to: customer?.email ?? "",
+                  attachment: `${doc.number}.pdf`,
+                  ...defaultMail({
+                    kind: doc.kind,
+                    kindLabel: label,
+                    number: doc.number ?? "",
+                    companyName: typeof doc.seller?.legal_name === "string" ? doc.seller.legal_name : tenant.name,
+                    recipientName: doc.recipientName,
+                    gross: formatEuro(doc.grossTotal),
+                    dueDate: doc.kind === "invoice" && doc.dueDate ? formatDate(doc.dueDate) : null,
+                  }),
+                }}
+              />
+            ))}
+          {emails.length > 0 && (
+            <ul className="flex flex-col divide-y text-sm" aria-label="Versandverlauf">
+              {emails.map((email) => (
+                <li key={email.id} className="flex flex-col gap-0.5 py-2">
+                  <span>
+                    {formatDateTime(email.sentAt)} an {email.recipients.join(", ")}
+                    {email.cc.length > 0 && ` (CC: ${email.cc.join(", ")})`}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {email.subject} · von {email.sentFrom}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Section>
+      )}
 
       {invoiceLive && (
         <Section title="Zahlungen" description={open > 0 ? `Noch offen: ${formatEuro(open)}` : open < 0 ? `Überzahlt: ${formatEuro(-open)}` : "Vollständig bezahlt."}>

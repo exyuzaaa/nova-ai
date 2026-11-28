@@ -300,6 +300,28 @@ Migration `20261128090000_crm.sql` (Schema `crm`):
 
 ---
 
+### Phase 3a-2 – Belegversand per Gmail, umgesetzt am 28.11.2026
+
+- Entscheidung (28.11.2026): E-Mail-Versand über **Gmail**. Umsetzung: Jedes Unternehmen verbindet sein eigenes
+  Gmail-/Google-Workspace-Postfach per OAuth (nur `gmail.send`); Belege gehen von der eigenen Adresse raus und liegen
+  dort unter „Gesendet“.
+- **Datenbank** (Migration `20261128240000_finance_mail.sql`, live, Prüfsumme live = lokal): verbundenes Postfach je
+  Unternehmen (Refresh-Token AES-256-GCM-verschlüsselt mit einem aus dem Client-Secret abgeleiteten Schlüssel; die
+  Spalte ist für Nutzer per Spaltenrechten nicht lesbar), Versandprotokoll je Beleg. Verbinden/Trennen nur mit
+  `finance.manage`, Versand von Rechnungen/Gutschriften mit `finance.issue`, von Angeboten mit `finance.edit`;
+  Entwürfe werden nicht versendet. Verbinden, Versand und Trennen stehen im Protokoll (ohne Token).
+- **Ablauf**: „Mit Gmail verbinden“ → Google → Rückleitung `/api/google/callback` (Schutz per Einmal-Zustand im
+  httpOnly-Cookie) → Postfach gespeichert. Am Beleg: Empfänger (vorbelegt mit der Kunden-E-Mail), CC, Betreff und
+  Text (Vorschlag mit Nummer, Betrag, Fälligkeit), PDF automatisch im Anhang, Versandverlauf. Widerrufene Zugänge
+  werden verständlich gemeldet und in den Einstellungen angezeigt; Trennen widerruft die Freigabe bei Google.
+- **Einrichtung** (einmalig, durch den Betreiber): Google-Cloud-OAuth-Client und `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`
+  in Vercel, siehe [`GMAIL.md`](GMAIL.md). Ohne diese Werte zeigt NOVA „noch nicht eingerichtet“.
+- **Vor dem Verkauf**: Google-Verifizierung der App (sensibler Bereich `gmail.send`; braucht Domain und Datenschutzerklärung).
+- Tests: 603 Datenbank-, 217 Unit-, 107 Browsertests (Browsertests gegen eine lokale Google-Attrappe; der echte
+  Google-Versand ist erst nach der Einrichtung prüfbar).
+
+---
+
 ## 0. Bestandsaufnahme
 
 | Bereich | Bestand | Bewertung |

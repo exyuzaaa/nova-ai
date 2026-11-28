@@ -36,6 +36,7 @@ Architektur und Entwicklungsplan: [`docs/analytics/ARCHITEKTUR.md`](docs/analyti
 | 2c | Kalender: persönlich/Team/Unternehmen, Wiederholungen, Einladungen mit Zusage, Frei/Belegt, Erinnerungen, iCal-Abo und .ics, fällige Aufgaben | ✓ |
 | 2d | Personal: Mitarbeiterverzeichnis, Vorgesetzte, vertrauliche Daten (eigenes Recht), Urlaub/Abwesenheiten mit Genehmigung, Resturlaub, Feiertage, Onboarding | ✓ |
 | 3a | Finanzen: Angebote, Rechnungen mit lückenloser Nummer, Storno per Gutschrift, Zahlungen, Artikel, Rechnungsdaten, PDF | ✓ |
+| 3a-2 | Finanzen: Belegversand per Gmail (eigenes Postfach je Unternehmen, PDF-Anhang, Versandverlauf) – Einrichtung: [`docs/nova/GMAIL.md`](docs/nova/GMAIL.md) | ✓ |
 
 ### Phase 3 im Überblick
 
